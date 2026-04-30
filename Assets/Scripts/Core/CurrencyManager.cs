@@ -11,8 +11,10 @@ public class CurrencyManager : MonoBehaviour
 
     [Header("Runtime")]
     public float currentCurrency;
+    public float totalCollected;
 
     public event Action<float> OnCurrencyChanged;
+    public event Action<float> OnCurrencyCollected;
 
     private void Awake()
     {
@@ -27,7 +29,9 @@ public class CurrencyManager : MonoBehaviour
     public void Add(float amount)
     {
         currentCurrency += amount;
+        totalCollected += amount;
         OnCurrencyChanged?.Invoke(currentCurrency);
+        OnCurrencyCollected?.Invoke(amount);
     }
 
     public bool Spend(float amount)
@@ -55,8 +59,6 @@ public class CurrencyManager : MonoBehaviour
         CurrencyDrop dropComponent = drop.GetComponent<CurrencyDrop>();
 
         if (dropComponent != null)
-        {
             dropComponent.Init(amount, dropLifetime);
-        }
     }
 }

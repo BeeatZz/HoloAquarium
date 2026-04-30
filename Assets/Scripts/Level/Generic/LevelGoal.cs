@@ -8,7 +8,11 @@ public class LevelGoal : ScriptableObject
     public int totalPurchasesRequired = 1;
     public List<PurchaseTier> purchaseTiers;
 
-    [Header("Star Conditions")]
+    [Header("Wave Requirements")]
+    public bool requireAllWavesComplete = false;
+    public int requiredWaveIndex = -1;
+
+    [Header("Time Reference")]
     public float timeLimitSeconds = 120f;
 }
 

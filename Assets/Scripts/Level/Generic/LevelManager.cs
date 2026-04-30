@@ -9,6 +9,9 @@ public class LevelManager : MonoBehaviour
     [Header("Level Data")]
     public LevelGoal levelGoal;
 
+    [Header("References")]
+    public WaveSpawner waveSpawner;
+
     [Header("Play Area")]
     public Vector2 playAreaMin = new Vector2(-4f, -3f);
     public Vector2 playAreaMax = new Vector2(4f, 3f);
@@ -17,6 +20,7 @@ public class LevelManager : MonoBehaviour
     public int currentPurchaseCount;
     public int gremDeathCount;
     public float elapsedTime;
+    public float totalCurrencyCollected;
     public bool levelActive;
     public bool levelComplete;
 
@@ -48,12 +52,14 @@ public class LevelManager : MonoBehaviour
         currentPurchaseCount = 0;
         gremDeathCount = 0;
         elapsedTime = 0f;
+        totalCurrencyCollected = 0f;
         currentTierIndex = 0;
         thresholdReached = false;
         levelActive = true;
         levelComplete = false;
 
         CurrencyManager.Instance.OnCurrencyChanged += CheckPurchaseThreshold;
+        CurrencyManager.Instance.OnCurrencyCollected += OnCurrencyCollectedHandler;
     }
 
     private void Update()
@@ -72,6 +78,7 @@ public class LevelManager : MonoBehaviour
     private void CheckPurchaseThreshold(float currentCurrency)
     {
         if (levelGoal == null || currentTierIndex >= levelGoal.purchaseTiers.Count) return;
+        if (!WaveRequirementMet()) return;
 
         float tierCost = levelGoal.purchaseTiers[currentTierIndex].cost;
 
@@ -84,6 +91,19 @@ public class LevelManager : MonoBehaviour
         {
             thresholdReached = false;
         }
+    }
+
+    private bool WaveRequirementMet()
+    {
+        if (waveSpawner == null) return true;
+
+        if (levelGoal.requireAllWavesComplete)
+            return waveSpawner.allWavesComplete;
+
+        if (levelGoal.requiredWaveIndex >= 0)
+            return waveSpawner.currentWaveIndex > levelGoal.requiredWaveIndex;
+
+        return true;
     }
 
     public bool TryPurchase()
@@ -103,9 +123,7 @@ public class LevelManager : MonoBehaviour
         OnPurchaseMade?.Invoke(currentPurchaseCount);
 
         if (currentPurchaseCount >= levelGoal.totalPurchasesRequired)
-        {
             CompleteLevel();
-        }
 
         return true;
     }
@@ -116,12 +134,18 @@ public class LevelManager : MonoBehaviour
         gremDeathCount++;
     }
 
+    private void OnCurrencyCollectedHandler(float amount)
+    {
+        totalCurrencyCollected += amount;
+    }
+
     private void CompleteLevel()
     {
         levelComplete = true;
         levelActive = false;
 
         CurrencyManager.Instance.OnCurrencyChanged -= CheckPurchaseThreshold;
+        CurrencyManager.Instance.OnCurrencyCollected -= OnCurrencyCollectedHandler;
 
         int stars = EvaluateStars();
         Debug.Log($"Level Complete — Stars: {stars}, Deaths: {gremDeathCount}, Time: {elapsedTime:F1}s");
@@ -131,15 +155,26 @@ public class LevelManager : MonoBehaviour
 
     private int EvaluateStars()
     {
-        int stars = 1;
-        if (gremDeathCount == 0) stars++;
-        if (elapsedTime <= levelGoal.timeLimitSeconds) stars++;
+        StarObjective[] objectives = GetComponentsInChildren<StarObjective>();
+
+        if (objectives.Length == 0) return 1;
+
+        int stars = 0;
+        foreach (StarObjective obj in objectives)
+        {
+            if (obj.Evaluate())
+                stars++;
+        }
+
         return stars;
     }
 
     private void OnDestroy()
     {
         if (CurrencyManager.Instance != null)
+        {
             CurrencyManager.Instance.OnCurrencyChanged -= CheckPurchaseThreshold;
+            CurrencyManager.Instance.OnCurrencyCollected -= OnCurrencyCollectedHandler;
+        }
     }
 }
