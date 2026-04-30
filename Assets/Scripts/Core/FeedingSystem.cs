@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using DG.Tweening;
 
 public class FeedingSystem : MonoBehaviour
@@ -12,6 +13,9 @@ public class FeedingSystem : MonoBehaviour
     public float foodLifetime = 10f;
     public float foodDetectionRadius = 1f;
 
+    [Header("State")]
+    public bool feedingModeActive;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -22,30 +26,29 @@ public class FeedingSystem : MonoBehaviour
         Instance = this;
     }
 
-    private void Update()
+ 
+    public void ToggleFeedingMode(bool active)
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            TryPlaceFood();
-        }
+        feedingModeActive = active;
     }
 
-    private void TryPlaceFood()
+    public void TryPlaceFoodAt(Vector2 position)
     {
         if (foodPrefab == null) return;
         if (!CurrencyManager.Instance.CanAfford(foodCost)) return;
 
-        // Raycast to find placement point on the level plane
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Vector2 mouseScreen = Mouse.current.position.ReadValue();
+        Ray ray = Camera.main.ScreenPointToRay(mouseScreen);
         Plane plane = new Plane(Vector3.forward, Vector3.zero);
 
         if (plane.Raycast(ray, out float distance))
         {
             Vector3 worldPoint = ray.GetPoint(distance);
 
-            // Don't place food if clicking a currency drop
+            // Don't place food if clicking a currency drop or enemy
             Collider2D hit = Physics2D.OverlapPoint(worldPoint);
             if (hit != null && hit.GetComponent<CurrencyDrop>() != null) return;
+            if (hit != null && hit.GetComponent<Enemy>() != null) return;
 
             CurrencyManager.Instance.Spend(foodCost);
             SpawnFood(worldPoint);

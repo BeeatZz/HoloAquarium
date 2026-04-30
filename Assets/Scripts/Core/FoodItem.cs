@@ -3,16 +3,16 @@ using DG.Tweening;
 
 public class FoodItem : MonoBehaviour
 {
-    // Internal
+    [Header("Idle Settings")]
+    public float bobSpeed = 1.5f;
+    public float bobAmplitude = 0.04f;
+
     private float hungerRestoreAmount;
     private float lifetime;
     private float detectionRadius;
     private bool consumed;
+    private bool readyToEat;
     private Vector3 basePosition;
-
-    [Header("Idle Settings")]
-    public float bobSpeed = 1.5f;
-    public float bobAmplitude = 0.04f;
 
     public void Init(float restore, float foodLifetime, float radius)
     {
@@ -20,6 +20,7 @@ public class FoodItem : MonoBehaviour
         lifetime = foodLifetime;
         detectionRadius = radius;
         consumed = false;
+        readyToEat = false;
 
         PlaySpawnAnimation();
         Invoke(nameof(Expire), lifetime);
@@ -27,7 +28,7 @@ public class FoodItem : MonoBehaviour
 
     private void Update()
     {
-        if (consumed) return;
+        if (consumed || !readyToEat) return;
 
         HandleIdleBob();
         CheckForHungryGrem();
@@ -45,13 +46,13 @@ public class FoodItem : MonoBehaviour
 
     private void CheckForHungryGrem()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRadius);
+        // Larger consume radius since grems actively walk to food
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRadius + 0.2f);
 
         foreach (Collider2D hit in hits)
         {
             Gremurin grem = hit.GetComponent<Gremurin>();
-
-            if (grem != null && !grem.isDead && grem.currentHunger < grem.data.maxHunger)
+            if (grem != null && !grem.isDead && grem.currentHunger < grem.data.maxHunger * 0.9f)
             {
                 Consume(grem);
                 return;
@@ -76,7 +77,9 @@ public class FoodItem : MonoBehaviour
     {
         basePosition = transform.position;
         transform.localScale = Vector3.zero;
-        transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.OutBack);
+        transform.DOScale(Vector3.one, 0.25f)
+            .SetEase(Ease.OutBack)
+            .OnComplete(() => readyToEat = true); // only start detecting after animation
     }
 
     private void Expire()

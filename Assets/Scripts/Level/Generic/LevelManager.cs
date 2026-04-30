@@ -9,6 +9,10 @@ public class LevelManager : MonoBehaviour
     [Header("Level Data")]
     public LevelGoal levelGoal;
 
+    [Header("Play Area")]
+    public Vector2 playAreaMin = new Vector2(-4f, -3f);
+    public Vector2 playAreaMax = new Vector2(4f, 3f);
+
     [Header("Runtime State")]
     public int currentPurchaseCount;
     public int gremDeathCount;
@@ -56,6 +60,13 @@ public class LevelManager : MonoBehaviour
     {
         if (!levelActive || levelComplete) return;
         elapsedTime += Time.deltaTime;
+    }
+
+    public Vector3 ClampToPlayArea(Vector3 position)
+    {
+        position.x = Mathf.Clamp(position.x, playAreaMin.x, playAreaMax.x);
+        position.y = Mathf.Clamp(position.y, playAreaMin.y, playAreaMax.y);
+        return position;
     }
 
     private void CheckPurchaseThreshold(float currentCurrency)

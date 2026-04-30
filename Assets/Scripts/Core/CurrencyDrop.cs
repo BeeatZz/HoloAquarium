@@ -78,16 +78,11 @@ public class CurrencyDrop : MonoBehaviour
         transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBack);
     }
 
-    private void OnMouseDown()
+    public void Collect()
     {
         if (!isCollectable || collected) return;
-        Collect();
-    }
 
-    private void Collect()
-    {
         collected = true;
-
         transform.DOKill();
         transform.DOScale(Vector3.zero, 0.15f)
             .SetEase(Ease.InBack)
@@ -97,6 +92,8 @@ public class CurrencyDrop : MonoBehaviour
                 Destroy(gameObject);
             });
     }
+
+   
 
     private void Expire()
     {

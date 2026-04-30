@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Gremurin : MonoBehaviour
@@ -16,6 +17,9 @@ public class Gremurin : MonoBehaviour
     public float wanderPauseMax = 5f;
     public float moveSpeed = 1.5f;
 
+    [Header("Hunger Settings")]
+    public float seekFoodHungerThreshold = 0.4f;
+
     [Header("Idle Bob")]
     public float bobSpeed = 2f;
     public float bobAmplitude = 0.05f;
@@ -25,6 +29,7 @@ public class Gremurin : MonoBehaviour
     private Vector3 targetPosition;
     private float wanderTimer;
     private bool isMoving;
+    private FoodItem targetFood;
 
     private void Start()
     {
@@ -38,7 +43,6 @@ public class Gremurin : MonoBehaviour
         targetPosition = transform.position;
         currentHunger = data.maxHunger;
         currentHealth = data.maxHealth;
-
         wanderRadius = data.wanderRadius;
         wanderPauseMin = data.wanderPauseMin;
         wanderPauseMax = data.wanderPauseMax;
@@ -64,13 +68,22 @@ public class Gremurin : MonoBehaviour
 
     private void HandleWander()
     {
+        if (currentHunger < data.maxHunger * seekFoodHungerThreshold)
+        {
+            SeekFood();
+            return;
+        }
+
+        targetFood = null;
+
         if (isMoving)
         {
-            transform.position = Vector3.MoveTowards(
+            Vector3 newPos = Vector3.MoveTowards(
                 transform.position,
                 targetPosition,
                 moveSpeed * Time.deltaTime
             );
+            transform.position = LevelManager.Instance.ClampToPlayArea(newPos);
 
             if (Vector3.Distance(transform.position, targetPosition) < 0.05f)
             {
@@ -90,29 +103,73 @@ public class Gremurin : MonoBehaviour
         }
     }
 
+    private void SeekFood()
+    {
+        if (targetFood == null)
+            targetFood = FindNearestFood();
+
+        if (targetFood == null) return;
+
+        isMoving = true;
+        Vector3 newPos = Vector3.MoveTowards(
+            transform.position,
+            targetFood.transform.position,
+            moveSpeed * 1.5f * Time.deltaTime
+        );
+        transform.position = LevelManager.Instance.ClampToPlayArea(newPos);
+        basePosition = transform.position;
+    }
+
+    private FoodItem FindNearestFood()
+    {
+        FoodItem[] foods = FindObjectsByType<FoodItem>(FindObjectsSortMode.None);
+        FoodItem nearest = null;
+        float nearestDist = float.MaxValue;
+
+        foreach (FoodItem food in foods)
+        {
+            float dist = Vector3.Distance(transform.position, food.transform.position);
+            if (dist < nearestDist)
+            {
+                nearestDist = dist;
+                nearest = food;
+            }
+        }
+
+        return nearest;
+    }
+
     private void HandleIdleBob()
     {
         if (!isMoving)
         {
             float bob = Mathf.Sin(Time.time * bobSpeed) * bobAmplitude;
-            transform.position = new Vector3(
+            Vector3 bobbedPos = new Vector3(
                 basePosition.x,
                 basePosition.y + bob,
                 basePosition.z
             );
+            transform.position = LevelManager.Instance.ClampToPlayArea(bobbedPos);
         }
     }
 
     private void PickWanderTarget()
     {
-        Vector2 randomOffset = Random.insideUnitCircle * wanderRadius;
-        targetPosition = basePosition + new Vector3(randomOffset.x, randomOffset.y, 0);
+        Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * wanderRadius;
+        Vector3 candidate = basePosition + new Vector3(randomOffset.x, randomOffset.y, 0);
+        targetPosition = LevelManager.Instance.ClampToPlayArea(candidate);
         isMoving = true;
+    }
+    public void SetBasePosition(Vector3 newBase)
+    {
+        basePosition = newBase;
+        targetPosition = newBase;
+        isMoving = false;
     }
 
     private void ScheduleNextWander()
     {
-        wanderTimer = Random.Range(wanderPauseMin, wanderPauseMax);
+        wanderTimer = UnityEngine.Random.Range(wanderPauseMin, wanderPauseMax);
     }
 
     public void TakeDamage(float amount)
