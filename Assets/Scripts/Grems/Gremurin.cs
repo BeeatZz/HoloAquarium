@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Gremurin : MonoBehaviour
 {
+    private SpriteRenderer sr;
     [Header("Stats")]
     public GremData data;
 
@@ -33,6 +34,7 @@ public class Gremurin : MonoBehaviour
 
     private void Start()
     {
+        sr = GetComponent<SpriteRenderer>();
         if (data == null)
         {
             Debug.LogError($"Gremurin {gameObject.name} has no GremData assigned.");
@@ -60,6 +62,13 @@ public class Gremurin : MonoBehaviour
         HandleIdleBob();
     }
 
+    private void UpdateFacing(Vector3 targetPos)
+    {
+        if (sr == null) return;
+        float diff = targetPos.x - transform.position.x;
+        if (Mathf.Abs(diff) > 0.01f)
+            sr.flipX = diff < 0;
+    }
     private void HandleHunger()
     {
         currentHunger -= data.hungerRate * Time.deltaTime;
@@ -78,6 +87,7 @@ public class Gremurin : MonoBehaviour
 
         if (isMoving)
         {
+            UpdateFacing(targetPosition);
             Vector3 newPos = Vector3.MoveTowards(
                 transform.position,
                 targetPosition,
@@ -111,6 +121,7 @@ public class Gremurin : MonoBehaviour
         if (targetFood == null) return;
 
         isMoving = true;
+        UpdateFacing(targetFood.transform.position);
         Vector3 newPos = Vector3.MoveTowards(
             transform.position,
             targetFood.transform.position,

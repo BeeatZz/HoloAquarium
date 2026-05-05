@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -7,10 +8,18 @@ public class PlayerInput : MonoBehaviour
 
     [Header("Settings")]
     public float punchDamage = 1f;
+    public float holdThreshold = 0.2f;
+
+    [Header("Drag Settings")]
+    public float dragFollowSpeed = 12f;
+    public float dragScale = 1.25f;
 
     // Drag state
     private Gremurin draggedGrem;
+    private Gremurin pressedGrem;
     private Vector3 dragOffset;
+    private float holdTimer;
+    private bool isDragging;
 
     private void Awake()
     {
@@ -24,18 +33,28 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
+
         if (Mouse.current.leftButton.wasPressedThisFrame)
             HandlePress();
 
-        if (Mouse.current.leftButton.isPressed && draggedGrem != null)
-            HandleDrag();
+        if (Mouse.current.leftButton.isPressed && pressedGrem != null)
+            HandleHold();
 
-        if (Mouse.current.leftButton.wasReleasedThisFrame && draggedGrem != null)
+        if (Mouse.current.leftButton.wasReleasedThisFrame)
             HandleRelease();
+    }
+
+    private bool IsClickOnPopup()
+    {
+        Vector2 mouseScreen = Mouse.current.position.ReadValue();
+        return GremInfoPopup.Instance != null &&
+               GremInfoPopup.Instance.IsClickInsidePopup(mouseScreen);
     }
 
     private void HandlePress()
     {
+        if (IsClickOnPopup()) return;
+
         Vector2 mouseScreen = Mouse.current.position.ReadValue();
         Vector2 worldPoint = Camera.main.ScreenToWorldPoint(mouseScreen);
 
@@ -43,6 +62,7 @@ public class PlayerInput : MonoBehaviour
 
         if (hit == null)
         {
+            GremInfoPopup.Instance?.Hide();
             if (FeedingSystem.Instance != null && FeedingSystem.Instance.feedingModeActive)
                 FeedingSystem.Instance.TryPlaceFoodAt(worldPoint);
             return;
@@ -50,50 +70,100 @@ public class PlayerInput : MonoBehaviour
 
         // Priority 1: collect currency drop
         CurrencyDrop drop = hit.GetComponent<CurrencyDrop>();
-        if (drop != null)
-        {
-            drop.Collect();
-            return;
-        }
+        if (drop != null) { drop.Collect(); return; }
 
         // Priority 2: punch enemy
         Enemy enemy = hit.GetComponent<Enemy>();
-        if (enemy != null)
-        {
-            PunchEnemy(enemy);
-            return;
-        }
+        if (enemy != null) { PunchEnemy(enemy); return; }
 
-        // Priority 3: start dragging grem
+        // Priority 3: grem pressed — start hold timer
         Gremurin grem = hit.GetComponent<Gremurin>();
         if (grem != null && !grem.isDead)
         {
-            draggedGrem = grem;
-            dragOffset = grem.transform.position - (Vector3)worldPoint;
+            pressedGrem = grem;
+            holdTimer = 0f;
+            isDragging = false;
+
+            Vector3 wp3 = Camera.main.ScreenToWorldPoint(mouseScreen);
+            wp3.z = 0;
+            dragOffset = grem.transform.position - wp3;
             return;
         }
+
+        GremInfoPopup.Instance?.Hide();
     }
 
-    private void HandleDrag()
+    private void HandleHold()
     {
-        if (draggedGrem == null || draggedGrem.isDead)
+        if (pressedGrem == null || pressedGrem.isDead)
         {
-            draggedGrem = null;
+            pressedGrem = null;
             return;
         }
 
-        Vector2 mouseScreen = Mouse.current.position.ReadValue();
-        Vector3 worldPoint = Camera.main.ScreenToWorldPoint(mouseScreen);
-        worldPoint.z = 0;
+        holdTimer += Time.deltaTime;
 
-        Vector3 newPos = worldPoint + dragOffset;
-        draggedGrem.transform.position = LevelManager.Instance.ClampToPlayArea(newPos);
-        draggedGrem.SetBasePosition(draggedGrem.transform.position);
+        if (!isDragging && holdTimer >= holdThreshold)
+        {
+            isDragging = true;
+            draggedGrem = pressedGrem;
+            GremInfoPopup.Instance?.Hide();
+
+            // Recalculate offset from current cursor position at drag start
+            Vector2 mouseScreen = Mouse.current.position.ReadValue();
+            Vector3 currentWorld = Camera.main.ScreenToWorldPoint(mouseScreen);
+            currentWorld.z = 0;
+            dragOffset = draggedGrem.transform.position - currentWorld;
+
+            // Scale up to look lifted
+            draggedGrem.transform.DOKill();
+            draggedGrem.transform.DOScale(Vector3.one * dragScale, 0.15f)
+                .SetEase(Ease.OutBack);
+        }
+
+        if (isDragging && draggedGrem != null)
+        {
+            Vector2 mouseScreen = Mouse.current.position.ReadValue();
+            Vector3 worldPoint = Camera.main.ScreenToWorldPoint(mouseScreen);
+            worldPoint.z = 0;
+
+            Vector3 targetPos = LevelManager.Instance.ClampToPlayArea(worldPoint + dragOffset);
+
+            // Lerp so grem lags slightly behind cursor
+            draggedGrem.transform.position = Vector3.Lerp(
+                draggedGrem.transform.position,
+                targetPos,
+                dragFollowSpeed * Time.deltaTime
+            );
+
+            draggedGrem.SetBasePosition(draggedGrem.transform.position);
+        }
     }
 
     private void HandleRelease()
     {
+        if (pressedGrem != null && !isDragging)
+        {
+            if (GremInfoPopup.Instance != null)
+            {
+                if (GremInfoPopup.Instance.IsShowing(pressedGrem))
+                    GremInfoPopup.Instance.Hide();
+                else
+                    GremInfoPopup.Instance.Show(pressedGrem);
+            }
+        }
+
+        // Scale back down on release
+        if (draggedGrem != null)
+        {
+            draggedGrem.transform.DOKill();
+            draggedGrem.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBack);
+        }
+
+        pressedGrem = null;
         draggedGrem = null;
+        isDragging = false;
+        holdTimer = 0f;
     }
 
     public void PunchEnemy(Enemy enemy)

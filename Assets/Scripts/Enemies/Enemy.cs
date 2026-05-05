@@ -3,6 +3,10 @@ using DG.Tweening;
 
 public class Enemy : MonoBehaviour
 {
+
+    [Header("Settings")]
+    public bool facingLeftByDefault = false;
+
     [Header("Stats")]
     public float maxHealth = 3f;
     public float moveSpeed = 1.5f;
@@ -15,14 +19,17 @@ public class Enemy : MonoBehaviour
 
     protected float attackTimer;
     protected Gremurin targetGrem;
-    protected CurrencyDrop targetDrop;
+    protected SpriteRenderer sr;
 
     protected virtual void Start()
     {
         currentHealth = maxHealth;
         attackTimer = attackCooldown;
 
-        // Spawn punch in
+        // Get SR from this object directly
+        sr = GetComponent<SpriteRenderer>();
+
+        // Simple spawn juice
         transform.localScale = Vector3.zero;
         transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
     }
@@ -30,12 +37,10 @@ public class Enemy : MonoBehaviour
     protected virtual void Update()
     {
         if (isDead) return;
-
         attackTimer -= Time.deltaTime;
         Think();
     }
 
-    // Override in subclasses to define behaviour
     protected virtual void Think()
     {
         FindTarget();
@@ -43,30 +48,19 @@ public class Enemy : MonoBehaviour
         TryAttack();
     }
 
-    protected virtual void FindTarget()
-    {
-        // Default: target nearest grem
-        targetGrem = FindNearestGrem();
-    }
+    protected virtual void FindTarget() => targetGrem = FindNearestGrem();
 
     protected virtual void MoveTowardTarget()
     {
         if (targetGrem == null) return;
-
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            targetGrem.transform.position,
-            moveSpeed * Time.deltaTime
-        );
+        transform.position = Vector3.MoveTowards(transform.position, targetGrem.transform.position, moveSpeed * Time.deltaTime);
+        UpdateFacing(targetGrem.transform.position);
     }
 
     protected virtual void TryAttack()
     {
-        if (attackTimer > 0) return;
-        if (targetGrem == null) return;
-
-        float dist = Vector3.Distance(transform.position, targetGrem.transform.position);
-        if (dist < 0.4f)
+        if (attackTimer > 0 || targetGrem == null) return;
+        if (Vector3.Distance(transform.position, targetGrem.transform.position) < 0.4f)
         {
             targetGrem.TakeDamage(damage);
             attackTimer = attackCooldown;
@@ -76,26 +70,34 @@ public class Enemy : MonoBehaviour
     public virtual void TakeDamage(float amount)
     {
         if (isDead) return;
-
         currentHealth -= amount;
 
-        // Hit flash
-        transform.DOPunchScale(Vector3.one * 0.2f, 0.1f, 5, 0.5f);
+        // Visual "Hit" effect - Punch scale is safer than moving
+        transform.DOKill();
+        transform.DOPunchScale(new Vector3(0.2f, -0.2f, 0), 0.15f, 10, 1);
 
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
+        if (currentHealth <= 0) Die();
     }
 
     protected virtual void Die()
     {
         isDead = true;
-
         transform.DOKill();
-        transform.DOScale(Vector3.zero, 0.2f)
-            .SetEase(Ease.InBack)
-            .OnComplete(() => Destroy(gameObject));
+        transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack).OnComplete(() => Destroy(gameObject));
+    }
+
+    protected void UpdateFacing(Vector3 targetPos)
+    {
+        if (sr == null) return;
+
+        float diff = targetPos.x - transform.position.x;
+        if (Mathf.Abs(diff) > 0.01f)
+        {
+            // If diff < 0, the target is to the left.
+            // If facingLeftByDefault is true, we invert the result.
+            bool shouldFlip = diff < 0;
+            sr.flipX = facingLeftByDefault ? !shouldFlip : shouldFlip;
+        }
     }
 
     protected Gremurin FindNearestGrem()
@@ -103,26 +105,14 @@ public class Enemy : MonoBehaviour
         Gremurin[] grems = FindObjectsByType<Gremurin>(FindObjectsSortMode.None);
         Gremurin nearest = null;
         float nearestDist = float.MaxValue;
-
         foreach (Gremurin g in grems)
         {
             if (g.isDead) continue;
-            float dist = Vector3.Distance(transform.position, g.transform.position);
-            if (dist < nearestDist)
-            {
-                nearestDist = dist;
-                nearest = g;
-            }
+            float d = Vector3.Distance(transform.position, g.transform.position);
+            if (d < nearestDist) { nearestDist = d; nearest = g; }
         }
-
         return nearest;
     }
 
-    // Called by player click
-    public virtual void OnPlayerPunch(float punchDamage)
-    {
-        TakeDamage(punchDamage);
-    }
-
-    
+    public void OnPlayerPunch(float punchDamage) => TakeDamage(punchDamage);
 }

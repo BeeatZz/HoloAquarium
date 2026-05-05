@@ -5,105 +5,81 @@ public class PebbleEnemy : Enemy
 {
     [Header("Pebble Settings")]
     public float dropStealRange = 0.4f;
+    protected CurrencyDrop targetDrop;
+
+    protected override void Start()
+    {
+        base.Start();
+        StartJuice();
+    }
+
+    // This makes it "Breathe/Hop" using only scale
+    private void StartJuice()
+    {
+        transform.localScale = Vector3.one;
+        // Stretch up and thin out, then squash down
+        transform.DOScale(new Vector3(0.85f, 1.2f, 1f), 0.2f)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetEase(Ease.InOutQuad);
+    }
+
+    public override void TakeDamage(float amount)
+    {
+        base.TakeDamage(amount); // Does the punch
+        if (!isDead) DOVirtual.DelayedCall(0.16f, StartJuice); // Restarts juice after punch
+    }
+
+    protected override void Think()
+    {
+        FindTarget();
+        MoveTowardTarget();
+        TryAttack();
+    }
 
     protected override void FindTarget()
     {
-        // Prefer currency drops over grems
-        CurrencyDrop nearestDrop = FindNearestDrop();
-
-        if (nearestDrop != null)
-        {
-            targetDrop = nearestDrop;
-            targetGrem = null;
-        }
-        else
-        {
-            targetDrop = null;
-            targetGrem = FindNearestGrem();
-        }
+        targetDrop = FindNearestDrop();
+        if (targetDrop == null) base.FindTarget();
     }
 
     protected override void MoveTowardTarget()
     {
-        if (targetDrop != null)
+        Vector3 dest = targetDrop != null ? targetDrop.transform.position : (targetGrem != null ? targetGrem.transform.position : Vector3.zero);
+        if (dest != Vector3.zero)
         {
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                targetDrop.transform.position,
-                moveSpeed * Time.deltaTime
-            );
-        }
-        else if (targetGrem != null)
-        {
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                targetGrem.transform.position,
-                moveSpeed * Time.deltaTime
-            );
+            transform.position = Vector3.MoveTowards(transform.position, dest, moveSpeed * Time.deltaTime);
+            UpdateFacing(dest);
         }
     }
 
     protected override void TryAttack()
     {
         if (attackTimer > 0) return;
-
-        // Steal drop if in range
-        if (targetDrop != null)
+        if (targetDrop != null && Vector3.Distance(transform.position, targetDrop.transform.position) < dropStealRange)
         {
-            float dist = Vector3.Distance(transform.position, targetDrop.transform.position);
-            if (dist < dropStealRange)
-            {
-                StealDrop(targetDrop);
-                attackTimer = attackCooldown;
-                return;
-            }
+            StealDrop(targetDrop);
+            attackTimer = attackCooldown;
         }
-
-        // Otherwise attack grem
-        if (targetGrem != null)
-        {
-            float dist = Vector3.Distance(transform.position, targetGrem.transform.position);
-            if (dist < 0.4f)
-            {
-                targetGrem.TakeDamage(damage);
-                attackTimer = attackCooldown;
-            }
-        }
+        else base.TryAttack();
     }
 
     private void StealDrop(CurrencyDrop drop)
     {
         if (drop == null) return;
-
-        // Animate toward self then destroy drop
-        drop.transform.DOKill();
-        drop.transform.DOMove(transform.position, 0.2f)
-            .OnComplete(() =>
-            {
-                if (drop != null)
-                    Destroy(drop.gameObject);
-            });
-
-        // Pebble does a little happy bounce
-        transform.DOPunchScale(Vector3.one * 0.4f, 0.3f, 5, 0.5f);
+        drop.transform.DOMove(transform.position, 0.2f).OnComplete(() => { if (drop) Destroy(drop.gameObject); });
+        transform.DOPunchScale(Vector3.one * 0.3f, 0.2f);
     }
 
     private CurrencyDrop FindNearestDrop()
     {
         CurrencyDrop[] drops = FindObjectsByType<CurrencyDrop>(FindObjectsSortMode.None);
         CurrencyDrop nearest = null;
-        float nearestDist = float.MaxValue;
-
-        foreach (CurrencyDrop drop in drops)
+        float minDist = float.MaxValue;
+        foreach (var d in drops)
         {
-            float dist = Vector3.Distance(transform.position, drop.transform.position);
-            if (dist < nearestDist)
-            {
-                nearestDist = dist;
-                nearest = drop;
-            }
+            float dist = Vector3.Distance(transform.position, d.transform.position);
+            if (dist < minDist) { minDist = dist; nearest = d; }
         }
-
         return nearest;
     }
 }

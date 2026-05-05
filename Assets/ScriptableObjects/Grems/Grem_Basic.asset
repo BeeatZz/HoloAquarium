@@ -13,7 +13,13 @@ MonoBehaviour:
   m_Name: Grem_Basic
   m_EditorClassIdentifier: 
   gremName: Gremurin
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: f4f743dc0d21f2142aed0e93e3a293fb, type: 3}
+  flavorText: Just a regular ol Grem
+  skills:
+  - skillName: Test
+    skillDescription: Skill test
+  - skillName: Test2
+    skillDescription: Skill test2
   maxHealth: 3
   maxHunger: 100
   hungerRate: 2

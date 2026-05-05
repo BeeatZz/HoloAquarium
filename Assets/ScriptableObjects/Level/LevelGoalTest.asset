@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f9a76a7c81afd04494285b977ce069b, type: 3}
   m_Name: LevelGoalTest
   m_EditorClassIdentifier: 
-  totalPurchasesRequired: 1
+  totalPurchasesRequired: 2
   purchaseTiers:
   - label: Tier1
     cost: 200
+  - label: Tier2
+    cost: 400
+  requireAllWavesComplete: 0
+  requiredWaveIndex: -1
   timeLimitSeconds: 120
