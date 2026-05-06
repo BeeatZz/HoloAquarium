@@ -72,9 +72,17 @@ public class Enemy : MonoBehaviour
         if (isDead) return;
         currentHealth -= amount;
 
-        // Visual "Hit" effect - Punch scale is safer than moving
-        transform.DOKill();
+        // Visual "Hit" effects
+        transform.DOKill(); // Stop existing scale tweens
         transform.DOPunchScale(new Vector3(0.2f, -0.2f, 0), 0.15f, 10, 1);
+
+        // --- FLASH RED LOGIC ---
+        // 1. Reset color to white in case a previous tween was running
+        // 2. Tween to Red, then back to White quickly
+        sr.DOKill(); // Stop existing color tweens
+        sr.color = Color.white;
+        sr.DOColor(Color.red, 0.1f).SetLoops(2, LoopType.Yoyo);
+        // -----------------------
 
         if (currentHealth <= 0) Die();
     }

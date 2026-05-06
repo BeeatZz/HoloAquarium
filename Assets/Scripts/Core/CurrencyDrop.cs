@@ -84,16 +84,38 @@ public class CurrencyDrop : MonoBehaviour
 
         collected = true;
         transform.DOKill();
-        transform.DOScale(Vector3.zero, 0.15f)
-            .SetEase(Ease.InBack)
-            .OnComplete(() =>
-            {
-                CurrencyManager.Instance.Add(amount);
-                Destroy(gameObject);
-            });
+
+        // Convert UI position to world space
+        Vector3 targetWorldPos = Camera.main.ScreenToWorldPoint(CurrencyManager.Instance.GetCounterScreenPos());
+        targetWorldPos.z = 0;
+
+        // Set a unified duration for perfect sync
+        float travelTime = 0.4f;
+
+        Sequence s = DOTween.Sequence();
+
+        // Flight with your 1f pullback
+        s.Append(transform.DOMove(targetWorldPos, travelTime).SetEase(Ease.InBack, 1f));
+
+        // Shrink - matched to travelTime so it finishes exactly upon arrival
+        s.Join(transform.DOScale(Vector3.one * 0.3f, travelTime).SetEase(Ease.InQuad));
+
+        s.OnComplete(() =>
+        {
+            // 1. Add the logic/value
+            CurrencyManager.Instance.Add(amount);
+
+            // 2. Trigger the UI feedback exactly now
+            // We use transform.DOPunchScale on the actual UI element
+            CurrencyManager.Instance.counterIcon.DOKill(true); // Reset any current punch
+            CurrencyManager.Instance.counterIcon.DOPunchScale(new Vector3(0.3f, 0.3f, 0.3f), 0.15f, 10, 1f);
+
+            // 3. Cleanup
+            Destroy(gameObject);
+        });
     }
 
-   
+
 
     private void Expire()
     {

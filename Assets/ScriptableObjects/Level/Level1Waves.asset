@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a07d6345064a5804faa1edcdcad214cc, type: 3}
   m_Name: Level1Waves
   m_EditorClassIdentifier: 
-  initialDelay: 5
+  initialDelay: 10
   waves:
   - label: First Wave
     delayBefore: 0

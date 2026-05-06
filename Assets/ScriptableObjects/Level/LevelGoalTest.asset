@@ -15,9 +15,9 @@ MonoBehaviour:
   totalPurchasesRequired: 2
   purchaseTiers:
   - label: Tier1
-    cost: 200
+    cost: 1
   - label: Tier2
-    cost: 400
+    cost: 2
   requireAllWavesComplete: 0
   requiredWaveIndex: -1
   timeLimitSeconds: 120

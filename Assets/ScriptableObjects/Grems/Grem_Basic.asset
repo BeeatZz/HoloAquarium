@@ -26,7 +26,7 @@ MonoBehaviour:
   currencyOutputRate: 5
   currencyOutputAmount: 1
   wanderRadius: 1.5
-  wanderPauseMin: 2
-  wanderPauseMax: 5
+  wanderPauseMin: 4
+  wanderPauseMax: 6
   moveSpeed: 1.5
   role: 0

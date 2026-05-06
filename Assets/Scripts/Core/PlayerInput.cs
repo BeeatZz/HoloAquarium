@@ -68,15 +68,19 @@ public class PlayerInput : MonoBehaviour
             return;
         }
 
-        // Priority 1: collect currency drop
         CurrencyDrop drop = hit.GetComponent<CurrencyDrop>();
         if (drop != null) { drop.Collect(); return; }
 
-        // Priority 2: punch enemy
         Enemy enemy = hit.GetComponent<Enemy>();
         if (enemy != null) { PunchEnemy(enemy); return; }
 
-        // Priority 3: grem pressed — start hold timer
+        GremEgg egg = hit.GetComponent<GremEgg>();
+        if (egg != null)
+        {
+            egg.Hatch();
+            return;
+        }
+
         Gremurin grem = hit.GetComponent<Gremurin>();
         if (grem != null && !grem.isDead)
         {
@@ -103,19 +107,22 @@ public class PlayerInput : MonoBehaviour
 
         holdTimer += Time.deltaTime;
 
+        // Transition from Press to Drag
         if (!isDragging && holdTimer >= holdThreshold)
         {
             isDragging = true;
             draggedGrem = pressedGrem;
+
+            // Tell the Gremurin it is being held so it stops its own AI logic
+            draggedGrem.OnPickedUp();
+
             GremInfoPopup.Instance?.Hide();
 
-            // Recalculate offset from current cursor position at drag start
             Vector2 mouseScreen = Mouse.current.position.ReadValue();
             Vector3 currentWorld = Camera.main.ScreenToWorldPoint(mouseScreen);
             currentWorld.z = 0;
             dragOffset = draggedGrem.transform.position - currentWorld;
 
-            // Scale up to look lifted
             draggedGrem.transform.DOKill();
             draggedGrem.transform.DOScale(Vector3.one * dragScale, 0.15f)
                 .SetEase(Ease.OutBack);
@@ -129,13 +136,13 @@ public class PlayerInput : MonoBehaviour
 
             Vector3 targetPos = LevelManager.Instance.ClampToPlayArea(worldPoint + dragOffset);
 
-            // Lerp so grem lags slightly behind cursor
             draggedGrem.transform.position = Vector3.Lerp(
                 draggedGrem.transform.position,
                 targetPos,
                 dragFollowSpeed * Time.deltaTime
             );
 
+            // Keep the Gremurin's internal position in sync with the drag
             draggedGrem.SetBasePosition(draggedGrem.transform.position);
         }
     }
@@ -153,9 +160,11 @@ public class PlayerInput : MonoBehaviour
             }
         }
 
-        // Scale back down on release
         if (draggedGrem != null)
         {
+            // Tell the Gremurin it was dropped so it can resume its AI
+            draggedGrem.OnReleased();
+
             draggedGrem.transform.DOKill();
             draggedGrem.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBack);
         }

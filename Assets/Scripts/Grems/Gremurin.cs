@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Collections;
 
 public class Gremurin : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class Gremurin : MonoBehaviour
     public float currentHunger;
     public float currentHealth;
     public bool isDead;
+    public bool isPickedUp; // Prevents movement while being held
 
     [Header("Wander Settings")]
     public float wanderRadius = 1.5f;
@@ -26,6 +28,8 @@ public class Gremurin : MonoBehaviour
     public float bobAmplitude = 0.05f;
 
     // Internal
+    private float currencyTimer;
+    private float currentRandomizedRate;
     private Vector3 basePosition;
     private Vector3 targetPosition;
     private float wanderTimer;
@@ -35,6 +39,8 @@ public class Gremurin : MonoBehaviour
     private void Start()
     {
         sr = GetComponent<SpriteRenderer>();
+        if (sr != null && data.sprite != null)
+            sr.sprite = data.sprite;
         if (data == null)
         {
             Debug.LogError($"Gremurin {gameObject.name} has no GremData assigned.");
@@ -51,15 +57,37 @@ public class Gremurin : MonoBehaviour
         moveSpeed = data.moveSpeed;
 
         ScheduleNextWander();
+        ResetCurrencyTimer();
+        currencyTimer = UnityEngine.Random.Range(0f, currentRandomizedRate);
     }
 
     private void Update()
     {
-        if (isDead) return;
+        if (isDead || isPickedUp) return; // Full stop if dead or picked up
 
         HandleHunger();
         HandleWander();
         HandleIdleBob();
+        HandleCurrency();
+    }
+
+    public void OnPickedUp()
+    {
+        isPickedUp = true;
+        isMoving = false;
+        targetFood = null; // Clear target so it doesn't snap back on drop
+
+        // Stop hit effects if they were playing so they don't look weird while dragging
+        StopCoroutine("HitEffectsCoroutine");
+        sr.color = Color.white;
+    }
+
+    public void OnReleased()
+    {
+        isPickedUp = false;
+        basePosition = transform.position; // New home is where we dropped it
+        targetPosition = transform.position;
+        ScheduleNextWander();
     }
 
     private void UpdateFacing(Vector3 targetPos)
@@ -69,10 +97,34 @@ public class Gremurin : MonoBehaviour
         if (Mathf.Abs(diff) > 0.01f)
             sr.flipX = diff < 0;
     }
+
     private void HandleHunger()
     {
         currentHunger -= data.hungerRate * Time.deltaTime;
         currentHunger = Mathf.Clamp(currentHunger, 0, data.maxHunger);
+    }
+
+    private void HandleCurrency()
+    {
+        currencyTimer -= Time.deltaTime;
+        if (currencyTimer <= 0)
+        {
+            ProduceCurrency();
+            ResetCurrencyTimer();
+        }
+    }
+
+    private void ResetCurrencyTimer()
+    {
+        float jitter = data.currencyOutputRate * 0.2f;
+        currentRandomizedRate = data.currencyOutputRate + UnityEngine.Random.Range(-jitter, jitter);
+        currencyTimer = currentRandomizedRate;
+    }
+
+    private void ProduceCurrency()
+    {
+        Debug.Log($"{data.gremName} produced {data.currencyOutputAmount} currency!");
+        // Instantiate(coinPrefab, transform.position, Quaternion.identity);
     }
 
     private void HandleWander()
@@ -146,7 +198,6 @@ public class Gremurin : MonoBehaviour
                 nearest = food;
             }
         }
-
         return nearest;
     }
 
@@ -171,6 +222,7 @@ public class Gremurin : MonoBehaviour
         targetPosition = LevelManager.Instance.ClampToPlayArea(candidate);
         isMoving = true;
     }
+
     public void SetBasePosition(Vector3 newBase)
     {
         basePosition = newBase;
@@ -186,11 +238,36 @@ public class Gremurin : MonoBehaviour
     public void TakeDamage(float amount)
     {
         if (isDead) return;
+
         currentHealth -= amount;
-        if (currentHealth <= 0)
+        StopCoroutine("HitEffectsCoroutine");
+        StartCoroutine(HitEffectsCoroutine());
+
+        if (currentHealth <= 0) Die();
+    }
+
+    private IEnumerator HitEffectsCoroutine()
+    {
+        Color originalColor = Color.white;
+        Color flashColor = Color.red;
+        Vector3 originalScale = transform.localScale;
+        Vector3 punchScale = originalScale * 1.2f;
+
+        float duration = 0.15f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
         {
-            Die();
+            elapsed += Time.deltaTime;
+            float normalizedTime = elapsed / duration;
+            sr.color = Color.Lerp(flashColor, originalColor, normalizedTime);
+            float scaleMultiplier = Mathf.Sin(normalizedTime * Mathf.PI);
+            transform.localScale = Vector3.Lerp(originalScale, punchScale, scaleMultiplier);
+            yield return null;
         }
+
+        sr.color = originalColor;
+        transform.localScale = originalScale;
     }
 
     public void Feed(float amount)
@@ -201,11 +278,8 @@ public class Gremurin : MonoBehaviour
     private void Die()
     {
         isDead = true;
-
         if (LevelManager.Instance != null)
             LevelManager.Instance.RegisterGremDeath();
-
-        // TODO: play death animation then destroy
         Destroy(gameObject);
     }
 }

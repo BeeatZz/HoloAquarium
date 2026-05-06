@@ -1,17 +1,22 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using DG.Tweening;
+using System;
 
 public class BeamHazard : MonoBehaviour
 {
     [Header("Settings")]
-    public float warningDuration = 1.5f;
+    public float warningDuration = 3f;
     public float beamDuration = 0.4f;
     public float beamWidth = 0.15f;
     public float beamDamage = 1f;
+
+    [Header("Visuals")]
     public Color warningColor = new Color(1f, 0.3f, 0.3f, 0.4f);
-    public Color beamColor = new Color(1f, 0.9f, 0.2f, 1f);
+    // Deep purple for the outer edges
+    public Color beamEdgeColor = new Color(0.5f, 0f, 1f, 0.8f);
+    // Near-white purple for the "hot" center core
+    public Color beamCenterColor = new Color(0.9f, 0.8f, 1f, 1f);
 
     private LineRenderer lineRenderer;
 
@@ -21,7 +26,9 @@ public class BeamHazard : MonoBehaviour
         lineRenderer.startWidth = beamWidth;
         lineRenderer.endWidth = beamWidth;
         lineRenderer.sortingOrder = 5;
-        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+
+        // Using the "Additive" shader makes colors "pop" and glow against the background
+        lineRenderer.material = new Material(Shader.Find("Legacy Shaders/Particles/Additive"));
         lineRenderer.enabled = false;
     }
 
@@ -38,50 +45,67 @@ public class BeamHazard : MonoBehaviour
 
         lineRenderer.positionCount = positions.Length;
         lineRenderer.SetPositions(positions);
-        lineRenderer.startColor = warningColor;
-        lineRenderer.endColor = warningColor;
         lineRenderer.enabled = true;
 
+        // Warning phase (Flickering Red)
         float elapsed = 0f;
         while (elapsed < warningDuration)
         {
-            float alpha = Mathf.PingPong(elapsed * 3f, 1f);
-            Color c = warningColor;
-            c.a = alpha * 0.6f;
-            lineRenderer.startColor = c;
-            lineRenderer.endColor = c;
+            float alpha = Mathf.PingPong(elapsed * 6f, 1f);
+            lineRenderer.startColor = lineRenderer.endColor = new Color(warningColor.r, warningColor.g, warningColor.b, alpha * 0.4f);
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        lineRenderer.startColor = beamColor;
-        lineRenderer.endColor = beamColor;
-        lineRenderer.startWidth = beamWidth * 2f;
-        lineRenderer.endWidth = beamWidth * 2f;
+        // --- PURPLE BEAM BLAST ---
+        SetupBeamGradient();
+        lineRenderer.startWidth = beamWidth * 2.5f;
+        lineRenderer.endWidth = beamWidth * 2.5f;
 
         for (int i = 0; i < positions.Length - 1; i++)
             DamageAlongSegment(positions[i], positions[i + 1]);
 
-        yield return new WaitForSeconds(beamDuration);
+        // Jitter/Flicker effect during the blast
+        float blastElapsed = 0f;
+        while (blastElapsed < beamDuration)
+        {
+            lineRenderer.widthMultiplier = UnityEngine.Random.Range(0.9f, 1.2f); // Makes the beam vibrate
+            blastElapsed += Time.deltaTime;
+            yield return null;
+        }
 
         foreach (Crystal c in crystals)
             c.SetWarning(false);
 
         lineRenderer.enabled = false;
-        lineRenderer.startWidth = beamWidth;
-        lineRenderer.endWidth = beamWidth;
-
         Destroy(gameObject);
+    }
+
+    private void SetupBeamGradient()
+    {
+        // This creates a "glow" look by fading the color at the ends 
+        // and using the center color for the middle of the line
+        Gradient gradient = new Gradient();
+        gradient.SetKeys(
+            new GradientColorKey[] {
+                new GradientColorKey(beamEdgeColor, 0.0f),
+                new GradientColorKey(beamCenterColor, 0.5f),
+                new GradientColorKey(beamEdgeColor, 1.0f)
+            },
+            new GradientAlphaKey[] {
+                new GradientAlphaKey(0.8f, 0.0f),
+                new GradientAlphaKey(1.0f, 0.5f),
+                new GradientAlphaKey(0.8f, 1.0f)
+            }
+        );
+        lineRenderer.colorGradient = gradient;
     }
 
     private void DamageAlongSegment(Vector3 start, Vector3 end)
     {
         Vector2 direction = (end - start).normalized;
         float distance = Vector3.Distance(start, end);
-
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(
-            start, beamWidth, direction, distance
-        );
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(start, beamWidth, direction, distance);
 
         foreach (RaycastHit2D hit in hits)
         {

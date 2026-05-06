@@ -8,6 +8,7 @@ public class CurrencyManager : MonoBehaviour
     [Header("Settings")]
     public float dropLifetime = 8f;
     public GameObject currencyDropPrefab;
+    public RectTransform counterIcon;
 
     [Header("Runtime")]
     public float currentCurrency;
@@ -25,7 +26,11 @@ public class CurrencyManager : MonoBehaviour
         }
         Instance = this;
     }
-
+    public Vector3 GetCounterScreenPos()
+    {
+        // Returns the exact pixel center of the UI element
+        return counterIcon.position;
+    }
     public void Add(float amount)
     {
         currentCurrency += amount;
