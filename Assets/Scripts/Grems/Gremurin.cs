@@ -2,15 +2,10 @@
 using UnityEngine;
 using DG.Tweening;
 
-
 public class Gremurin : MonoBehaviour
 {
     [Header("Stats")]
     public GremData data;
-
-    [Header("Separation")]
-    public float separationRadius = 0.4f;
-    public float separationStrength = 0.5f;
 
     [Header("Runtime State")]
     public float currentHunger;
@@ -18,18 +13,25 @@ public class Gremurin : MonoBehaviour
     public bool isDead;
     public bool isPickedUp;
 
-    [Header("Wander Settings")]
+    [Header("Movement")]
     public float wanderRadius = 1.5f;
     public float wanderPauseMin = 2f;
     public float wanderPauseMax = 5f;
     public float moveSpeed = 1.5f;
-
-    [Header("Hunger Settings")]
     public float seekFoodHungerThreshold = 0.4f;
 
     [Header("Idle Bob")]
     public float bobSpeed = 2f;
     public float bobAmplitude = 0.05f;
+
+    [Header("Nerissa Mechanics")]
+    public bool isCharmed = false;
+    public int clicksToWakeUp = 5;
+    public float lastUncharmedTime = -10f;
+    public float damageCooldown = 0.5f;
+    private int currentClicks = 0;
+    private Gremurin charmTarget;
+    private float lastDamageTime;
 
     protected Vector3 basePosition;
     protected Vector3 targetPosition;
@@ -40,23 +42,15 @@ public class Gremurin : MonoBehaviour
 
     protected virtual void Start()
     {
-        if (data == null)
-        {
-            Debug.LogError($"Gremurin {gameObject.name} has no GremData assigned.");
-            return;
-        }
-
+        if (data == null) return;
         sr = GetComponent<SpriteRenderer>();
-        if (sr != null && data.sprite != null)
-            sr.sprite = data.sprite;
+        if (sr != null && data.sprite != null) sr.sprite = data.sprite;
 
         basePosition = transform.position;
         targetPosition = transform.position;
         currentHunger = data.maxHunger;
         currentHealth = data.maxHealth;
         wanderRadius = data.wanderRadius;
-        wanderPauseMin = data.wanderPauseMin;
-        wanderPauseMax = data.wanderPauseMax;
         moveSpeed = data.moveSpeed;
 
         ScheduleNextWander();
@@ -65,6 +59,7 @@ public class Gremurin : MonoBehaviour
     protected virtual void Update()
     {
         if (isDead || isPickedUp) return;
+        if (isCharmed) { HandleCharmBehavior(); return; }
 
         HandleHunger();
         HandleWander();
@@ -79,21 +74,12 @@ public class Gremurin : MonoBehaviour
 
     protected virtual void HandleWander()
     {
-        if (currentHunger < data.maxHunger * seekFoodHungerThreshold)
-        {
-            SeekFood();
-            return;
-        }
-
+        if (currentHunger < data.maxHunger * seekFoodHungerThreshold) { SeekFood(); return; }
         targetFood = null;
 
         if (isMoving)
         {
-            Vector3 newPos = Vector3.MoveTowards(
-                transform.position,
-                targetPosition,
-                moveSpeed * Time.deltaTime
-            );
+            Vector3 newPos = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
             transform.position = LevelManager.Instance.ClampToPlayArea(newPos);
             UpdateFacing(targetPosition);
 
@@ -108,8 +94,7 @@ public class Gremurin : MonoBehaviour
         else
         {
             wanderTimer -= Time.deltaTime;
-            if (wanderTimer <= 0f)
-                PickWanderTarget();
+            if (wanderTimer <= 0f) PickWanderTarget();
         }
     }
 
@@ -118,124 +103,117 @@ public class Gremurin : MonoBehaviour
         if (!isMoving)
         {
             float bob = Mathf.Sin(Time.time * bobSpeed) * bobAmplitude;
-            Vector3 bobbedPos = new Vector3(
-                basePosition.x,
-                basePosition.y + bob,
-                basePosition.z
-            );
-            transform.position = LevelManager.Instance.ClampToPlayArea(bobbedPos);
+            transform.position = LevelManager.Instance.ClampToPlayArea(new Vector3(basePosition.x, basePosition.y + bob, basePosition.z));
         }
     }
 
-    protected virtual void SeekFood()
+    protected virtual void HandleCharmBehavior()
     {
-        if (targetFood == null)
-            targetFood = FindNearestFood();
-
-        if (targetFood == null) return;
-
-        isMoving = true;
-        Vector3 newPos = Vector3.MoveTowards(
-            transform.position,
-            targetFood.transform.position,
-            moveSpeed * 1.5f * Time.deltaTime
-        );
-        transform.position = LevelManager.Instance.ClampToPlayArea(newPos);
-        UpdateFacing(targetFood.transform.position);
-        basePosition = transform.position;
-    }
-
-    protected void UpdateFacing(Vector3 targetPos)
-    {
-        if (sr == null) return;
-        float diff = targetPos.x - transform.position.x;
-        if (Mathf.Abs(diff) > 0.01f)
-            sr.flipX = diff < 0;
-    }
-
-    protected FoodItem FindNearestFood()
-    {
-        FoodItem[] foods = FindObjectsByType<FoodItem>(FindObjectsSortMode.None);
-        FoodItem nearest = null;
-        float nearestDist = float.MaxValue;
-
-        foreach (FoodItem food in foods)
+        if (charmTarget == null || charmTarget.isDead) charmTarget = FindNearestOtherGrem();
+        if (charmTarget != null)
         {
-            float dist = Vector3.Distance(transform.position, food.transform.position);
-            if (dist < nearestDist)
-            {
-                nearestDist = dist;
-                nearest = food;
-            }
+            Vector3 newPos = Vector3.MoveTowards(transform.position, charmTarget.transform.position, (moveSpeed * 0.5f) * Time.deltaTime);
+            transform.position = LevelManager.Instance.ClampToPlayArea(newPos);
+            UpdateFacing(charmTarget.transform.position);
+
+            if (Vector3.Distance(transform.position, charmTarget.transform.position) < 0.4f)
+                charmTarget.TakeDamage(2f);
         }
-
-        return nearest;
     }
 
-    protected void PickWanderTarget()
+    public void BeCharmed(Color charmColor)
     {
-        Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * wanderRadius;
-        Vector3 candidate = basePosition + new Vector3(randomOffset.x, randomOffset.y, 0);
-        targetPosition = LevelManager.Instance.ClampToPlayArea(candidate);
-        isMoving = true;
+        if (isCharmed || IsInsideBarrier()) return;
+        isCharmed = true;
+        currentClicks = 0;
+        sr.DOColor(charmColor, 0.5f);
     }
 
-    protected void ScheduleNextWander()
+    public void OnSpamClicked()
     {
-        wanderTimer = UnityEngine.Random.Range(wanderPauseMin, wanderPauseMax);
+        if (!isCharmed) return;
+        currentClicks++;
+
+        transform.DOKill();
+        transform.DOScale(Vector3.one * 1.15f, 0.05f).OnComplete(() => transform.DOScale(Vector3.one, 0.05f));
+
+        if (currentClicks >= clicksToWakeUp) WakeUp();
     }
 
-    public void SetBasePosition(Vector3 newBase)
+    public void WakeUp()
     {
-        basePosition = newBase;
-        targetPosition = newBase;
-        isMoving = false;
-    }
+        isCharmed = false;
+        lastUncharmedTime = Time.time;
+        sr.DOColor(Color.white, 0.2f);
 
-    public void OnPickedUp()
-    {
-        isPickedUp = true;
-        isMoving = false;
-    }
+        transform.DOKill();
+        transform.DOScale(Vector3.one * 1.5f, 0.1f).SetEase(Ease.OutBack).OnComplete(() => transform.DOScale(Vector3.one, 0.2f));
 
-    public void OnReleased()
-    {
-        isPickedUp = false;
+        basePosition = transform.position;
         ScheduleNextWander();
     }
 
+    private bool IsInsideBarrier() => Physics2D.OverlapCircle(transform.position, 0.1f, LayerMask.GetMask("Barrier")) != null;
+
     public virtual void TakeDamage(float amount)
     {
-        if (isDead) return;
+        if (isDead || Time.time < lastDamageTime + damageCooldown) return;
+        lastDamageTime = Time.time;
         currentHealth -= amount;
 
         if (sr != null)
         {
             sr.DOKill();
-            sr.DOColor(Color.red, 0.05f).SetEase(Ease.OutQuad)
-                .OnComplete(() => sr.DOColor(Color.white, 0.15f));
+            Color ret = isCharmed ? new Color(0.7f, 0.4f, 1f) : Color.white;
+            sr.DOColor(Color.red, 0.05f).OnComplete(() => sr.DOColor(ret, 0.15f));
         }
 
         transform.DOKill();
-        transform.DOPunchScale(Vector3.one * 0.3f, 0.2f, 5, 0.5f);
-        transform.DOShakePosition(0.2f, 0.08f, 15, 90f);
+        transform.DOScale(Vector3.one * 1.25f, 0.05f).OnComplete(() => transform.DOScale(Vector3.one, 0.1f));
 
-        if (currentHealth <= 0)
-            Die();
+        if (currentHealth <= 0) Die();
     }
 
-    public virtual void Feed(float amount)
+    private Gremurin FindNearestOtherGrem()
     {
-        currentHunger = Mathf.Clamp(currentHunger + amount, 0, data.maxHunger);
+        Gremurin[] all = UnityEngine.Object.FindObjectsByType<Gremurin>(FindObjectsSortMode.None);
+        Gremurin closest = null; float minDist = float.MaxValue;
+        foreach (var g in all)
+        {
+            if (g == this || g.isDead) continue;
+            float d = Vector3.Distance(transform.position, g.transform.position);
+            if (d < minDist) { minDist = d; closest = g; }
+        }
+        return closest;
     }
-
-    protected virtual void Die()
+    protected virtual void SeekFood()
     {
-        isDead = true;
-
-        if (LevelManager.Instance != null)
-            LevelManager.Instance.RegisterGremDeath();
-
-        Destroy(gameObject);
+        if (targetFood == null) targetFood = FindNearestFood();
+        if (targetFood == null) return;
+        isMoving = true;
+        Vector3 newPos = Vector3.MoveTowards(transform.position, targetFood.transform.position, moveSpeed * 1.5f * Time.deltaTime);
+        transform.position = LevelManager.Instance.ClampToPlayArea(newPos);
+        UpdateFacing(targetFood.transform.position);
+        basePosition = transform.position;
     }
+    protected void UpdateFacing(Vector3 targetPos) { if (sr == null) return; sr.flipX = (targetPos.x - transform.position.x) < 0; }
+    protected FoodItem FindNearestFood()
+    {
+        FoodItem[] foods = UnityEngine.Object.FindObjectsByType<FoodItem>(FindObjectsSortMode.None);
+        FoodItem nearest = null; float nDist = float.MaxValue;
+        foreach (var f in foods) { float d = Vector3.Distance(transform.position, f.transform.position); if (d < nDist) { nDist = d; nearest = f; } }
+        return nearest;
+    }
+    protected void PickWanderTarget()
+    {
+        Vector2 rand = UnityEngine.Random.insideUnitCircle * wanderRadius;
+        targetPosition = LevelManager.Instance.ClampToPlayArea(basePosition + (Vector3)rand);
+        isMoving = true;
+    }
+    protected void ScheduleNextWander() => wanderTimer = UnityEngine.Random.Range(wanderPauseMin, wanderPauseMax);
+    public void SetBasePosition(Vector3 nb) { basePosition = nb; targetPosition = nb; isMoving = false; }
+    public void OnPickedUp() { isPickedUp = true; isMoving = false; }
+    public void OnReleased() { isPickedUp = false; ScheduleNextWander(); }
+    public virtual void Feed(float amt) => currentHunger = Mathf.Clamp(currentHunger + amt, 0, data.maxHunger);
+    protected virtual void Die() { isDead = true; if (LevelManager.Instance != null) LevelManager.Instance.RegisterGremDeath(); UnityEngine.Object.Destroy(gameObject); }
 }

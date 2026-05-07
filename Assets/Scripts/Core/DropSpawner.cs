@@ -12,7 +12,6 @@ public class DropSpawner : MonoBehaviour
 
         if (gremurin == null)
         {
-            Debug.LogError("DropSpawner: No Gremurin component found on this GameObject.");
             return;
         }
 
@@ -49,4 +48,5 @@ public class DropSpawner : MonoBehaviour
         if (gremurin.data == null) return;
         outputTimer = gremurin.data.currencyOutputRate;
     }
+
 }

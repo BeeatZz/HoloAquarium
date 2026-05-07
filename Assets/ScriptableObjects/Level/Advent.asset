@@ -20,3 +20,6 @@ MonoBehaviour:
   requiredTotalStars: 0
   levels:
   - {fileID: 11400000, guid: 6dd52e0e6e56e5147b6c48b594b87785, type: 2}
+  - {fileID: 11400000, guid: 3b0d806112a62b743864feebd325647e, type: 2}
+  - {fileID: 11400000, guid: 4a687c8151a511b4a9a550e5dbcfe3fd, type: 2}
+  - {fileID: 11400000, guid: a0a6071b7ac08114d8f5251e4985e8f0, type: 2}

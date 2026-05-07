@@ -20,7 +20,6 @@ public class PebbleGrem : Gremurin
 
     protected override void HandleWander()
     {
-        // Hunger still takes priority
         if (currentHunger < data.maxHunger * seekFoodHungerThreshold)
         {
             SeekFood();

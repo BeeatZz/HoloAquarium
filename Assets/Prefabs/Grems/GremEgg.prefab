@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5598555334253594244}
   - component: {fileID: 71198766182752981}
   - component: {fileID: 5992182409255114528}
+  - component: {fileID: 7246572719331345100}
   m_Layer: 0
   m_Name: GremEgg
   m_TagString: Untagged
@@ -143,3 +144,15 @@ MonoBehaviour:
   bounceHeight: 0.08
   shakeAmount: 0.05
   shakeSpeed: 8
+--- !u!114 &7246572719331345100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3245751049185922292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 706c716519f0aad4ca40607197d6c9de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

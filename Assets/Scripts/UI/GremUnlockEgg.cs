@@ -30,14 +30,11 @@ public class GremUnlockEgg : MonoBehaviour, IPointerClickHandler
         pendingData = data;
         clickCount = 0;
         hatched = false;
-
-        // Reset Egg Visuals
         eggImage.sprite = closedSprite;
         eggImage.color = Color.white;
         eggImage.gameObject.SetActive(true);
         eggImage.transform.localScale = Vector3.zero;
 
-        // Reset Grem Image
         if (gremImage != null)
         {
             gremImage.color = new Color(1, 1, 1, 0);
@@ -45,7 +42,6 @@ public class GremUnlockEgg : MonoBehaviour, IPointerClickHandler
             gremImage.gameObject.SetActive(false);
         }
 
-        // Hard Reset Text - Ensure they are 0 alpha but READY
         if (gremNameText != null)
         {
             gremNameText.alpha = 0;
@@ -57,7 +53,6 @@ public class GremUnlockEgg : MonoBehaviour, IPointerClickHandler
             gremFlavorText.gameObject.SetActive(false);
         }
 
-        // Appearance Tween
         eggImage.transform.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack).SetUpdate(true);
     }
 
@@ -84,21 +79,18 @@ public class GremUnlockEgg : MonoBehaviour, IPointerClickHandler
         hatched = true;
         if (pendingData == null) yield break;
 
-        // 1. Prepare Grem Image
         if (gremImage != null)
         {
             gremImage.sprite = pendingData.sprite;
-            gremImage.SetNativeSize(); // Fixes the 0,0 Width/Height issue
+            gremImage.SetNativeSize(); 
             gremImage.gameObject.SetActive(true);
         }
 
-        // Final Egg Shake
         eggImage.rectTransform.DOKill();
         eggImage.rectTransform.DOShakeAnchorPos(0.5f, maxShakeStrength * 1.5f, 30, 90f).SetUpdate(true);
 
         yield return new WaitForSecondsRealtime(0.5f);
 
-        // 2. Animate Grem Discovery
         if (gremImage != null)
         {
             gremImage.transform.SetAsLastSibling();
@@ -106,31 +98,27 @@ public class GremUnlockEgg : MonoBehaviour, IPointerClickHandler
             gremImage.transform.DOScale(Vector3.one, 0.6f).SetEase(Ease.OutBack).SetUpdate(true);
         }
 
-        // Fade out egg
         eggImage.DOFade(0f, 0.4f).SetUpdate(true);
         yield return new WaitForSecondsRealtime(0.6f);
 
-        // 3. SET NAME ACTIVE
         if (gremNameText != null)
         {
-            gremNameText.gameObject.SetActive(true); // Forced activation
+            gremNameText.gameObject.SetActive(true);
             gremNameText.text = pendingData.gremName;
             DOTween.To(() => gremNameText.alpha, x => gremNameText.alpha = x, 1f, 0.3f).SetUpdate(true);
         }
 
         yield return new WaitForSecondsRealtime(0.2f);
 
-        // 4. SET FLAVOR ACTIVE
         if (gremFlavorText != null)
         {
-            gremFlavorText.gameObject.SetActive(true); // Forced activation
+            gremFlavorText.gameObject.SetActive(true); 
             gremFlavorText.text = pendingData.flavorText;
             DOTween.To(() => gremFlavorText.alpha, x => gremFlavorText.alpha = x, 1f, 0.4f).SetUpdate(true);
         }
 
         yield return new WaitForSecondsRealtime(0.4f);
 
-        // 5. Finalize UI
         LevelCompleteUI.Instance?.SetButtonsInteractable(true);
     }
 }

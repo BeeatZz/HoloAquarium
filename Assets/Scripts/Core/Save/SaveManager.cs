@@ -19,7 +19,6 @@ public class SaveManager : MonoBehaviour
                 }
             }
 
-            // CRITICAL FIX: Ensure data is loaded if accessed before Awake
             if (_instance.saveData == null)
             {
                 _instance.Load();
@@ -63,7 +62,6 @@ public class SaveManager : MonoBehaviour
             Debug.Log("Save loaded.");
         }
 
-        // Safety: Always ensure saveData is not null
         if (saveData == null)
         {
             saveData = new SaveData();

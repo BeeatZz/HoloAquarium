@@ -19,12 +19,22 @@ MonoBehaviour:
     waitForClear: 1
     entries:
     - enemyPrefab: {fileID: 60664519481366948, guid: 3518336aaf52a994583b6aab26ea1a18, type: 3}
-      count: 3
-      spawnInterval: 2
-  - label: Second Wave
-    delayBefore: 5
-    waitForClear: 0
+      count: 1
+      spawnInterval: 0
+  - label: Second
+    delayBefore: 0
+    waitForClear: 1
     entries:
-    - enemyPrefab: {fileID: 60664519481366948, guid: 3518336aaf52a994583b6aab26ea1a18, type: 3}
-      count: 3
-      spawnInterval: 2
+    - enemyPrefab: {fileID: 2247522750972301891, guid: 8484a8751e4c8f3409dca6223317fc39, type: 3}
+      count: 1
+      spawnInterval: 0
+    - enemyPrefab: {fileID: 1817759906632933024, guid: f27166d742ce6df419f890f7be01bb45, type: 3}
+      count: 1
+      spawnInterval: 0
+  - label: third
+    delayBefore: 0
+    waitForClear: 1
+    entries:
+    - enemyPrefab: {fileID: 7417557367372351461, guid: dd7cbb59a324dd84a9ddbedf3e96a1c5, type: 3}
+      count: 1
+      spawnInterval: 0

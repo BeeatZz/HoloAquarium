@@ -92,6 +92,7 @@ GameObject:
   - component: {fileID: 9110747822060894261}
   - component: {fileID: 1923323073115340505}
   - component: {fileID: 5185005263625600261}
+  - component: {fileID: 6445791564205205746}
   m_Layer: 3
   m_Name: Gremurin
   m_TagString: Untagged
@@ -210,8 +211,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 0}
-  separationRadius: 0.4
-  separationStrength: 0.3
   currentHunger: 0
   currentHealth: 0
   isDead: 0
@@ -223,6 +222,10 @@ MonoBehaviour:
   seekFoodHungerThreshold: 0.4
   bobSpeed: 2
   bobAmplitude: 0.05
+  isCharmed: 0
+  clicksToWakeUp: 5
+  lastUncharmedTime: -10
+  damageCooldown: 0.5
 --- !u!114 &1923323073115340505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273,3 +276,15 @@ CapsuleCollider2D:
   m_Offset: {x: -0.07, y: -0.34}
   m_Size: {x: 2.06, y: 1.37}
   m_Direction: 1
+--- !u!114 &6445791564205205746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3485767565064571701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 706c716519f0aad4ca40607197d6c9de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

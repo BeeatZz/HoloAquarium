@@ -28,7 +28,6 @@ public class CurrencyManager : MonoBehaviour
     }
     public Vector3 GetCounterScreenPos()
     {
-        // Returns the exact pixel center of the UI element
         return counterIcon.position;
     }
     public void Add(float amount)
@@ -56,7 +55,6 @@ public class CurrencyManager : MonoBehaviour
     {
         if (currencyDropPrefab == null)
         {
-            Debug.LogWarning("CurrencyManager: No drop prefab assigned.");
             return;
         }
 

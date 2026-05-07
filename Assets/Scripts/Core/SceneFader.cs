@@ -38,10 +38,8 @@ public class SceneFader : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    // Called automatically on every scene load
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Force full black before fading in
         fadeImage.color = new Color(0, 0, 0, 1);
         fadeImage.raycastTarget = true;
 
@@ -50,7 +48,6 @@ public class SceneFader : MonoBehaviour
     }
 
 
-    // SceneFader.Instance.SetReadyCallback(() => { ... do setup ... FadeIn(); });
     public void SetReadyCallback(Action callback)
     {
         onReadyCallback = callback;
@@ -82,7 +79,6 @@ public class SceneFader : MonoBehaviour
             .SetUpdate(true)
             .WaitForCompletion();
 
-        // Make sure it stays black before scene loads
         fadeImage.color = new Color(0, 0, 0, 1f);
 
         SceneManager.LoadScene(sceneName);

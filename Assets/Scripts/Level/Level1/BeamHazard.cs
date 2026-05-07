@@ -13,9 +13,7 @@ public class BeamHazard : MonoBehaviour
 
     [Header("Visuals")]
     public Color warningColor = new Color(1f, 0.3f, 0.3f, 0.4f);
-    // Deep purple for the outer edges
     public Color beamEdgeColor = new Color(0.5f, 0f, 1f, 0.8f);
-    // Near-white purple for the "hot" center core
     public Color beamCenterColor = new Color(0.9f, 0.8f, 1f, 1f);
 
     private LineRenderer lineRenderer;
@@ -27,7 +25,6 @@ public class BeamHazard : MonoBehaviour
         lineRenderer.endWidth = beamWidth;
         lineRenderer.sortingOrder = 5;
 
-        // Using the "Additive" shader makes colors "pop" and glow against the background
         lineRenderer.material = new Material(Shader.Find("Legacy Shaders/Particles/Additive"));
         lineRenderer.enabled = false;
     }
@@ -47,7 +44,6 @@ public class BeamHazard : MonoBehaviour
         lineRenderer.SetPositions(positions);
         lineRenderer.enabled = true;
 
-        // Warning phase (Flickering Red)
         float elapsed = 0f;
         while (elapsed < warningDuration)
         {
@@ -57,7 +53,6 @@ public class BeamHazard : MonoBehaviour
             yield return null;
         }
 
-        // --- PURPLE BEAM BLAST ---
         SetupBeamGradient();
         lineRenderer.startWidth = beamWidth * 2.5f;
         lineRenderer.endWidth = beamWidth * 2.5f;
@@ -65,11 +60,10 @@ public class BeamHazard : MonoBehaviour
         for (int i = 0; i < positions.Length - 1; i++)
             DamageAlongSegment(positions[i], positions[i + 1]);
 
-        // Jitter/Flicker effect during the blast
         float blastElapsed = 0f;
         while (blastElapsed < beamDuration)
         {
-            lineRenderer.widthMultiplier = UnityEngine.Random.Range(0.9f, 1.2f); // Makes the beam vibrate
+            lineRenderer.widthMultiplier = UnityEngine.Random.Range(0.9f, 1.2f);
             blastElapsed += Time.deltaTime;
             yield return null;
         }
@@ -83,8 +77,7 @@ public class BeamHazard : MonoBehaviour
 
     private void SetupBeamGradient()
     {
-        // This creates a "glow" look by fading the color at the ends 
-        // and using the center color for the middle of the line
+     
         Gradient gradient = new Gradient();
         gradient.SetKeys(
             new GradientColorKey[] {

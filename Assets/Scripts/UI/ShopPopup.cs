@@ -46,7 +46,6 @@ public class ShopPopup : MonoBehaviour
 
     private void PopulateShop()
     {
-        // Clear existing items
         foreach (Transform child in itemContainer)
             Destroy(child.gameObject);
 
@@ -55,24 +54,20 @@ public class ShopPopup : MonoBehaviour
             GameObject entry = Instantiate(itemTemplate, itemContainer);
             entry.SetActive(true);
 
-            // Name
             TextMeshProUGUI nameText = entry.transform.Find("NameText")
                 ?.GetComponent<TextMeshProUGUI>();
             if (nameText != null)
                 nameText.text = item.gremData.gremName;
 
-            // Cost
             TextMeshProUGUI costText = entry.transform.Find("CostText")
                 ?.GetComponent<TextMeshProUGUI>();
             if (costText != null)
                 costText.text = $"{item.cost}";
 
-            // Photo
             Image photo = entry.transform.Find("Photo")?.GetComponent<Image>();
             if (photo != null && item.gremData.sprite != null)
                 photo.sprite = item.gremData.sprite;
 
-            // Buy button
             Button buyBtn = entry.transform.Find("BuyButton")?.GetComponent<Button>();
             if (buyBtn != null)
             {

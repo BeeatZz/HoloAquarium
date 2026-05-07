@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 [Serializable]
 public class SaveData
@@ -7,9 +8,11 @@ public class SaveData
     public List<LevelSaveData> levelProgress = new List<LevelSaveData>();
     public List<string> unlockedGrems = new List<string>();
     public List<string> unlockedAchievements = new List<string>();
-    public Dictionary<string, int> stats = new Dictionary<string, int>();
     public List<CampaignSaveData> campaignProgress = new List<CampaignSaveData>();
 
+    public List<StatEntry> stats = new List<StatEntry>();
+
+    #region Campaign Helpers
     public CampaignSaveData GetCampaignData(string campaignId)
     {
         return campaignProgress.Find(c => c.campaignId == campaignId);
@@ -32,6 +35,9 @@ public class SaveData
         CampaignSaveData data = GetCampaignData(campaignId);
         return data?.currentLevelId;
     }
+    #endregion
+
+    #region Level Helpers
     public LevelSaveData GetLevelData(string levelId)
     {
         return levelProgress.Find(l => l.levelId == levelId);
@@ -48,7 +54,9 @@ public class SaveData
         LevelSaveData data = GetLevelData(levelId);
         return data?.stars ?? 0;
     }
+    #endregion
 
+    #region Unlock Helpers
     public bool IsGremUnlocked(string gremName)
     {
         return unlockedGrems.Contains(gremName);
@@ -58,19 +66,31 @@ public class SaveData
     {
         return unlockedAchievements.Contains(achievementId);
     }
+    #endregion
 
+    #region Stat Helpers (Fixed for Unity Serialization)
     public void IncrementStat(string statId, int amount = 1)
     {
-        if (stats.ContainsKey(statId))
-            stats[statId] += amount;
+        StatEntry entry = stats.Find(s => s.key == statId);
+        if (entry != null)
+            entry.value += amount;
         else
-            stats[statId] = amount;
+            stats.Add(new StatEntry { key = statId, value = amount });
     }
 
     public int GetStat(string statId)
     {
-        return stats.ContainsKey(statId) ? stats[statId] : 0;
+        StatEntry entry = stats.Find(s => s.key == statId);
+        return entry != null ? entry.value : 0;
     }
+    #endregion
+}
+
+[Serializable]
+public class StatEntry
+{
+    public string key;
+    public int value;
 }
 
 [Serializable]
@@ -81,6 +101,7 @@ public class CampaignSaveData
     public bool completed;
     public string currentLevelId;
 }
+
 [Serializable]
 public class LevelSaveData
 {

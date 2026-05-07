@@ -12,6 +12,7 @@ public class Enemy : MonoBehaviour
     public float moveSpeed = 1.5f;
     public float damage = 1f;
     public float attackCooldown = 1.5f;
+    public float bossDamageValue = 10f;
 
     [Header("Runtime")]
     public float currentHealth;
@@ -28,10 +29,8 @@ public class Enemy : MonoBehaviour
         currentHealth = maxHealth;
         attackTimer = attackCooldown;
 
-        // Get SR from this object directly
         sr = GetComponent<SpriteRenderer>();
 
-        // Simple spawn juice
         transform.localScale = Vector3.zero;
         transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
     }
@@ -74,23 +73,22 @@ public class Enemy : MonoBehaviour
         if (isDead) return;
         currentHealth -= amount;
 
-        // Visual "Hit" effects
-        transform.DOKill(); // Stop existing scale tweens
+        transform.DOKill();
         transform.DOPunchScale(new Vector3(0.2f, -0.2f, 0), 0.15f, 10, 1);
 
-        // --- FLASH RED LOGIC ---
-        // 1. Reset color to white in case a previous tween was running
-        // 2. Tween to Red, then back to White quickly
-        sr.DOKill(); // Stop existing color tweens
+        sr.DOKill();
         sr.color = Color.white;
         sr.DOColor(Color.red, 0.1f).SetLoops(2, LoopType.Yoyo);
-        // -----------------------
 
         if (currentHealth <= 0) Die();
     }
 
     protected virtual void Die()
     {
+        if (BossHealthBar.Instance != null)
+        {
+            BossHealthBar.Instance.TakeDamage(bossDamageValue);
+        }
         isDead = true;
         transform.DOKill();
         transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack).OnComplete(() => Destroy(gameObject));
@@ -103,8 +101,6 @@ public class Enemy : MonoBehaviour
         float diff = targetPos.x - transform.position.x;
         if (Mathf.Abs(diff) > 0.01f)
         {
-            // If diff < 0, the target is to the left.
-            // If facingLeftByDefault is true, we invert the result.
             bool shouldFlip = diff < 0;
             sr.flipX = facingLeftByDefault ? !shouldFlip : shouldFlip;
         }

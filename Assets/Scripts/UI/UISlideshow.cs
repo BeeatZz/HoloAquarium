@@ -1,5 +1,5 @@
 using UnityEngine;
-using DG.Tweening; // Don't forget this!
+using DG.Tweening; 
 
 public class UISlideshow : MonoBehaviour
 {
@@ -18,7 +18,6 @@ public class UISlideshow : MonoBehaviour
 
     public void NextSlide()
     {
-        // If we are at the last slide, go back to 0. Otherwise, go to next.
         if (currentIndex >= totalSlides - 1)
         {
             currentIndex = 0;
@@ -32,7 +31,6 @@ public class UISlideshow : MonoBehaviour
 
     public void PreviousSlide()
     {
-        // If we are at the first slide (0), go to the last slide.
         if (currentIndex <= 0)
         {
             currentIndex = totalSlides - 1;
@@ -46,12 +44,10 @@ public class UISlideshow : MonoBehaviour
 
     private void MoveToCurrentIndex()
     {
-        // Kill any existing tweens to prevent "fighting" if the user clicks fast
         contentRect.DOKill();
 
         float targetX = -currentIndex * slideWidth;
 
-        // The DOTween magic
         contentRect.DOAnchorPosX(targetX, duration).SetEase(transitionEase);
     }
 }

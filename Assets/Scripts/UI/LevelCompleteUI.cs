@@ -58,7 +58,6 @@ public class LevelCompleteUI : MonoBehaviour
 
     private void Start()
     {
-        // When coming from Menu, LevelLoader sets this static string
         if (!string.IsNullOrEmpty(LevelLoader.PendingLevelId))
             currentLevelId = LevelLoader.PendingLevelId;
 
@@ -83,7 +82,6 @@ public class LevelCompleteUI : MonoBehaviour
 
     private void OnLevelComplete()
     {
-        // Fallback if ID is missing
         if (string.IsNullOrEmpty(currentLevelId))
             currentLevelId = SceneManager.GetActiveScene().name;
 
@@ -123,10 +121,8 @@ public class LevelCompleteUI : MonoBehaviour
             }
         }
 
-        // 1. Save Basic Level Progress
         SaveManager.Instance.CompleteLevel(currentLevelId, stars);
 
-        // 2. Handle Campaign Progression (Fixed logic to prevent Line 141 crash)
         string campaignId = LevelLoader.PendingCampaignId;
 
         if (levelRegistry == null)
@@ -153,7 +149,6 @@ public class LevelCompleteUI : MonoBehaviour
             }
         }
 
-        // 3. Reward Logic
         if (levelRegistry != null)
         {
             LevelDefinition levelDef = levelRegistry.GetLevel(currentLevelId);

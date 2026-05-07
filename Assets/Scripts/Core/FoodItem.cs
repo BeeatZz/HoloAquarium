@@ -46,7 +46,6 @@ public class FoodItem : MonoBehaviour
 
     private void CheckForHungryGrem()
     {
-        // Larger consume radius since grems actively walk to food
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRadius + 0.2f);
 
         foreach (Collider2D hit in hits)
@@ -79,7 +78,7 @@ public class FoodItem : MonoBehaviour
         transform.localScale = Vector3.zero;
         transform.DOScale(Vector3.one, 0.25f)
             .SetEase(Ease.OutBack)
-            .OnComplete(() => readyToEat = true); // only start detecting after animation
+            .OnComplete(() => readyToEat = true); 
     }
 
     private void Expire()

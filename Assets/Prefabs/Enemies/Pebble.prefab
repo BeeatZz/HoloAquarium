@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6458012334335246254}
   - component: {fileID: 9064643754588572847}
   - component: {fileID: 7165635697035181824}
+  - component: {fileID: -7942380415866019449}
   m_Layer: 0
   m_Name: Pebble
   m_TagString: Untagged
@@ -51,9 +52,15 @@ MonoBehaviour:
   moveSpeed: 1.5
   damage: 1
   attackCooldown: 1.5
+  bossDamageValue: 10
   currentHealth: 0
   isDead: 0
   dropStealRange: 0.4
+  hopSpeed: 8
+  hopHeight: 0.12
+  hopSquishAmount: 0.15
+  intimidateDuration: 2
+  fleeSpeed: 3
 --- !u!58 &9064643754588572847
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -133,7 +140,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_Sprite: {fileID: 21300000, guid: 9636abe4125443f4e91defedda597c6b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -145,3 +152,15 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-7942380415866019449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60664519481366948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 706c716519f0aad4ca40607197d6c9de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

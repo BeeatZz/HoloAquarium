@@ -61,13 +61,11 @@ public class LevelSelectManager : MonoBehaviour
                     }
                 }
 
-                // Thumbnail
                 Image thumb = levelBtn.transform
                     .Find("Thumbnail")?.GetComponent<Image>();
                 if (thumb != null && level.thumbnail != null)
                     thumb.sprite = level.thumbnail;
 
-                // Lock state
                 CanvasGroup cg = levelBtn.GetComponent<CanvasGroup>();
                 if (cg == null)
                     cg = levelBtn.AddComponent<CanvasGroup>();
@@ -75,7 +73,6 @@ public class LevelSelectManager : MonoBehaviour
                 cg.interactable = levelUnlocked;
                 cg.blocksRaycasts = levelUnlocked;
 
-                // Button
                 Button btn = levelBtn.GetComponent<Button>();
                 if (btn != null && levelUnlocked)
                 {

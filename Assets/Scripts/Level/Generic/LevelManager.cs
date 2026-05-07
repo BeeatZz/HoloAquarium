@@ -1,6 +1,8 @@
 using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 public class LevelManager : MonoBehaviour
 {
@@ -23,6 +25,11 @@ public class LevelManager : MonoBehaviour
     public float totalCurrencyCollected;
     public bool levelActive;
     public bool levelComplete;
+    public bool is3DPerspectiveMode = false;
+    [Header("Survival Settings")]
+    public TextMeshProUGUI timerText;
+    private bool survivalActive = false;
+    private float survivalTimeRemaining;
 
     public event Action OnLevelComplete;
     public event Action<int> OnPurchaseMade;
@@ -60,12 +67,61 @@ public class LevelManager : MonoBehaviour
 
         CurrencyManager.Instance.OnCurrencyChanged += CheckPurchaseThreshold;
         CurrencyManager.Instance.OnCurrencyCollected += OnCurrencyCollectedHandler;
+
+        if (timerText != null) timerText.gameObject.SetActive(false);
     }
 
     private void Update()
     {
         if (!levelActive || levelComplete) return;
+
         elapsedTime += Time.deltaTime;
+
+        if (survivalActive)
+        {
+            survivalTimeRemaining -= Time.deltaTime;
+
+            if (timerText != null)
+            {
+                timerText.text = $"SURVIVE: {Mathf.CeilToInt(survivalTimeRemaining)}s";
+            }
+
+            if (survivalTimeRemaining <= 0)
+            {
+                survivalActive = false;
+                if (timerText != null) timerText.gameObject.SetActive(false);
+                CompleteLevel();
+            }
+        }
+    }
+
+    public void StartSurvivalTimer(float duration)
+    {
+        if (survivalActive) return;
+
+        survivalTimeRemaining = duration;
+        survivalActive = true;
+
+        if (timerText != null)
+        {
+            timerText.gameObject.SetActive(true);
+            timerText.transform.localScale = Vector3.zero;
+            timerText.transform.localScale = Vector3.one; 
+        }
+    }
+
+    public void CheckForDefeat()
+    {
+        if (!levelActive || levelComplete) return;
+
+        Gremurin[] remainingGrems = UnityEngine.Object.FindObjectsByType<Gremurin>(FindObjectsSortMode.None);
+
+        if (remainingGrems.Length == 0)
+        {
+            Debug.Log("Game Over");
+            levelActive = false;
+            
+        }
     }
 
     public Vector3 ClampToPlayArea(Vector3 position)
@@ -96,13 +152,8 @@ public class LevelManager : MonoBehaviour
     private bool WaveRequirementMet()
     {
         if (waveSpawner == null) return true;
-
-        if (levelGoal.requireAllWavesComplete)
-            return waveSpawner.allWavesComplete;
-
-        if (levelGoal.requiredWaveIndex >= 0)
-            return waveSpawner.currentWaveIndex > levelGoal.requiredWaveIndex;
-
+        if (levelGoal.requireAllWavesComplete) return waveSpawner.allWavesComplete;
+        if (levelGoal.requiredWaveIndex >= 0) return waveSpawner.currentWaveIndex > levelGoal.requiredWaveIndex;
         return true;
     }
 
@@ -132,6 +183,8 @@ public class LevelManager : MonoBehaviour
     {
         if (!levelActive || levelComplete) return;
         gremDeathCount++;
+
+        CheckForDefeat();
     }
 
     private void OnCurrencyCollectedHandler(float amount)
@@ -141,8 +194,11 @@ public class LevelManager : MonoBehaviour
 
     private void CompleteLevel()
     {
+        if (levelComplete) return;
+
         levelComplete = true;
         levelActive = false;
+        survivalActive = false;
 
         CurrencyManager.Instance.OnCurrencyChanged -= CheckPurchaseThreshold;
         CurrencyManager.Instance.OnCurrencyCollected -= OnCurrencyCollectedHandler;
@@ -156,17 +212,15 @@ public class LevelManager : MonoBehaviour
     private int EvaluateStars()
     {
         StarObjective[] objectives = GetComponentsInChildren<StarObjective>();
-
         if (objectives.Length == 0) return 1;
 
         int stars = 0;
         foreach (StarObjective obj in objectives)
         {
-            if (obj.Evaluate())
-                stars++;
+            if (obj.Evaluate()) stars++;
         }
 
-        return stars;
+        return Mathf.Max(1, stars);
     }
 
     private void OnDestroy()
