@@ -37,22 +37,16 @@ public class FeedingSystem : MonoBehaviour
         if (foodPrefab == null) return;
         if (!CurrencyManager.Instance.CanAfford(foodCost)) return;
 
-        Vector2 mouseScreen = Mouse.current.position.ReadValue();
-        Ray ray = Camera.main.ScreenPointToRay(mouseScreen);
-        Plane plane = new Plane(Vector3.forward, Vector3.zero);
+        Vector3 worldPoint = LevelManager.Instance.ClampToPlayArea(
+            new Vector3(position.x, position.y, 0)
+        );
 
-        if (plane.Raycast(ray, out float distance))
-        {
-            Vector3 worldPoint = ray.GetPoint(distance);
+        Collider2D hit = Physics2D.OverlapPoint(worldPoint);
+        if (hit != null && hit.GetComponent<CurrencyDrop>() != null) return;
+        if (hit != null && hit.GetComponent<Enemy>() != null) return;
 
-            // Don't place food if clicking a currency drop or enemy
-            Collider2D hit = Physics2D.OverlapPoint(worldPoint);
-            if (hit != null && hit.GetComponent<CurrencyDrop>() != null) return;
-            if (hit != null && hit.GetComponent<Enemy>() != null) return;
-
-            CurrencyManager.Instance.Spend(foodCost);
-            SpawnFood(worldPoint);
-        }
+        CurrencyManager.Instance.Spend(foodCost);
+        SpawnFood(worldPoint);
     }
 
     private void SpawnFood(Vector3 position)

@@ -78,7 +78,7 @@ public class ShopPopup : MonoBehaviour
             {
                 ShopItem captured = item;
                 buyBtn.onClick.AddListener(() => OnBuyGrem(captured));
-            }
+            }   
         }
     }
 

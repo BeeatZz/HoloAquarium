@@ -1,7 +1,5 @@
-using UnityEngine;
-using System.Collections;
-using DG.Tweening;
 using System;
+using UnityEngine;
 
 public class GremEggSpawner : MonoBehaviour
 {
@@ -9,7 +7,6 @@ public class GremEggSpawner : MonoBehaviour
 
     [Header("References")]
     public GameObject eggPrefab;
-    public GameObject gremPrefab;
 
     private void Awake()
     {
@@ -25,7 +22,6 @@ public class GremEggSpawner : MonoBehaviour
     {
         if (eggPrefab == null) return;
 
-        // Random position inside play area
         Vector2 min = LevelManager.Instance.playAreaMin;
         Vector2 max = LevelManager.Instance.playAreaMax;
         Vector3 spawnPos = new Vector3(
@@ -37,6 +33,6 @@ public class GremEggSpawner : MonoBehaviour
         GameObject egg = Instantiate(eggPrefab, spawnPos, Quaternion.identity);
         GremEgg eggComponent = egg.GetComponent<GremEgg>();
         if (eggComponent != null)
-            eggComponent.Init(data, gremPrefab);
+            eggComponent.Init(data);
     }
 }

@@ -7,6 +7,7 @@ public class GremData : ScriptableObject
     [Header("Identity")]
     public string gremName;
     public Sprite sprite;
+    public GameObject speciesPrefab;
 
     [Header("Pokedex Entry")]
     [TextArea(2, 4)]

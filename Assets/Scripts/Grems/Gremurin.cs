@@ -1,18 +1,22 @@
-using System;
+﻿using System;
 using UnityEngine;
-using System.Collections;
+using DG.Tweening;
+
 
 public class Gremurin : MonoBehaviour
 {
-    private SpriteRenderer sr;
     [Header("Stats")]
     public GremData data;
+
+    [Header("Separation")]
+    public float separationRadius = 0.4f;
+    public float separationStrength = 0.5f;
 
     [Header("Runtime State")]
     public float currentHunger;
     public float currentHealth;
     public bool isDead;
-    public bool isPickedUp; // Prevents movement while being held
+    public bool isPickedUp;
 
     [Header("Wander Settings")]
     public float wanderRadius = 1.5f;
@@ -27,25 +31,24 @@ public class Gremurin : MonoBehaviour
     public float bobSpeed = 2f;
     public float bobAmplitude = 0.05f;
 
-    // Internal
-    private float currencyTimer;
-    private float currentRandomizedRate;
-    private Vector3 basePosition;
-    private Vector3 targetPosition;
-    private float wanderTimer;
-    private bool isMoving;
-    private FoodItem targetFood;
+    protected Vector3 basePosition;
+    protected Vector3 targetPosition;
+    protected float wanderTimer;
+    protected bool isMoving;
+    protected FoodItem targetFood;
+    protected SpriteRenderer sr;
 
-    private void Start()
+    protected virtual void Start()
     {
-        sr = GetComponent<SpriteRenderer>();
-        if (sr != null && data.sprite != null)
-            sr.sprite = data.sprite;
         if (data == null)
         {
             Debug.LogError($"Gremurin {gameObject.name} has no GremData assigned.");
             return;
         }
+
+        sr = GetComponent<SpriteRenderer>();
+        if (sr != null && data.sprite != null)
+            sr.sprite = data.sprite;
 
         basePosition = transform.position;
         targetPosition = transform.position;
@@ -57,77 +60,24 @@ public class Gremurin : MonoBehaviour
         moveSpeed = data.moveSpeed;
 
         ScheduleNextWander();
-        ResetCurrencyTimer();
-        currencyTimer = UnityEngine.Random.Range(0f, currentRandomizedRate);
     }
 
-    private void Update()
+    protected virtual void Update()
     {
-        if (isDead || isPickedUp) return; // Full stop if dead or picked up
+        if (isDead || isPickedUp) return;
 
         HandleHunger();
         HandleWander();
         HandleIdleBob();
-        HandleCurrency();
     }
 
-    public void OnPickedUp()
-    {
-        isPickedUp = true;
-        isMoving = false;
-        targetFood = null; // Clear target so it doesn't snap back on drop
-
-        // Stop hit effects if they were playing so they don't look weird while dragging
-        StopCoroutine("HitEffectsCoroutine");
-        sr.color = Color.white;
-    }
-
-    public void OnReleased()
-    {
-        isPickedUp = false;
-        basePosition = transform.position; // New home is where we dropped it
-        targetPosition = transform.position;
-        ScheduleNextWander();
-    }
-
-    private void UpdateFacing(Vector3 targetPos)
-    {
-        if (sr == null) return;
-        float diff = targetPos.x - transform.position.x;
-        if (Mathf.Abs(diff) > 0.01f)
-            sr.flipX = diff < 0;
-    }
-
-    private void HandleHunger()
+    protected virtual void HandleHunger()
     {
         currentHunger -= data.hungerRate * Time.deltaTime;
         currentHunger = Mathf.Clamp(currentHunger, 0, data.maxHunger);
     }
 
-    private void HandleCurrency()
-    {
-        currencyTimer -= Time.deltaTime;
-        if (currencyTimer <= 0)
-        {
-            ProduceCurrency();
-            ResetCurrencyTimer();
-        }
-    }
-
-    private void ResetCurrencyTimer()
-    {
-        float jitter = data.currencyOutputRate * 0.2f;
-        currentRandomizedRate = data.currencyOutputRate + UnityEngine.Random.Range(-jitter, jitter);
-        currencyTimer = currentRandomizedRate;
-    }
-
-    private void ProduceCurrency()
-    {
-        Debug.Log($"{data.gremName} produced {data.currencyOutputAmount} currency!");
-        // Instantiate(coinPrefab, transform.position, Quaternion.identity);
-    }
-
-    private void HandleWander()
+    protected virtual void HandleWander()
     {
         if (currentHunger < data.maxHunger * seekFoodHungerThreshold)
         {
@@ -139,13 +89,13 @@ public class Gremurin : MonoBehaviour
 
         if (isMoving)
         {
-            UpdateFacing(targetPosition);
             Vector3 newPos = Vector3.MoveTowards(
                 transform.position,
                 targetPosition,
                 moveSpeed * Time.deltaTime
             );
             transform.position = LevelManager.Instance.ClampToPlayArea(newPos);
+            UpdateFacing(targetPosition);
 
             if (Vector3.Distance(transform.position, targetPosition) < 0.05f)
             {
@@ -159,13 +109,25 @@ public class Gremurin : MonoBehaviour
         {
             wanderTimer -= Time.deltaTime;
             if (wanderTimer <= 0f)
-            {
                 PickWanderTarget();
-            }
         }
     }
 
-    private void SeekFood()
+    protected virtual void HandleIdleBob()
+    {
+        if (!isMoving)
+        {
+            float bob = Mathf.Sin(Time.time * bobSpeed) * bobAmplitude;
+            Vector3 bobbedPos = new Vector3(
+                basePosition.x,
+                basePosition.y + bob,
+                basePosition.z
+            );
+            transform.position = LevelManager.Instance.ClampToPlayArea(bobbedPos);
+        }
+    }
+
+    protected virtual void SeekFood()
     {
         if (targetFood == null)
             targetFood = FindNearestFood();
@@ -173,17 +135,25 @@ public class Gremurin : MonoBehaviour
         if (targetFood == null) return;
 
         isMoving = true;
-        UpdateFacing(targetFood.transform.position);
         Vector3 newPos = Vector3.MoveTowards(
             transform.position,
             targetFood.transform.position,
             moveSpeed * 1.5f * Time.deltaTime
         );
         transform.position = LevelManager.Instance.ClampToPlayArea(newPos);
+        UpdateFacing(targetFood.transform.position);
         basePosition = transform.position;
     }
 
-    private FoodItem FindNearestFood()
+    protected void UpdateFacing(Vector3 targetPos)
+    {
+        if (sr == null) return;
+        float diff = targetPos.x - transform.position.x;
+        if (Mathf.Abs(diff) > 0.01f)
+            sr.flipX = diff < 0;
+    }
+
+    protected FoodItem FindNearestFood()
     {
         FoodItem[] foods = FindObjectsByType<FoodItem>(FindObjectsSortMode.None);
         FoodItem nearest = null;
@@ -198,29 +168,21 @@ public class Gremurin : MonoBehaviour
                 nearest = food;
             }
         }
+
         return nearest;
     }
 
-    private void HandleIdleBob()
-    {
-        if (!isMoving)
-        {
-            float bob = Mathf.Sin(Time.time * bobSpeed) * bobAmplitude;
-            Vector3 bobbedPos = new Vector3(
-                basePosition.x,
-                basePosition.y + bob,
-                basePosition.z
-            );
-            transform.position = LevelManager.Instance.ClampToPlayArea(bobbedPos);
-        }
-    }
-
-    private void PickWanderTarget()
+    protected void PickWanderTarget()
     {
         Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * wanderRadius;
         Vector3 candidate = basePosition + new Vector3(randomOffset.x, randomOffset.y, 0);
         targetPosition = LevelManager.Instance.ClampToPlayArea(candidate);
         isMoving = true;
+    }
+
+    protected void ScheduleNextWander()
+    {
+        wanderTimer = UnityEngine.Random.Range(wanderPauseMin, wanderPauseMax);
     }
 
     public void SetBasePosition(Vector3 newBase)
@@ -230,56 +192,50 @@ public class Gremurin : MonoBehaviour
         isMoving = false;
     }
 
-    private void ScheduleNextWander()
+    public void OnPickedUp()
     {
-        wanderTimer = UnityEngine.Random.Range(wanderPauseMin, wanderPauseMax);
+        isPickedUp = true;
+        isMoving = false;
     }
 
-    public void TakeDamage(float amount)
+    public void OnReleased()
+    {
+        isPickedUp = false;
+        ScheduleNextWander();
+    }
+
+    public virtual void TakeDamage(float amount)
     {
         if (isDead) return;
-
         currentHealth -= amount;
-        StopCoroutine("HitEffectsCoroutine");
-        StartCoroutine(HitEffectsCoroutine());
 
-        if (currentHealth <= 0) Die();
-    }
-
-    private IEnumerator HitEffectsCoroutine()
-    {
-        Color originalColor = Color.white;
-        Color flashColor = Color.red;
-        Vector3 originalScale = transform.localScale;
-        Vector3 punchScale = originalScale * 1.2f;
-
-        float duration = 0.15f;
-        float elapsed = 0f;
-
-        while (elapsed < duration)
+        if (sr != null)
         {
-            elapsed += Time.deltaTime;
-            float normalizedTime = elapsed / duration;
-            sr.color = Color.Lerp(flashColor, originalColor, normalizedTime);
-            float scaleMultiplier = Mathf.Sin(normalizedTime * Mathf.PI);
-            transform.localScale = Vector3.Lerp(originalScale, punchScale, scaleMultiplier);
-            yield return null;
+            sr.DOKill();
+            sr.DOColor(Color.red, 0.05f).SetEase(Ease.OutQuad)
+                .OnComplete(() => sr.DOColor(Color.white, 0.15f));
         }
 
-        sr.color = originalColor;
-        transform.localScale = originalScale;
+        transform.DOKill();
+        transform.DOPunchScale(Vector3.one * 0.3f, 0.2f, 5, 0.5f);
+        transform.DOShakePosition(0.2f, 0.08f, 15, 90f);
+
+        if (currentHealth <= 0)
+            Die();
     }
 
-    public void Feed(float amount)
+    public virtual void Feed(float amount)
     {
         currentHunger = Mathf.Clamp(currentHunger + amount, 0, data.maxHunger);
     }
 
-    private void Die()
+    protected virtual void Die()
     {
         isDead = true;
+
         if (LevelManager.Instance != null)
             LevelManager.Instance.RegisterGremDeath();
+
         Destroy(gameObject);
     }
 }

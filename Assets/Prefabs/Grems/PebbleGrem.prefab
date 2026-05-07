@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 7014580535090944394}
   - component: {fileID: 4404175199466875831}
   - component: {fileID: 6048202981354926127}
-  - component: {fileID: 9110747822060894261}
   - component: {fileID: 1923323073115340505}
   - component: {fileID: 5185005263625600261}
+  - component: {fileID: 4115026822745897637}
   m_Layer: 0
-  m_Name: Gremurin
+  m_Name: PebbleGrem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -118,32 +118,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &9110747822060894261
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3485767565064571701}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0251eeb2a299212499622f23e6da9cc3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  data: {fileID: 0}
-  separationRadius: 0.4
-  separationStrength: 0.3
-  currentHunger: 0
-  currentHealth: 0
-  isDead: 0
-  isPickedUp: 0
-  wanderRadius: 1.5
-  wanderPauseMin: 2
-  wanderPauseMax: 5
-  moveSpeed: 1.5
-  seekFoodHungerThreshold: 0.4
-  bobSpeed: 2
-  bobAmplitude: 0.05
 --- !u!114 &1923323073115340505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,3 +168,34 @@ CapsuleCollider2D:
   m_Offset: {x: -0.07, y: -0.34}
   m_Size: {x: 1.32, y: 0.72}
   m_Direction: 1
+--- !u!114 &4115026822745897637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3485767565064571701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3f8bb28a8512284dbae3ace272780d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: {fileID: 11400000, guid: 9f69d480cf1ff7f4d93ce08c1a6a8c2b, type: 2}
+  separationRadius: 0.4
+  separationStrength: 0.5
+  currentHunger: 0
+  currentHealth: 0
+  isDead: 0
+  isPickedUp: 0
+  wanderRadius: 1.5
+  wanderPauseMin: 2
+  wanderPauseMax: 5
+  moveSpeed: 1.5
+  seekFoodHungerThreshold: 0.4
+  bobSpeed: 2
+  bobAmplitude: 0.05
+  collectRadius: 0.3
+  detectionRadius: 3
+  collectorMoveSpeed: 2.5
+  intimidateRadius: 2
+  intimidateCooldown: 0.5

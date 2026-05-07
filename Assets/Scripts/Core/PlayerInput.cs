@@ -64,7 +64,11 @@ public class PlayerInput : MonoBehaviour
         {
             GremInfoPopup.Instance?.Hide();
             if (FeedingSystem.Instance != null && FeedingSystem.Instance.feedingModeActive)
-                FeedingSystem.Instance.TryPlaceFoodAt(worldPoint);
+            {
+                // Only place food within play area
+                if (IsWithinPlayArea(worldPoint))
+                    FeedingSystem.Instance.TryPlaceFoodAt(worldPoint);
+            }
             return;
         }
 
@@ -75,15 +79,14 @@ public class PlayerInput : MonoBehaviour
         if (enemy != null) { PunchEnemy(enemy); return; }
 
         GremEgg egg = hit.GetComponent<GremEgg>();
-        if (egg != null)
-        {
-            egg.Hatch();
-            return;
-        }
+        if (egg != null) { egg.Hatch(); return; }
 
         Gremurin grem = hit.GetComponent<Gremurin>();
         if (grem != null && !grem.isDead)
         {
+            // Only pick up grems within play area
+            if (!IsWithinPlayArea(worldPoint)) return;
+
             pressedGrem = grem;
             holdTimer = 0f;
             isDragging = false;
@@ -96,7 +99,18 @@ public class PlayerInput : MonoBehaviour
 
         GremInfoPopup.Instance?.Hide();
     }
+    private bool IsPointerOverUI()
+    {
+        var pointerEventData = new UnityEngine.EventSystems.PointerEventData(
+            UnityEngine.EventSystems.EventSystem.current
+        );
+        pointerEventData.position = Mouse.current.position.ReadValue();
 
+        var results = new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();
+        UnityEngine.EventSystems.EventSystem.current.RaycastAll(pointerEventData, results);
+
+        return results.Count > 0;
+    }
     private void HandleHold()
     {
         if (pressedGrem == null || pressedGrem.isDead)
@@ -174,7 +188,13 @@ public class PlayerInput : MonoBehaviour
         isDragging = false;
         holdTimer = 0f;
     }
-
+    private bool IsWithinPlayArea(Vector2 worldPoint)
+    {
+        Vector2 min = LevelManager.Instance.playAreaMin;
+        Vector2 max = LevelManager.Instance.playAreaMax;
+        return worldPoint.x >= min.x && worldPoint.x <= max.x &&
+               worldPoint.y >= min.y && worldPoint.y <= max.y;
+    }
     public void PunchEnemy(Enemy enemy)
     {
         enemy.OnPlayerPunch(punchDamage);

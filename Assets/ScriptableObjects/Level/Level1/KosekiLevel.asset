@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f093221c6c6d4c949ba5e8f6a672b7ba, type: 3}
+  m_Name: KosekiLevel
+  m_EditorClassIdentifier: 
+  levelId: 0
+  displayName: Gemstone Lair
+  sceneName: KosekiLevel
+  thumbnail: {fileID: 0}
+  gremReward: {fileID: 11400000, guid: 9f69d480cf1ff7f4d93ce08c1a6a8c2b, type: 2}
+  unlockType: 0
+  previousLevelId: 
+  requiredTotalStars: 0

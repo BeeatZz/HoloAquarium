@@ -19,6 +19,8 @@ public class Enemy : MonoBehaviour
 
     protected float attackTimer;
     protected Gremurin targetGrem;
+    protected CurrencyDrop targetDrop;
+    protected Transform visual;
     protected SpriteRenderer sr;
 
     protected virtual void Start()

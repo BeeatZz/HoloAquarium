@@ -7,6 +7,7 @@ public class GremEgg : MonoBehaviour
     [Header("Sprites")]
     public Sprite closedSprite;
     public Sprite openSprite;
+
     [Header("Animation Settings")]
     public float bounceSpeed = 1.2f;
     public float bounceHeight = 0.08f;
@@ -14,20 +15,21 @@ public class GremEgg : MonoBehaviour
     public float shakeSpeed = 8f;
 
     private GremData pendingData;
-    private GameObject gremPrefab;
     private bool hatched;
     private Vector3 basePosition;
     private SpriteRenderer sr;
 
-    public void Init(GremData data, GameObject prefab)
+    public void Init(GremData data)
     {
         pendingData = data;
-        gremPrefab = prefab;
         hatched = false;
         basePosition = transform.position;
         sr = GetComponent<SpriteRenderer>();
 
-        // Spawn pop
+        if (sr != null && closedSprite != null)
+            sr.sprite = closedSprite;
+
+        // Spawn pop-in animation
         transform.localScale = Vector3.zero;
         transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
     }
@@ -40,6 +42,7 @@ public class GremEgg : MonoBehaviour
 
     private void HandleBounceAndShake()
     {
+        // Procedural animation for "living" egg feel
         float bounce = Mathf.Abs(Mathf.Sin(Time.time * bounceSpeed)) * bounceHeight;
         float shake = Mathf.Sin(Time.time * shakeSpeed) * shakeAmount;
 
@@ -50,14 +53,9 @@ public class GremEgg : MonoBehaviour
         );
     }
 
-    private void OnMouseDown()
-    {
-        // Handled by PlayerInput
-    }
-
     public void Hatch()
     {
-        if (hatched) return;
+        if (hatched || pendingData == null) return;
         hatched = true;
 
         StartCoroutine(HatchSequence());
@@ -65,42 +63,42 @@ public class GremEgg : MonoBehaviour
 
     private IEnumerator HatchSequence()
     {
-        // Change sprite immediately on click
+        // Change to open sprite
         if (sr != null && openSprite != null)
             sr.sprite = openSprite;
 
-        // Hop up
-        Vector3 startPos = basePosition;
+        transform.DOKill(); // Stop the bounce/shake
+
+        // 1. Hop Up
         Vector3 hopPeak = basePosition + new Vector3(0, 0.4f, 0);
-
-        transform.DOKill();
-
-        // Up
         transform.DOMove(hopPeak, 0.15f).SetEase(Ease.OutQuad);
         yield return new WaitForSeconds(0.15f);
 
-        // Squish on the way down
-        transform.DOMove(startPos, 0.15f).SetEase(Ease.InQuad);
+        // 2. Squish on impact
+        transform.DOMove(basePosition, 0.15f).SetEase(Ease.InQuad);
         transform.DOScaleY(0.6f, 0.15f);
         yield return new WaitForSeconds(0.15f);
 
-        // Unsquish
+        // 3. Unsquish
         transform.DOScaleY(1f, 0.1f);
         yield return new WaitForSeconds(0.1f);
 
-        // TODO: smoke effect here
-
-        // Spawn grem
-        if (gremPrefab != null)
+        // 4. Instantiate the specific Gremurin Prefab from ScriptableObject
+        if (pendingData.speciesPrefab != null)
         {
-            GameObject gremObj = Instantiate(gremPrefab, basePosition, Quaternion.identity);
+            GameObject gremObj = Instantiate(pendingData.speciesPrefab, basePosition, Quaternion.identity);
             Gremurin grem = gremObj.GetComponent<Gremurin>();
             if (grem != null)
+            {
                 grem.data = pendingData;
+            }
+        }
+        else
+        {
+            Debug.LogError($"No Species Prefab assigned in GremData: {pendingData.gremName}");
         }
 
-        // Pop out
-        transform.DOKill();
+        // 5. Egg shell fades/pops out
         transform.DOScale(Vector3.zero, 0.2f)
             .SetEase(Ease.InBack)
             .OnComplete(() => Destroy(gameObject));

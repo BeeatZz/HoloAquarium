@@ -6,7 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Scenes/MainMenu.unity
+    guid: eb24104a00f6de34f825e23214b257ae
+  - enabled: 1
+    path: Assets/Scenes/CampaignSelect.unity
+    guid: 32b52f8ba6b0a8b4fae57359e0db9aaa
+  - enabled: 1
+    path: Assets/Scenes/KosekiLevel.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
