@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gremName: Gremurin
   sprite: {fileID: 21300000, guid: f4f743dc0d21f2142aed0e93e3a293fb, type: 3}
-  speciesPrefab: {fileID: 0}
+  speciesPrefab: {fileID: 3485767565064571701, guid: 592ec362faec6a145893536569607d1e, type: 3}
   flavorText: Just a regular ol Grem
   skills:
   - skillName: Test
