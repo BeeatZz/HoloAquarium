@@ -68,10 +68,11 @@ public class GeowEnemy : Enemy
         {
             yield return new WaitForSeconds(meteorWarningDuration);
 
-            Collider2D[] hits = Physics2D.OverlapCircleAll(targetPos, meteorRadius);
+            int hitboxLayer = LayerMask.GetMask("GremHitbox");
+            Collider2D[] hits = Physics2D.OverlapCircleAll(targetPos, meteorRadius, hitboxLayer);
             foreach (Collider2D hit in hits)
             {
-                Gremurin grem = hit.GetComponent<Gremurin>();
+                Gremurin grem = hit.GetComponentInParent<Gremurin>();
                 if (grem != null && !grem.isDead)
                     grem.TakeDamage(meteorDamage);
             }

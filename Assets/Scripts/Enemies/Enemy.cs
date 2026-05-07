@@ -124,5 +124,5 @@ public class Enemy : MonoBehaviour
         return nearest;
     }
 
-    public void OnPlayerPunch(float punchDamage) => TakeDamage(punchDamage);
+    public virtual void OnPlayerPunch(float punchDamage) => TakeDamage(punchDamage);
 }

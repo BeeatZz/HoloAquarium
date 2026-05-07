@@ -18,6 +18,12 @@ public class SaveManager : MonoBehaviour
                     _instance = go.AddComponent<SaveManager>();
                 }
             }
+
+            // CRITICAL FIX: Ensure data is loaded if accessed before Awake
+            if (_instance.saveData == null)
+            {
+                _instance.Load();
+            }
             return _instance;
         }
     }
@@ -35,11 +41,9 @@ public class SaveManager : MonoBehaviour
         _instance = this;
         DontDestroyOnLoad(gameObject);
 
-        savePath = Path.Combine(Application.persistentDataPath, "save.json");
-        Load();
+        if (saveData == null) Load();
     }
 
-    // --- Added Lifecycle Hooks ---
     private void OnApplicationQuit() => Save();
 
     private void OnApplicationPause(bool pause)
@@ -47,10 +51,61 @@ public class SaveManager : MonoBehaviour
         if (pause) Save();
     }
 
+    public void Load()
+    {
+        if (string.IsNullOrEmpty(savePath))
+            savePath = Path.Combine(Application.persistentDataPath, "save.json");
+
+        if (File.Exists(savePath))
+        {
+            string json = File.ReadAllText(savePath);
+            saveData = JsonUtility.FromJson<SaveData>(json);
+            Debug.Log("Save loaded.");
+        }
+
+        // Safety: Always ensure saveData is not null
+        if (saveData == null)
+        {
+            saveData = new SaveData();
+            Debug.Log("No save found, starting fresh.");
+        }
+    }
+
+    public void Save()
+    {
+        if (saveData == null) return;
+        string json = JsonUtility.ToJson(saveData, true);
+        File.WriteAllText(savePath, json);
+    }
+
+    public void CompleteLevel(string levelId, int stars)
+    {
+        if (string.IsNullOrEmpty(levelId)) return;
+
+        LevelSaveData existing = saveData.GetLevelData(levelId);
+
+        if (existing != null)
+        {
+            existing.completed = true;
+            if (stars > existing.stars)
+                existing.stars = stars;
+        }
+        else
+        {
+            saveData.levelProgress.Add(new LevelSaveData
+            {
+                levelId = levelId,
+                completed = true,
+                stars = stars
+            });
+        }
+
+        Save();
+    }
+
     public void StartCampaign(string campaignId, string firstLevelId)
     {
         CampaignSaveData existing = saveData.GetCampaignData(campaignId);
-
         if (existing != null)
         {
             existing.started = true;
@@ -67,7 +122,6 @@ public class SaveManager : MonoBehaviour
                 completed = false
             });
         }
-
         Save();
     }
 
@@ -90,53 +144,8 @@ public class SaveManager : MonoBehaviour
             Save();
         }
     }
+
     public SaveData GetSaveData() => saveData;
-
-    public void Save()
-    {
-        if (saveData == null) return;
-        string json = JsonUtility.ToJson(saveData, true);
-        File.WriteAllText(savePath, json);
-        Debug.Log($"Game saved to {savePath}");
-    }
-
-    public void Load()
-    {
-        if (File.Exists(savePath))
-        {
-            string json = File.ReadAllText(savePath);
-            saveData = JsonUtility.FromJson<SaveData>(json);
-            Debug.Log("Save loaded.");
-        }
-        else
-        {
-            saveData = new SaveData();
-            Debug.Log("No save found, starting fresh.");
-        }
-    }
-
-    public void CompleteLevel(string levelId, int stars)
-    {
-        LevelSaveData existing = saveData.GetLevelData(levelId);
-
-        if (existing != null)
-        {
-            existing.completed = true;
-            if (stars > existing.stars)
-                existing.stars = stars;
-        }
-        else
-        {
-            saveData.levelProgress.Add(new LevelSaveData
-            {
-                levelId = levelId,
-                completed = true,
-                stars = stars
-            });
-        }
-
-        Save();
-    }
 
     public void UnlockGrem(string gremName)
     {
@@ -152,7 +161,6 @@ public class SaveManager : MonoBehaviour
         if (!saveData.unlockedAchievements.Contains(achievementId))
         {
             saveData.unlockedAchievements.Add(achievementId);
-            // TODO: trigger Steam achievement here
             Save();
         }
     }
@@ -163,17 +171,14 @@ public class SaveManager : MonoBehaviour
         {
             case CampaignUnlockType.AlwaysUnlocked:
                 return true;
-
             case CampaignUnlockType.CompletePrevious:
                 CampaignDefinition prev = registry.GetCampaign(campaign.previousCampaignId);
                 if (prev == null) return true;
                 foreach (LevelDefinition level in prev.levels)
                     if (!saveData.IsLevelCompleted(level.levelId)) return false;
                 return true;
-
             case CampaignUnlockType.RequiredStars:
                 return registry.GetTotalStars(saveData) >= campaign.requiredTotalStars;
-
             default:
                 return false;
         }
@@ -185,13 +190,10 @@ public class SaveManager : MonoBehaviour
         {
             case LevelUnlockType.AlwaysUnlocked:
                 return true;
-
             case LevelUnlockType.CompletePrevious:
                 return saveData.IsLevelCompleted(level.previousLevelId);
-
             case LevelUnlockType.RequiredStars:
                 return registry.GetTotalStars(saveData) >= level.requiredTotalStars;
-
             default:
                 return false;
         }
@@ -202,6 +204,5 @@ public class SaveManager : MonoBehaviour
         if (File.Exists(savePath))
             File.Delete(savePath);
         saveData = new SaveData();
-        Debug.Log("Save deleted.");
     }
 }

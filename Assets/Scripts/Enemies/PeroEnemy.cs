@@ -13,29 +13,26 @@ public class PeroEnemy : Enemy
 
     protected override void Start()
     {
-        base.Start(); // Sets up Visual child and spawn animation
+        base.Start();
         patternTimer = patternChangeInterval;
     }
 
     protected override void Think()
     {
-        // Challenge tracking: Move in crazy patterns
         HandleErraticMovement();
-        
-        base.Think(); // Handles FindTarget, MoveTowardTarget, and TryAttack
+        base.Think();
     }
 
     protected override void FindTarget()
     {
-        // Target a specific role: Specialist grems first
         Gremurin[] allGrems = FindObjectsByType<Gremurin>(FindObjectsSortMode.None);
         Gremurin priorityTarget = null;
         float minDistance = float.MaxValue;
 
-        // Pass 1: Look for Specialists
         foreach (Gremurin grem in allGrems)
         {
-            if (grem.data != null && grem.data.gremRole == GremRole.Specialist)
+            if (grem.isDead) continue;
+            if (grem.data != null && grem.data.role == GremRole.Specialist)
             {
                 float dist = Vector3.Distance(transform.position, grem.transform.position);
                 if (dist < minDistance)
@@ -46,15 +43,10 @@ public class PeroEnemy : Enemy
             }
         }
 
-        // Pass 2: Fallback to nearest if no specialists exist
         if (priorityTarget != null)
-        {
-            currentTarget = priorityTarget;
-        }
+            targetGrem = priorityTarget;
         else
-        {
-            base.FindTarget(); 
-        }
+            base.FindTarget();
     }
 
     private void HandleErraticMovement()
@@ -62,7 +54,6 @@ public class PeroEnemy : Enemy
         patternTimer -= Time.deltaTime;
         if (patternTimer <= 0)
         {
-            // Create a "crazy" zigzag offset
             randomOffset = Random.insideUnitSphere * zigZagIntensity;
             randomOffset.z = 0;
             patternTimer = patternChangeInterval;
@@ -71,30 +62,26 @@ public class PeroEnemy : Enemy
 
     protected override void MoveTowardTarget()
     {
-        if (currentTarget == null) return;
+        if (targetGrem == null) return;
 
-        // Challenge tracking: fast movement with zigzagging
-        Vector3 direction = (currentTarget.transform.position - transform.position).normalized;
+        Vector3 direction = (targetGrem.transform.position - transform.position).normalized;
         Vector3 erraticPath = direction + (randomOffset * 0.5f);
-        
+
         float speed = moveSpeed * dashSpeedMultiplier;
         transform.position += erraticPath.normalized * speed * Time.deltaTime;
-
-        // Ensure Pero stays in the box
         transform.position = LevelManager.Instance.ClampToPlayArea(transform.position);
-
-        UpdateFacing(currentTarget.transform.position); //
+        UpdateFacing(targetGrem.transform.position);
     }
 
     public override void OnPlayerPunch(float damage)
     {
-        // Challenge tracking: DASH away when punched to be harder to click twice
-        base.OnPlayerPunch(damage); // Visual punch scale
-        
+        base.OnPlayerPunch(damage);
+
         Vector2 escapeDir = Random.insideUnitCircle.normalized * 2f;
         transform.DOMove(transform.position + (Vector3)escapeDir, 0.3f)
             .SetEase(Ease.OutExpo)
-            .OnUpdate(() => {
+            .OnUpdate(() =>
+            {
                 transform.position = LevelManager.Instance.ClampToPlayArea(transform.position);
             });
     }

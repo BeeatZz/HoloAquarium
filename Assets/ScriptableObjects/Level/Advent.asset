@@ -16,10 +16,7 @@ MonoBehaviour:
   displayName: Advent
   thumbnail: {fileID: 0}
   unlockType: 0
-  previousCampaignId: 
+  previousCampaignId: -1
   requiredTotalStars: 0
   levels:
   - {fileID: 11400000, guid: 6dd52e0e6e56e5147b6c48b594b87785, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}

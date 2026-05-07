@@ -65,28 +65,30 @@ public class PlayerInput : MonoBehaviour
             GremInfoPopup.Instance?.Hide();
             if (FeedingSystem.Instance != null && FeedingSystem.Instance.feedingModeActive)
             {
-                // Only place food within play area
                 if (IsWithinPlayArea(worldPoint))
                     FeedingSystem.Instance.TryPlaceFoodAt(worldPoint);
             }
             return;
         }
 
+        // Priority 1: collect currency drop
         CurrencyDrop drop = hit.GetComponent<CurrencyDrop>();
         if (drop != null) { drop.Collect(); return; }
 
+        // Priority 2: punch enemy
         Enemy enemy = hit.GetComponent<Enemy>();
         if (enemy != null) { PunchEnemy(enemy); return; }
 
+        // Priority 3: hatch egg
         GremEgg egg = hit.GetComponent<GremEgg>();
         if (egg != null) { egg.Hatch(); return; }
 
-        Gremurin grem = hit.GetComponent<Gremurin>();
+        // Priority 4: grem pickup — only on GremPickup layer
+        int pickupLayer = LayerMask.GetMask("GremPickup");
+        Collider2D gremHit = Physics2D.OverlapPoint(worldPoint, pickupLayer);
+        Gremurin grem = gremHit?.GetComponent<Gremurin>();
         if (grem != null && !grem.isDead)
         {
-            // Only pick up grems within play area
-            if (!IsWithinPlayArea(worldPoint)) return;
-
             pressedGrem = grem;
             holdTimer = 0f;
             isDragging = false;

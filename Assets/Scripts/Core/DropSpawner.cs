@@ -24,9 +24,9 @@ public class DropSpawner : MonoBehaviour
         if (gremurin == null || gremurin.isDead) return;
         if (gremurin.data == null) return;
         if (gremurin.currentHunger <= 0) return;
+        if (LevelManager.Instance != null && !LevelManager.Instance.levelActive) return;
 
         outputTimer -= Time.deltaTime;
-
         if (outputTimer <= 0f)
         {
             SpawnDrop();

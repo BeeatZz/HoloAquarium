@@ -21,3 +21,10 @@ MonoBehaviour:
     - enemyPrefab: {fileID: 60664519481366948, guid: 3518336aaf52a994583b6aab26ea1a18, type: 3}
       count: 3
       spawnInterval: 2
+  - label: Second Wave
+    delayBefore: 5
+    waitForClear: 0
+    entries:
+    - enemyPrefab: {fileID: 60664519481366948, guid: 3518336aaf52a994583b6aab26ea1a18, type: 3}
+      count: 3
+      spawnInterval: 2

@@ -103,13 +103,17 @@ public class BeamHazard : MonoBehaviour
 
     private void DamageAlongSegment(Vector3 start, Vector3 end)
     {
+        int hitboxLayer = LayerMask.GetMask("GremHitbox");
         Vector2 direction = (end - start).normalized;
         float distance = Vector3.Distance(start, end);
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(start, beamWidth, direction, distance);
+
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(
+            start, beamWidth, direction, distance, hitboxLayer
+        );
 
         foreach (RaycastHit2D hit in hits)
         {
-            Gremurin grem = hit.collider.GetComponent<Gremurin>();
+            Gremurin grem = hit.collider.GetComponentInParent<Gremurin>();
             if (grem != null && !grem.isDead)
                 grem.TakeDamage(beamDamage);
         }
