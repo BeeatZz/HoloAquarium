@@ -53,6 +53,7 @@ public class PlayerInput : MonoBehaviour
         {
             if (generalHit.TryGetComponent(out Enemy enemy)) { enemy.OnPlayerPunch(punchDamage); return; }
             if (generalHit.TryGetComponent(out GremEgg egg)) { egg.Hatch(); return; }
+            if (generalHit.TryGetComponent(out PageSuckPage page)) { page.OnMouseDown(); return; } 
         }
 
         if (IsWithinPlayArea(worldPoint))
@@ -115,6 +116,7 @@ public class PlayerInput : MonoBehaviour
             if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Currency") && hit.collider.TryGetComponent(out CurrencyDrop drop)) { drop.Collect(); return; }
             if (hit.collider.TryGetComponent(out Enemy enemy)) { enemy.OnPlayerPunch(punchDamage); return; }
             if (hit.collider.TryGetComponent(out GremEgg egg)) { egg.Hatch(); return; }
+            if (hit.collider.TryGetComponent(out PageSuckPage page)) { page.OnMouseDown(); return; }
 
             if (hit.collider.gameObject.layer == LayerMask.NameToLayer("GremPickup") && hit.collider.TryGetComponent(out Gremurin grem) && !grem.isDead)
             {

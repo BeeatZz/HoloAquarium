@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72c3b0f5a642a4d4c9ed4bd08c705f58, type: 3}
+  m_Name: BookWyrm
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  moveSpeed: 1.5
+  enragedMoveSpeed: 2.5
+  attacksBeforeVulnerable: 3
+  vulnerableDuration: 5
+  attackCooldown: 1.5
+  phase2AttackCooldown: 0.8
+  chargeSpeed: 8
+  chargeWarningDuration: 1.2
+  chargeDamage: 1
+  chargeHitRadius: 0.6
+  projectileSpeed: 5
+  projectileDamage: 1
+  rayRotateSpeed: 20
+  rayDuration: 5
+  cursorDisableDuration: 3
+  tornadoExpandSpeed: 1
+  tornadoMaxRadius: 3
+  tornadoDuration: 5
+  tornadoDamage: 0.5
+  pageSuckDuration: 8
+  healPerPage: 5
+  pageDestroyRateThreshold: 2
+  pageDestroyTrackWindow: 3
+  pageSuckPageSpeed: 2
+  pageSuckSpawnInterval: 2
+  inkTornadoChance: 0.25
+  pageSuckChance: 0.35
+  chargeChance: 0.5
