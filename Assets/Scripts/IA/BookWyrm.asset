@@ -13,14 +13,16 @@ MonoBehaviour:
   m_Name: BookWyrm
   m_EditorClassIdentifier: 
   maxHealth: 100
+  phase2TriggerThreshold: 0.5
   moveSpeed: 1.5
   enragedMoveSpeed: 2.5
   attacksBeforeVulnerable: 3
-  vulnerableDuration: 5
+  vulnerableDuration: 3
   attackCooldown: 1.5
   phase2AttackCooldown: 0.8
   chargeSpeed: 8
   chargeWarningDuration: 1.2
+  chargePostAttackPause: 1
   chargeDamage: 1
   chargeHitRadius: 0.6
   projectileSpeed: 5
@@ -38,6 +40,9 @@ MonoBehaviour:
   pageDestroyTrackWindow: 3
   pageSuckPageSpeed: 2
   pageSuckSpawnInterval: 2
-  inkTornadoChance: 0.25
-  pageSuckChance: 0.35
-  chargeChance: 0.5
+  p1ChargeWeight: 50
+  p1ProjectileWeight: 50
+  p2ChargeWeight: 40
+  p2ProjectileWeight: 20
+  p2InkTornadoWeight: 20
+  p2PageSuckWeight: 30

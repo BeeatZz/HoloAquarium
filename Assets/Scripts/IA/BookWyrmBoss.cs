@@ -1,44 +1,33 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using System.Collections;
 using DG.Tweening;
+using UnityEngine;
 
-[RequireComponent(typeof(BookWyrmStateMachine))]
-[RequireComponent(typeof(BookWyrmBehaviorTree))]
-[RequireComponent(typeof(SpriteRenderer))]
-[RequireComponent(typeof(CircleCollider2D))]
 public class BookWyrmBoss : Enemy
 {
     public BookWyrmData data;
 
-    [Header("Prefabs")]
     public GameObject chargeWarningPrefab;
     public GameObject projectilePrefab;
     public GameObject rotatingRayPrefab;
     public GameObject tornadoPrefab;
     public GameObject pageSuckPrefab;
-
-    [Header("Points")]
     public Transform firePoint;
     public Transform[] pageSuckSpawnPoints;
 
-    [Header("Settings")]
     public bool useStateMachine = true;
-
-    // Public State Properties
     public bool isVulnerable { get; private set; }
     public bool isPhase2 { get; private set; }
     public bool isPageSucking { get; private set; }
+    public bool isAttacking { get; private set; }
     public int currentAttackCount { get; private set; }
     public float lastAttackTime { get; private set; }
     public float pageDestroyCount { get; private set; }
     public float pageDestroyTimer { get; private set; }
-    public bool isAttacking { get; private set; }
-
-    // Track damage threshold inside Vulnerable windows
+    public bool thresholdRetaliationTriggered { get; private set; }
     public float damageTakenInCurrentVulnerableWindow { get; private set; }
+    public float vulnerableStartTime { get; private set; }
 
-    // Events
     public event Action OnHalfHealth;
     public event Action OnDeath;
     public event Action OnVulnerableStart;
@@ -63,8 +52,11 @@ public class BookWyrmBoss : Enemy
 
         GameObject[] spawnObjs = GameObject.FindGameObjectsWithTag("PageSuckSpawn");
         pageSuckSpawnPoints = new Transform[spawnObjs.Length];
+
         for (int i = 0; i < spawnObjs.Length; i++)
+        {
             pageSuckSpawnPoints[i] = spawnObjs[i].transform;
+        }
 
         if (data != null)
         {
@@ -76,15 +68,24 @@ public class BookWyrmBoss : Enemy
         PickNewWanderTarget();
     }
 
-    protected override void Think()
+    protected override void Think() { }
+
+    protected override void Update()
     {
+        base.Update();
+
+        if (pageDestroyTimer > 0)
+        {
+            pageDestroyTimer -= Time.deltaTime;
+
+            if (pageDestroyTimer <= 0)
+                pageDestroyCount = 0;
+        }
     }
 
     public override void TakeDamage(float amount)
     {
         if (isDead) return;
-
-        // Hard gate: If not vulnerable, or we already absorbed our max window budget, reject damage
         if (!isVulnerable || damageTakenInCurrentVulnerableWindow >= 10f) return;
 
         currentHealth -= amount;
@@ -95,31 +96,33 @@ public class BookWyrmBoss : Enemy
         {
             sr.DOKill();
             sr.DOColor(Color.red, 0.05f)
-                .OnComplete(() => {
-                    if (isVulnerable && damageTakenInCurrentVulnerableWindow < 10f) sr.DOColor(Color.yellow, 0.15f);
-                    else sr.DOColor(Color.white, 0.15f);
+                .OnComplete(() =>
+                {
+                    if (isVulnerable && damageTakenInCurrentVulnerableWindow < 10f)
+                        sr.DOColor(Color.yellow, 0.15f);
+                    else
+                        sr.DOColor(Color.white, 0.15f);
                 });
         }
 
         transform.DOPunchScale(Vector3.one * 0.2f, 0.1f, 5, 0.5f);
 
-        if (IsVulnerableDamageThresholdExceeded())
-        {
-            OnVulnerableDamageThresholdReached?.Invoke();
-        }
-
         float thresholdPct = data != null ? data.phase2TriggerThreshold : 0.5f;
-        if (!halfHealthFired && currentHealth <= maxHealth * thresholdPct)
+        bool hitPhase2ThisFrame = !halfHealthFired && currentHealth <= maxHealth * thresholdPct;
+
+        if (hitPhase2ThisFrame)
         {
             halfHealthFired = true;
             isPhase2 = true;
-
-            if (isVulnerable)
-            {
-                ExitVulnerable();
-            }
-
             OnHalfHealth?.Invoke();
+        }
+
+        if (IsVulnerableDamageThresholdExceeded() &&
+            !hitPhase2ThisFrame &&
+            !thresholdRetaliationTriggered)
+        {
+            thresholdRetaliationTriggered = true;
+            OnVulnerableDamageThresholdReached?.Invoke();
         }
 
         if (currentHealth <= 0)
@@ -134,22 +137,12 @@ public class BookWyrmBoss : Enemy
     protected override void Die()
     {
         isDead = true;
+
         if (currentAttackCoroutine != null) StopCoroutine(currentAttackCoroutine);
         if (pageSuckCoroutine != null) StopCoroutine(pageSuckCoroutine);
+
         OnDeath?.Invoke();
         base.Die();
-    }
-
-    protected override void Update()
-    {
-        base.Update();
-
-        if (pageDestroyTimer > 0)
-        {
-            pageDestroyTimer -= Time.deltaTime;
-            if (pageDestroyTimer <= 0)
-                pageDestroyCount = 0;
-        }
     }
 
     public void DoWander(bool enraged = false)
@@ -170,106 +163,118 @@ public class BookWyrmBoss : Enemy
         UpdateFacing(wanderTarget);
     }
 
-    // ── ATTACK TRIGGER METHODS ────────────────────────────────────────
-
+    // Attack system
     public void StartChargeAttack(Action onComplete = null)
     {
         if (currentAttackCoroutine != null) StopCoroutine(currentAttackCoroutine);
+
         isAttacking = true;
+        lastAttackTime = Time.time;
+
         currentAttackCoroutine = StartCoroutine(ChargeSequence(() =>
         {
             isAttacking = false;
             IncrementAttackCount();
             onComplete?.Invoke();
         }));
-        lastAttackTime = Time.time;
     }
 
     public void StartProjectileAttack(Action onComplete = null)
     {
         if (currentAttackCoroutine != null) StopCoroutine(currentAttackCoroutine);
+
         isAttacking = true;
+        lastAttackTime = Time.time;
+
         currentAttackCoroutine = StartCoroutine(ProjectileSequence(() =>
         {
             isAttacking = false;
             IncrementAttackCount();
             onComplete?.Invoke();
         }));
-        lastAttackTime = Time.time;
     }
 
     public void StartInkTornado(Action onComplete = null)
     {
         if (currentAttackCoroutine != null) StopCoroutine(currentAttackCoroutine);
+
         isAttacking = true;
+        lastAttackTime = Time.time;
+
         currentAttackCoroutine = StartCoroutine(InkTornadoSequence(() =>
         {
             isAttacking = false;
             IncrementAttackCount();
             onComplete?.Invoke();
         }));
-        lastAttackTime = Time.time;
-    }
-
-    public void StartPageSuck(Action onComplete = null)
-    {
-        if (pageSuckCoroutine != null) StopCoroutine(pageSuckCoroutine);
-        pageSuckCoroutine = StartCoroutine(PageSuckSequence(onComplete));
     }
 
     public void StartRotatingRays(Action onComplete = null)
     {
         if (currentAttackCoroutine != null) StopCoroutine(currentAttackCoroutine);
+
         isAttacking = true;
+        lastAttackTime = Time.time;
+
         currentAttackCoroutine = StartCoroutine(RotatingRaySequence(() =>
         {
             isAttacking = false;
             onComplete?.Invoke();
         }));
-        lastAttackTime = Time.time;
+    }
+
+    public void StartPageSuck(Action onComplete = null)
+    {
+        if (pageSuckCoroutine != null) StopCoroutine(pageSuckCoroutine);
+
+        isPageSucking = true;
+
+        pageSuckCoroutine = StartCoroutine(PageSuckSequence(() =>
+        {
+            isPageSucking = false;
+            onComplete?.Invoke();
+        }));
     }
 
     public void StartAttackWander(float duration, Action onComplete = null)
     {
         if (currentAttackCoroutine != null) StopCoroutine(currentAttackCoroutine);
+
         isAttacking = true;
+        lastAttackTime = Time.time;
+
         currentAttackCoroutine = StartCoroutine(AttackWanderSequence(duration, () =>
         {
             isAttacking = false;
             onComplete?.Invoke();
         }));
-        lastAttackTime = Time.time;
     }
 
-    public void FinishAttackWander()
-    {
-        lastAttackTime = Time.time;
-    }
-
-    // ── STATE MANAGEMENT ──────────────────────────────────────────────
-
+    // State
     public void EnterVulnerable()
     {
         isVulnerable = true;
         isAttacking = false;
+
+        thresholdRetaliationTriggered = false;
         damageTakenInCurrentVulnerableWindow = 0f;
+        vulnerableStartTime = Time.time;
 
         OnVulnerableStart?.Invoke();
+
         if (sr != null)
         {
             sr.DOKill();
             sr.DOColor(Color.yellow, 0.2f);
         }
-
-        if (currentAttackCoroutine != null) StopCoroutine(currentAttackCoroutine);
-        currentAttackCoroutine = StartCoroutine(VulnerableTimer());
     }
 
     public void ExitVulnerable()
     {
         if (!isVulnerable) return;
+
         isVulnerable = false;
-        isAttacking = false;
+        thresholdRetaliationTriggered = false;
 
         if (sr != null)
         {
@@ -277,18 +282,33 @@ public class BookWyrmBoss : Enemy
             sr.DOColor(Color.white, 0.2f);
         }
 
-        // FIX: Stop the VulnerableTimer coroutine instantly to prevent late execution loops
-        if (currentAttackCoroutine != null)
-        {
-            StopCoroutine(currentAttackCoroutine);
-            currentAttackCoroutine = null;
-        }
-
-        // FIX: Clear counters directly inside the break function to solve state machine race conditions
         ClearAttackCounters();
         ResetDamageWindow();
 
         OnVulnerableEnd?.Invoke();
+    }
+
+    public void ExitVulnerableSilently()
+    {
+        isVulnerable = false;
+        thresholdRetaliationTriggered = false;
+
+        if (sr != null)
+        {
+            sr.DOKill();
+            sr.DOColor(Color.white, 0.2f);
+        }
+
+        ClearAttackCounters();
+        ResetDamageWindow();
+    }
+
+    public void FinishAttackWander()
+    {
+        isAttacking = false;
+
+        if (currentAttackCoroutine != null)
+            StopCoroutine(currentAttackCoroutine);
     }
 
     public void ClearAttackCounters()
@@ -304,29 +324,32 @@ public class BookWyrmBoss : Enemy
     public void HealFromPage()
     {
         float heal = data != null ? data.healPerPage : 5f;
+
         currentHealth = Mathf.Clamp(currentHealth + heal, 0, maxHealth);
 
         if (sr != null)
         {
             sr.DOKill();
             sr.DOColor(Color.green, 0.1f)
-                .OnComplete(() => sr.DOColor(isVulnerable ? Color.yellow : Color.white, 0.2f));
+                .OnComplete(() =>
+                    sr.DOColor(isVulnerable ? Color.yellow : Color.white, 0.2f)
+                );
         }
     }
 
     public void RegisterPageDestroyed()
     {
         pageDestroyCount++;
+
         float window = data != null ? data.pageDestroyTrackWindow : 3f;
         pageDestroyTimer = window;
     }
 
-    // ── EVALUATION HELPERS ───────────────────────────────────────────
-
+    // Helpers
     public bool ShouldEnterVulnerable()
     {
         int baseThreshold = data != null ? data.attacksBeforeVulnerable : 3;
-        int threshold = isPhase2 ? (baseThreshold * 2) : baseThreshold;
+        int threshold = isPhase2 ? baseThreshold * 2 : baseThreshold;
 
         return currentAttackCount >= threshold && !isVulnerable;
     }
@@ -336,10 +359,12 @@ public class BookWyrmBoss : Enemy
         if (!IsInPlayArea()) return false;
         if (isAttacking) return false;
         if (isVulnerable) return false;
+        if (isPageSucking) return false;
 
         float cd = isPhase2
             ? (data != null ? data.phase2AttackCooldown : 0.8f)
             : (data != null ? data.attackCooldown : 1.5f);
+
         return Time.time - lastAttackTime >= cd;
     }
 
@@ -360,30 +385,30 @@ public class BookWyrmBoss : Enemy
             float roll = UnityEngine.Random.Range(0f, totalPool);
             return roll < data.p1ChargeWeight ? "Charge" : "Projectile";
         }
-        else
-        {
-            float totalPool = data.p2ChargeWeight + data.p2ProjectileWeight + data.p2InkTornadoWeight + data.p2PageSuckWeight;
-            if (totalPool <= 0f) return "Projectile";
 
-            float roll = UnityEngine.Random.Range(0f, totalPool);
+        float totalPool2 =
+            data.p2ChargeWeight +
+            data.p2ProjectileWeight +
+            data.p2InkTornadoWeight;
 
-            if (roll < data.p2ChargeWeight)
-                return "Charge";
-            if (roll < data.p2ChargeWeight + data.p2ProjectileWeight)
-                return "Projectile";
-            if (roll < data.p2ChargeWeight + data.p2ProjectileWeight + data.p2InkTornadoWeight)
-                return "Tornado";
+        if (totalPool2 <= 0f) return "Projectile";
 
-            return "PageSuck";
-        }
+        float roll2 = UnityEngine.Random.Range(0f, totalPool2);
+
+        if (roll2 < data.p2ChargeWeight) return "Charge";
+        if (roll2 < data.p2ChargeWeight + data.p2ProjectileWeight) return "Projectile";
+
+        return "Tornado";
     }
 
     public bool IsInPlayArea()
     {
         if (LevelManager.Instance == null) return true;
+
         Vector2 pos = transform.position;
         Vector2 min = LevelManager.Instance.playAreaMin;
         Vector2 max = LevelManager.Instance.playAreaMax;
+
         return pos.x >= min.x && pos.x <= max.x &&
                pos.y >= min.y && pos.y <= max.y;
     }
@@ -391,8 +416,9 @@ public class BookWyrmBoss : Enemy
     private void IncrementAttackCount()
     {
         currentAttackCount++;
+
         int baseThreshold = data != null ? data.attacksBeforeVulnerable : 3;
-        int threshold = isPhase2 ? (baseThreshold * 2) : baseThreshold;
+        int threshold = isPhase2 ? baseThreshold * 2 : baseThreshold;
 
         if (currentAttackCount >= threshold)
             OnAttackCountReached?.Invoke();
@@ -401,8 +427,10 @@ public class BookWyrmBoss : Enemy
     private void PickNewWanderTarget()
     {
         if (LevelManager.Instance == null) return;
+
         Vector2 min = LevelManager.Instance.playAreaMin;
         Vector2 max = LevelManager.Instance.playAreaMax;
+
         wanderTarget = new Vector3(
             UnityEngine.Random.Range(min.x, max.x),
             UnityEngine.Random.Range(min.y, max.y),
@@ -410,8 +438,12 @@ public class BookWyrmBoss : Enemy
         );
     }
 
-    // ── SEQUENCES (COROUTINES) ───────────────────────────────────────
+    public void SetAttacking(bool value)
+    {
+        isAttacking = value;
+    }
 
+    // Sequences
     private IEnumerator AttackWanderSequence(float duration, Action onComplete)
     {
         yield return new WaitForSeconds(duration);
@@ -437,25 +469,20 @@ public class BookWyrmBoss : Enemy
         if (warning != null) Destroy(warning);
 
         float chargeSpd = data != null ? data.chargeSpeed : 8f;
-        float chargeDmg = data != null ? data.chargeDamage : 1f;
-        float hitRadius = data != null ? data.chargeHitRadius : 0.6f;
         float elapsed = 0f;
 
         while (elapsed < 0.5f)
         {
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                chargeTarget,
-                chargeSpd * Time.deltaTime
-            );
+            transform.position = Vector3.MoveTowards(transform.position, chargeTarget, chargeSpd * Time.deltaTime);
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            transform.position, hitRadius,
-            LayerMask.GetMask("GremHitbox")
-        );
+        float hitRadius = data != null ? data.chargeHitRadius : 0.6f;
+        float chargeDmg = data != null ? data.chargeDamage : 1f;
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, hitRadius, LayerMask.GetMask("GremHitbox"));
+
         foreach (Collider2D hit in hits)
         {
             Gremurin g = hit.GetComponentInParent<Gremurin>();
@@ -477,10 +504,14 @@ public class BookWyrmBoss : Enemy
         if (projectilePrefab != null && firePoint != null)
         {
             Vector3 dir = (target.transform.position - firePoint.position).normalized;
+
             GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+
             BookWyrmProjectile bwProj = proj.GetComponent<BookWyrmProjectile>();
+
             float projSpd = data != null ? data.projectileSpeed : 5f;
             float projDmg = data != null ? data.projectileDamage : 1f;
+
             bwProj?.Init(dir, projSpd, projDmg);
         }
 
@@ -491,14 +522,17 @@ public class BookWyrmBoss : Enemy
     private IEnumerator RotatingRaySequence(Action onComplete)
     {
         GameObject rays = null;
+
         if (rotatingRayPrefab != null)
         {
             rays = Instantiate(rotatingRayPrefab, transform.position, Quaternion.identity);
             rays.transform.SetParent(transform);
 
             RotatingRay rayScript = rays.GetComponent<RotatingRay>();
+
             float raySpd = data != null ? data.rayRotateSpeed : 60f;
             float disableDur = data != null ? data.cursorDisableDuration : 3f;
+
             rayScript?.Init(raySpd, disableDur);
         }
 
@@ -511,41 +545,51 @@ public class BookWyrmBoss : Enemy
 
     private IEnumerator PageSuckSequence(Action onComplete)
     {
-        isPageSucking = true;
         pageDestroyCount = 0;
         pageDestroyTimer = 0;
 
         float duration = data != null ? data.pageSuckDuration : 8f;
+
         Coroutine spawnSub = StartCoroutine(SpawnPageSuckPages());
 
         yield return new WaitForSeconds(duration);
 
         if (spawnSub != null) StopCoroutine(spawnSub);
-        isPageSucking = false;
+
         pageDestroyCount = 0;
+
         onComplete?.Invoke();
     }
 
     private IEnumerator SpawnPageSuckPages()
     {
-        if (pageSuckPrefab == null || pageSuckSpawnPoints == null || pageSuckSpawnPoints.Length == 0)
+        if (pageSuckPrefab == null ||
+            pageSuckSpawnPoints == null ||
+            pageSuckSpawnPoints.Length == 0)
             yield break;
 
         float interval = data != null ? data.pageSuckSpawnInterval : 0.5f;
         float pageSpd = data != null ? data.pageSuckPageSpeed : 3f;
+
         float elapsed = 0f;
 
         while (isPageSucking)
         {
             elapsed += Time.deltaTime;
+
             if (elapsed >= interval)
             {
                 elapsed = 0f;
-                Transform sp = pageSuckSpawnPoints[UnityEngine.Random.Range(0, pageSuckSpawnPoints.Length)];
+
+                Transform sp =
+                    pageSuckSpawnPoints[UnityEngine.Random.Range(0, pageSuckSpawnPoints.Length)];
+
                 GameObject page = Instantiate(pageSuckPrefab, sp.position, Quaternion.identity);
+
                 PageSuckPage pageScript = page.GetComponent<PageSuckPage>();
                 pageScript?.Init(transform, this, pageSpd);
             }
+
             yield return null;
         }
     }
@@ -555,6 +599,7 @@ public class BookWyrmBoss : Enemy
         if (tornadoPrefab != null)
         {
             GameObject tornado = Instantiate(tornadoPrefab, transform.position, Quaternion.identity);
+
             InkTornado tornadoScript = tornado.GetComponent<InkTornado>();
 
             float expSpd = data != null ? data.tornadoExpandSpeed : 1f;
@@ -563,19 +608,10 @@ public class BookWyrmBoss : Enemy
             float dmg = data != null ? data.tornadoDamage : 0.5f;
 
             tornadoScript?.Init(expSpd, maxRad, dur, dmg);
+
             yield return new WaitForSeconds(dur + 0.5f);
         }
 
         onComplete?.Invoke();
-    }
-    public void SetAttacking(bool value)
-    {
-        isAttacking = value;
-    }
-    private IEnumerator VulnerableTimer()
-    {
-        float dur = data != null ? data.vulnerableDuration : 5f;
-        yield return new WaitForSeconds(dur);
-        if (isVulnerable) ExitVulnerable();
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 public class BookWyrmStateMachine : MonoBehaviour
@@ -19,54 +19,51 @@ public class BookWyrmStateMachine : MonoBehaviour
     public BookWyrmBoss boss;
     public State currentState;
 
+    private float cooldownEnterTime;
+    private bool pendingPhaseShift;
+    private bool retaliationInProgress;
+    private float retaliationStartTime;
+
     private void Start()
     {
-        // Phase transition event
+        // Phase transition (half health)
         boss.OnHalfHealth += () =>
         {
-            if (currentState == State.Vulnerable || currentState == State.VulnerableRetaliation)
+            if (retaliationInProgress)
             {
-                // Force exit vulnerability clean if we phase shift mid-stun
-                boss.ExitVulnerable();
-                boss.ClearAttackCounters();
-                boss.ResetDamageWindow();
+                pendingPhaseShift = true;
             }
-
-            boss.StartPageSuck();
-
-            // Allow the state machine/tree to resolve the correct phase state dynamically
-            TransitionTo(ResolveNextState());
+            else if (currentState == State.Vulnerable)
+            {
+                pendingPhaseShift = true;
+                boss.ExitVulnerableSilently();
+                TransitionTo(State.AttackCooldown);
+            }
+            else
+            {
+                ApplyPhaseShift();
+            }
         };
 
-        boss.OnDeath += () => enabled = false;
-
-        // Triggers naturally when attack counter maxes out
-        boss.OnAttackCountReached += () =>
-        {
-            if (currentState != State.Vulnerable && currentState != State.VulnerableRetaliation)
-                TransitionTo(State.Vulnerable);
-        };
-
-        // Triggers immediately when the 10 damage cap is reached inside the damage window
+        // Damage threshold reached during vulnerable state
         boss.OnVulnerableDamageThresholdReached += () =>
         {
-            if (currentState == State.Vulnerable)
+            if (currentState == State.Vulnerable && !retaliationInProgress)
             {
                 TransitionTo(State.VulnerableRetaliation);
             }
         };
 
-        // The boss's internal timer ended naturally without the player hitting the damage threshold
+        // Natural vulnerable end
         boss.OnVulnerableEnd += () =>
         {
-            // Only process natural timeouts if we are actively in the Vulnerable state.
             if (currentState == State.Vulnerable)
             {
-                boss.ClearAttackCounters();
-                boss.ResetDamageWindow();
-                TransitionTo(ResolveNextState());
+                TransitionTo(State.AttackCooldown);
             }
         };
+
+        boss.OnDeath += () => enabled = false;
 
         TransitionTo(State.Wander);
     }
@@ -86,7 +83,6 @@ public class BookWyrmStateMachine : MonoBehaviour
                 break;
 
             case State.AttackWander:
-                boss.DoWander(boss.isPhase2);
                 break;
 
             case State.AttackCooldown:
@@ -94,13 +90,24 @@ public class BookWyrmStateMachine : MonoBehaviour
                 break;
 
             case State.Vulnerable:
-                // Stand completely still while vulnerable
+                float vulnDuration = boss.data != null ? boss.data.vulnerableDuration : 5f;
+
+                if (vulnDuration <= 0f)
+                {
+                    vulnDuration = 5f;
+                }
+
+                if (Time.time >= boss.vulnerableStartTime + vulnDuration)
+                {
+                    boss.ExitVulnerable();
+                }
                 break;
 
             case State.VulnerableRetaliation:
-                if (boss.isPhase2)
+                if (Time.time - retaliationStartTime > 15f)
                 {
-                    boss.DoWander(true);
+                    retaliationInProgress = false;
+                    TransitionTo(State.AttackCooldown);
                 }
                 break;
         }
@@ -136,22 +143,32 @@ public class BookWyrmStateMachine : MonoBehaviour
 
     private void UpdateCooldown()
     {
-        // FIX: Instead of forcing State.Wander directly, resolve the next logical state
-        // This ensures decorator rules can be calculated cleanly.
+        if (boss.ShouldEnterVulnerable())
+        {
+            TransitionTo(State.Vulnerable);
+            return;
+        }
+
         if (boss.AttackCooldownReady())
+        {
             TransitionTo(ResolveNextState());
+            return;
+        }
+
+        if (Time.time - cooldownEnterTime > 3f)
+        {
+            boss.SetAttacking(false);
+            retaliationInProgress = false;
+            TransitionTo(boss.isPhase2 ? State.EnragedWander : State.Wander);
+        }
     }
 
     private State ResolveNextState()
     {
-        // If your Behavior Tree is managing decorators, always check if a special override is needed first
         if (boss.ShouldEnterVulnerable())
-        {
             return State.Vulnerable;
-        }
 
         float attackWanderRoll = UnityEngine.Random.value;
-
         if (attackWanderRoll < 0.2f)
             return State.AttackWander;
 
@@ -159,14 +176,10 @@ public class BookWyrmStateMachine : MonoBehaviour
 
         switch (chosenAttack)
         {
-            case "Charge":
-                return State.Charging;
-
-            case "Projectile":
-                return State.ProjectileAttack;
-
-            case "Tornado":
-                return State.InkTornado;
+            case "Charge": return State.Charging;
+            case "Projectile": return State.ProjectileAttack;
+            case "Tornado": return State.InkTornado;
+            case "PageSuck": return State.Charging;
 
             default:
                 return boss.isPhase2 ? State.EnragedWander : State.Wander;
@@ -175,9 +188,22 @@ public class BookWyrmStateMachine : MonoBehaviour
 
     private void TransitionTo(State next)
     {
-        OnExitState(currentState);
+        State oldState = currentState;
         currentState = next;
+
+        OnExitState(oldState);
         OnEnterState(currentState);
+
+        if (next == State.AttackCooldown)
+        {
+            cooldownEnterTime = Time.time;
+
+            if (pendingPhaseShift)
+            {
+                pendingPhaseShift = false;
+                ApplyPhaseShift();
+            }
+        }
     }
 
     private void OnEnterState(State state)
@@ -189,45 +215,33 @@ public class BookWyrmStateMachine : MonoBehaviour
                 break;
 
             case State.Charging:
-                boss.StartChargeAttack(() =>
-                {
-                    TransitionTo(State.AttackCooldown);
-                });
+                boss.StartChargeAttack(() => OnAttackComplete());
                 break;
 
             case State.ProjectileAttack:
-                boss.StartProjectileAttack(() =>
-                {
-                    TransitionTo(State.AttackCooldown);
-                });
+                boss.StartProjectileAttack(() => OnAttackComplete());
                 break;
 
             case State.InkTornado:
-                boss.StartInkTornado(() =>
-                {
-                    TransitionTo(State.AttackCooldown);
-                });
+                boss.StartInkTornado(() => OnAttackComplete());
                 break;
 
             case State.AttackWander:
-                boss.StartAttackWander(1.5f, () =>
-                {
-                    TransitionTo(State.AttackCooldown);
-                });
+                boss.StartAttackWander(1.5f, () => TransitionTo(State.AttackCooldown));
                 break;
 
             case State.VulnerableRetaliation:
-                // Clean up vulnerable state
-                boss.ExitVulnerable();
+                retaliationInProgress = true;
+                retaliationStartTime = Time.time;
 
-                // Explicitly lock the state machine
+                boss.ExitVulnerableSilently();
                 boss.SetAttacking(true);
 
                 if (boss.isPhase2)
                 {
                     boss.StartPageSuck(() =>
                     {
-                        boss.SetAttacking(false);
+                        retaliationInProgress = false;
                         TransitionTo(State.AttackCooldown);
                     });
                 }
@@ -235,7 +249,7 @@ public class BookWyrmStateMachine : MonoBehaviour
                 {
                     boss.StartRotatingRays(() =>
                     {
-                        boss.SetAttacking(false);
+                        retaliationInProgress = false;
                         TransitionTo(State.AttackCooldown);
                     });
                 }
@@ -245,5 +259,37 @@ public class BookWyrmStateMachine : MonoBehaviour
 
     private void OnExitState(State state)
     {
+        switch (state)
+        {
+            case State.VulnerableRetaliation:
+            case State.Charging:
+            case State.ProjectileAttack:
+            case State.InkTornado:
+            case State.AttackWander:
+                boss.SetAttacking(false);
+                break;
+        }
+    }
+
+    private void OnAttackComplete()
+    {
+        if (currentState == State.Vulnerable || currentState == State.VulnerableRetaliation)
+            return;
+
+        if (boss.ShouldEnterVulnerable())
+        {
+            TransitionTo(State.Vulnerable);
+            return;
+        }
+
+        TransitionTo(State.AttackCooldown);
+    }
+
+    private void ApplyPhaseShift()
+    {
+        boss.StartPageSuck(() =>
+        {
+            TransitionTo(ResolveNextState());
+        });
     }
 }

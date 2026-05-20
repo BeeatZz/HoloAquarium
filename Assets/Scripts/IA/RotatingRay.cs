@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
 using System.Collections;
 using DG.Tweening;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class RotatingRay : MonoBehaviour
 {
@@ -9,11 +9,15 @@ public class RotatingRay : MonoBehaviour
     public SpriteRenderer[] warningArms;
 
     public float warningDuration = 1.5f;
+
     public Color warningColor = new Color(1f, 0f, 0f, 0.4f);
     public Color activeColor = new Color(1f, 0.8f, 0f, 0.9f);
 
+    public LayerMask hazardLayer;
+
     private float rotateSpeed;
     private float cursorDisableDuration;
+
     private bool active;
     private bool cursorDisabled;
     private bool rotating;
@@ -22,28 +26,57 @@ public class RotatingRay : MonoBehaviour
     {
         rotateSpeed = speed;
         cursorDisableDuration = disableDuration;
+
         StartCoroutine(RaySequence());
     }
 
     private IEnumerator RaySequence()
     {
         if (warningArms != null)
+        {
             foreach (SpriteRenderer arm in warningArms)
-                if (arm != null) arm.color = warningColor;
+            {
+                if (arm != null)
+                {
+                    arm.color = warningColor;
+                }
+            }
+        }
 
         if (rayArms != null)
+        {
             foreach (SpriteRenderer arm in rayArms)
-                if (arm != null) arm.color = new Color(1f, 0.8f, 0f, 0f);
+            {
+                if (arm != null)
+                {
+                    arm.color = new Color(1f, 0.8f, 0f, 0f);
+                }
+            }
+        }
 
         yield return new WaitForSeconds(warningDuration);
 
         if (warningArms != null)
+        {
             foreach (SpriteRenderer arm in warningArms)
-                if (arm != null) arm.DOFade(0f, 0.3f);
+            {
+                if (arm != null)
+                {
+                    arm.DOFade(0f, 0.3f);
+                }
+            }
+        }
 
         if (rayArms != null)
+        {
             foreach (SpriteRenderer arm in rayArms)
-                if (arm != null) arm.DOFade(0.9f, 0.3f);
+            {
+                if (arm != null)
+                {
+                    arm.DOFade(activeColor.a, 0.3f);
+                }
+            }
+        }
 
         rotating = true;
         active = true;
@@ -51,35 +84,36 @@ public class RotatingRay : MonoBehaviour
 
     private void Update()
     {
-        if (!rotating) return;
+        if (!rotating)
+        {
+            return;
+        }
 
-        transform.Rotate(0, 0, rotateSpeed * Time.deltaTime);
+        transform.Rotate(0f, 0f, rotateSpeed * Time.deltaTime);
+
         CheckCursorHit();
     }
 
     private void CheckCursorHit()
     {
-        if (cursorDisabled) return;
+        if (cursorDisabled || !active)
+        {
+            return;
+        }
 
         Vector2 mouseScreen = Mouse.current.position.ReadValue();
         Vector2 worldPos = Camera.main.ScreenToWorldPoint(mouseScreen);
 
-        if (rayArms == null) return;
+        RaycastHit2D hit = Physics2D.Raycast(
+            worldPos,
+            Vector2.zero,
+            0f,
+            hazardLayer
+        );
 
-        foreach (SpriteRenderer arm in rayArms)
+        if (hit.collider != null)
         {
-            if (arm == null) continue;
-            Vector2 rayDir = arm.transform.up.normalized;
-            Vector2 toMouse = worldPos - (Vector2)transform.position;
-
-            float dot = Vector2.Dot(toMouse.normalized, rayDir);
-            float dist = toMouse.magnitude;
-
-            if (dot > 0.95f && dist < 4f)
-            {
-                StartCoroutine(DisableCursor());
-                return;
-            }
+            StartCoroutine(DisableCursor());
         }
     }
 
@@ -88,14 +122,18 @@ public class RotatingRay : MonoBehaviour
         cursorDisabled = true;
 
         if (PlayerInput.Instance != null)
+        {
             PlayerInput.Instance.enabled = false;
+        }
 
         CursorManager.Instance?.SetDisabled(true);
 
         yield return new WaitForSeconds(cursorDisableDuration);
 
         if (PlayerInput.Instance != null)
+        {
             PlayerInput.Instance.enabled = true;
+        }
 
         CursorManager.Instance?.SetDisabled(false);
 
@@ -105,7 +143,9 @@ public class RotatingRay : MonoBehaviour
     private void OnDestroy()
     {
         if (PlayerInput.Instance != null)
+        {
             PlayerInput.Instance.enabled = true;
+        }
 
         CursorManager.Instance?.SetDisabled(false);
     }
