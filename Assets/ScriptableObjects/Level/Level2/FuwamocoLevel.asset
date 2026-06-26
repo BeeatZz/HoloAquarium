@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Fuwamoco Level
   sceneName: FuwamocoLevel
   thumbnail: {fileID: 0}
-  gremReward: {fileID: 0}
+  gremReward: {fileID: 11400000, guid: b04ae1e24717e6d408e11fc98fa5a0ce, type: 2}
   unlockType: 1
   previousLevelId: 0
   requiredTotalStars: 0

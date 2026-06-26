@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using DG.Tweening;
 
 public class LevelCompleteUI : MonoBehaviour
@@ -33,6 +34,7 @@ public class LevelCompleteUI : MonoBehaviour
     public Button menuButton;
 
     private string nextLevelSceneName;
+    private string nextLevelId;
     private bool claimPressed;
 
     private void Awake()
@@ -64,18 +66,36 @@ public class LevelCompleteUI : MonoBehaviour
         if (LevelManager.Instance != null)
         {
             LevelManager.Instance.OnLevelComplete += OnLevelComplete;
-            PopulateStarConditions();
+            // Draw initial list on frame one
+            UpdateObjectivesTextList();
         }
     }
 
-    private void PopulateStarConditions()
+    /// <summary>
+    /// Replaces PopulateStarConditions. Re-builds the TMP text, wrapping completed 
+    /// items in rich text coloring tags if requested.
+    /// </summary>
+    private void UpdateObjectivesTextList(bool highlightCompleted = false)
     {
         if (starConditionsText == null || LevelManager.Instance == null) return;
 
         StarObjective[] objectives = LevelManager.Instance.GetComponentsInChildren<StarObjective>();
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        StringBuilder sb = new StringBuilder();
+
         for (int i = 0; i < objectives.Length; i++)
-            sb.AppendLine($"{i + 1} - {objectives[i].label}");
+        {
+            if (objectives[i] == null) continue;
+
+            // Check if we should color it green
+            if (highlightCompleted && objectives[i].Evaluate())
+            {
+                sb.AppendLine($"<color=green>{i + 1} - {objectives[i].label} (Done!)</color>");
+            }
+            else
+            {
+                sb.AppendLine($"{i + 1} - {objectives[i].label}");
+            }
+        }
 
         starConditionsText.text = sb.ToString().TrimEnd();
     }
@@ -107,36 +127,47 @@ public class LevelCompleteUI : MonoBehaviour
         Time.timeScale = 0f;
         panel.SetActive(true);
 
+        StarObjective[] objectives = LevelManager.Instance.GetComponentsInChildren<StarObjective>();
+
+        // Turn all stars off initially
         foreach (GameObject star in starObjects) if (star != null) star.SetActive(false);
 
+        // Evaluate each specific star index against its corresponding objective
         for (int i = 0; i < starObjects.Length; i++)
         {
-            if (i < stars && starObjects[i] != null)
+            if (i < objectives.Length && objectives[i] != null)
             {
-                yield return new WaitForSecondsRealtime(0.5f);
-                starObjects[i].SetActive(true);
-                starObjects[i].transform
-                    .DOPunchScale(Vector3.one * 0.5f, 0.3f, 5, 0.5f)
-                    .SetUpdate(true);
+                if (objectives[i].Evaluate() && starObjects[i] != null)
+                {
+                    yield return new WaitForSecondsRealtime(0.4f);
+
+                    // Pop the golden star graphic onto the UI
+                    starObjects[i].SetActive(true);
+                    starObjects[i].transform
+                        .DOPunchScale(Vector3.one * 0.5f, 0.3f, 5, 0.5f)
+                        .SetUpdate(true);
+                }
             }
         }
 
+        // FIX: Instantly recalculate the objectives list text, turning completed items green!
+        UpdateObjectivesTextList(highlightCompleted: true);
+
+        // Save progress using total calculated stars
         SaveManager.Instance.CompleteLevel(currentLevelId, stars);
 
+        // Campaign progress parsing...
         string campaignId = LevelLoader.PendingCampaignId;
-
         if (levelRegistry == null)
         {
-            Debug.LogError("LevelCompleteUI: LevelRegistry is missing! Assign it in the Inspector.");
+            Debug.LogError("LevelCompleteUI: LevelRegistry is missing!");
         }
         else if (!string.IsNullOrEmpty(campaignId))
         {
             CampaignDefinition campaign = levelRegistry.GetCampaign(campaignId);
-
             if (campaign != null)
             {
                 int currentIndex = campaign.levels.FindIndex(l => l != null && l.levelId == currentLevelId);
-
                 if (currentIndex >= 0 && currentIndex < campaign.levels.Count - 1)
                 {
                     LevelDefinition nextLevel = campaign.levels[currentIndex + 1];
@@ -144,11 +175,16 @@ public class LevelCompleteUI : MonoBehaviour
                     {
                         SaveManager.Instance.UpdateCampaignProgress(campaignId, nextLevel.levelId);
                         nextLevelSceneName = nextLevel.sceneName;
+                        nextLevelId = nextLevel.levelId;
+
+                        LevelLoader.PendingLevelId = nextLevelId;
+                        LevelLoader.PendingCampaignId = campaignId;
                     }
                 }
             }
         }
 
+        // Handle Gremurin Reward Unlock sequences without soft-locking
         if (levelRegistry != null)
         {
             LevelDefinition levelDef = levelRegistry.GetLevel(currentLevelId);
@@ -169,7 +205,6 @@ public class LevelCompleteUI : MonoBehaviour
 
                     gremUnlockPanel.SetActive(true);
                     gremUnlockEgg.Init(levelDef.gremReward);
-                    yield break;
                 }
             }
         }
@@ -199,8 +234,22 @@ public class LevelCompleteUI : MonoBehaviour
         cg.blocksRaycasts = interactable;
     }
 
-    private void OnReplay() { Time.timeScale = 1f; SceneFader.Instance.FadeToScene(SceneManager.GetActiveScene().name); }
-    private void OnContinue() { if (!string.IsNullOrEmpty(nextLevelSceneName)) { Time.timeScale = 1f; SceneFader.Instance.FadeToScene(nextLevelSceneName); } }
+    private void OnReplay()
+    {
+        Time.timeScale = 1f;
+        LevelLoader.PendingLevelId = currentLevelId;
+        SceneFader.Instance.FadeToScene(SceneManager.GetActiveScene().name);
+    }
+    private void OnContinue()
+    {
+        if (!string.IsNullOrEmpty(nextLevelSceneName))
+        {
+            Time.timeScale = 1f;
+            LevelLoader.PendingLevelId = nextLevelId;
+            LevelLoader.PendingCampaignId = LevelLoader.PendingCampaignId;
+            SceneFader.Instance.FadeToScene(nextLevelSceneName);
+        }
+    }
     private void OnMenu() { Time.timeScale = 1f; SceneFader.Instance.FadeToScene("CampaignSelect"); }
 
     private void OnDestroy() { if (LevelManager.Instance != null) LevelManager.Instance.OnLevelComplete -= OnLevelComplete; }

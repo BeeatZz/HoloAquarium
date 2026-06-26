@@ -2001,7 +2001,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f8b8b9730d761046b25be7de1497176, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  punchDamage: 10
+  punchDamage: 5
   holdThreshold: 0.1
   dragFollowSpeed: 12
   dragScale: 1.25

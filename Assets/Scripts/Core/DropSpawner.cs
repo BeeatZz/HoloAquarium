@@ -43,10 +43,11 @@ public class DropSpawner : MonoBehaviour
         );
     }
 
-    private void ResetTimer()
+    public void ResetTimer()
     {
-        if (gremurin.data == null) return;
-        outputTimer = gremurin.data.currencyOutputRate;
-    }
+        if (gremurin == null) return;
 
+        // Pulls dynamically from the base script, adapting instantly to changes
+        outputTimer = gremurin.CurrentCurrencyOutputRate;
+    }
 }

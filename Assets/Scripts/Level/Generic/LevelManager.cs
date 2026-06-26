@@ -222,7 +222,18 @@ public class LevelManager : MonoBehaviour
 
         return Mathf.Max(1, stars);
     }
+    public float currentCost
+    {
+        get
+        {
+            if (levelGoal == null || levelGoal.purchaseTiers == null) return 0f;
 
+            if (currentTierIndex >= levelGoal.purchaseTiers.Count)
+                return float.MaxValue;
+
+            return levelGoal.purchaseTiers[currentTierIndex].cost;
+        }
+    }
     private void OnDestroy()
     {
         if (CurrencyManager.Instance != null)

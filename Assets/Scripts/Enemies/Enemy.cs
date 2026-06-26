@@ -3,7 +3,6 @@ using DG.Tweening;
 
 public class Enemy : MonoBehaviour
 {
-
     [Header("Settings")]
     public bool facingLeftByDefault = false;
 
@@ -24,12 +23,18 @@ public class Enemy : MonoBehaviour
     protected Transform visual;
     protected SpriteRenderer sr;
 
+    // Animation reference
+    protected Animator animator;
+
     protected virtual void Start()
     {
         currentHealth = maxHealth;
         attackTimer = attackCooldown;
 
         sr = GetComponent<SpriteRenderer>();
+
+        // Looks for the Animator on this GameObject or its visual child
+        animator = GetComponentInChildren<Animator>();
 
         transform.localScale = Vector3.zero;
         transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
@@ -53,9 +58,18 @@ public class Enemy : MonoBehaviour
 
     protected virtual void MoveTowardTarget()
     {
-        if (targetGrem == null) return;
+        if (targetGrem == null)
+        {
+            // If there's no target, stop the moving animation
+            UpdateMovingAnimation(false);
+            return;
+        }
+
         transform.position = Vector3.MoveTowards(transform.position, targetGrem.transform.position, moveSpeed * Time.deltaTime);
         UpdateFacing(targetGrem.transform.position);
+
+        // We are moving toward a target, play moving animation
+        UpdateMovingAnimation(true);
     }
 
     protected virtual void TryAttack()
@@ -90,6 +104,10 @@ public class Enemy : MonoBehaviour
             BossHealthBar.Instance.TakeDamage(bossDamageValue);
         }
         isDead = true;
+
+        // Stop moving animation immediately upon death
+        UpdateMovingAnimation(false);
+
         transform.DOKill();
         transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack).OnComplete(() => Destroy(gameObject));
     }
@@ -103,6 +121,14 @@ public class Enemy : MonoBehaviour
         {
             bool shouldFlip = diff < 0;
             sr.flipX = facingLeftByDefault ? !shouldFlip : shouldFlip;
+        }
+    }
+
+    protected void UpdateMovingAnimation(bool isMoving)
+    {
+        if (animator != null)
+        {
+            animator.SetBool("IsMoving", isMoving);
         }
     }
 

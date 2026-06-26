@@ -46,11 +46,29 @@ public class ShopPopup : MonoBehaviour
 
     private void PopulateShop()
     {
+        // 1. Clear old UI elements
         foreach (Transform child in itemContainer)
             Destroy(child.gameObject);
 
+        // 2. Get the list of currently unlocked Grem names from the SaveManager
+        SaveData currentSave = SaveManager.Instance?.GetSaveData();
+        List<string> unlockedGremsList = currentSave != null ? currentSave.unlockedGrems : new List<string>();
+
+        // 3. Loop through and instantiate items
         foreach (ShopItem item in availableGrems)
         {
+            if (item.gremData == null) continue;
+
+            // Check if this specific item is allowed to bypass the unlock system
+            bool isBasicGrem = item.isAlwaysUnlocked;
+            bool isUnlockedInSave = unlockedGremsList.Contains(item.gremData.gremName);
+
+            // If it's neither always unlocked nor found in the save file, skip it!
+            if (!isBasicGrem && !isUnlockedInSave)
+            {
+                continue;
+            }
+
             GameObject entry = Instantiate(itemTemplate, itemContainer);
             entry.SetActive(true);
 
@@ -73,7 +91,7 @@ public class ShopPopup : MonoBehaviour
             {
                 ShopItem captured = item;
                 buyBtn.onClick.AddListener(() => OnBuyGrem(captured));
-            }   
+            }
         }
     }
 
@@ -91,4 +109,6 @@ public class ShopItem
 {
     public GremData gremData;
     public float cost;
+    [Tooltip("If checked, this Grem ignores save file unlocking and is always visible in the shop.")]
+    public bool isAlwaysUnlocked; // <-- Check this box for your basic Grem in the Inspector!
 }

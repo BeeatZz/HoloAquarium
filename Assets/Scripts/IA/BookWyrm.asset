@@ -43,6 +43,6 @@ MonoBehaviour:
   p1ChargeWeight: 50
   p1ProjectileWeight: 50
   p2ChargeWeight: 40
-  p2ProjectileWeight: 20
-  p2InkTornadoWeight: 20
+  p2ProjectileWeight: 30
+  p2InkTornadoWeight: 10
   p2PageSuckWeight: 30
