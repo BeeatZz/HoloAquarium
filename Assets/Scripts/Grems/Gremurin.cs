@@ -66,6 +66,9 @@ public class Gremurin : MonoBehaviour
         moveSpeed = data.moveSpeed;
 
         ScheduleNextWander();
+
+        // --- PLAY SPAWN SOUND ---
+        data.audioPack?.PlaySpawn();
     }
 
     protected virtual void Update()
@@ -136,6 +139,7 @@ public class Gremurin : MonoBehaviour
         {
             isMoving = true;
 
+            // Charmed movement speed adjustment preserved
             Vector3 newPos = Vector3.MoveTowards(transform.position, charmTarget.transform.position, (moveSpeed * 0.5f) * Time.deltaTime);
             transform.position = LevelManager.Instance.ClampToPlayArea(newPos);
             UpdateFacing(charmTarget.transform.position);
@@ -144,6 +148,9 @@ public class Gremurin : MonoBehaviour
             {
                 charmTarget.TakeDamage(2f);
                 if (animator != null) animator.SetTrigger("Attack");
+
+                // --- PLAY CHARM ATTACK CRY ---
+                data.audioPack?.PlayAttack();
             }
         }
         else
@@ -191,6 +198,9 @@ public class Gremurin : MonoBehaviour
         if (isDead || Time.time < lastDamageTime + damageCooldown) return;
         lastDamageTime = Time.time;
         currentHealth -= amount;
+
+        // --- PLAY HURT SOUND ---
+        data.audioPack?.PlayHit();
 
         if (sr != null)
         {
@@ -277,11 +287,21 @@ public class Gremurin : MonoBehaviour
         ScheduleNextWander();
     }
 
-    public virtual void Feed(float amt) => currentHunger = Mathf.Clamp(currentHunger + amt, 0, data.maxHunger);
+    public virtual void Feed(float amt)
+    {
+        currentHunger = Mathf.Clamp(currentHunger + amt, 0, data.maxHunger);
+
+        // --- PLAY EAT SOUND PACK ---
+        data.audioPack?.PlayHit(); // Or add a specialized audio method if needed!
+    }
 
     protected virtual void Die()
     {
         isDead = true;
+
+        // --- PLAY DEATH CRY ---
+        data.audioPack?.PlayDeath();
+
         if (animator != null) animator.SetBool("IsMoving", false);
         if (LevelManager.Instance != null) LevelManager.Instance.RegisterGremDeath();
         UnityEngine.Object.Destroy(gameObject);

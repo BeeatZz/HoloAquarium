@@ -90,6 +90,10 @@ public class NoveliteGrem : Gremurin
         {
             currentClickCount++;
             transform.DOPunchScale(Vector3.one * 0.1f, 0.1f);
+
+            // --- PLAY SPAM CLICK VARIATION SOUND ---
+            data.audioPack?.PlayAttack();
+
             if (currentClickCount >= requiredClicks) TriggerAttack();
         }
     }
@@ -103,8 +107,11 @@ public class NoveliteGrem : Gremurin
         // Attack Delay
         DOVirtual.DelayedCall(explosionDelay, () => {
             // Explosion Logic
-            // Inside NoveliteGrem.cs -> TriggerAttack()
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
+
+            // --- PLAY MASSIVE SPECIAL EXPLOSION SOUND ---
+            data.audioPack?.PlaySpecial();
+
             foreach (var hit in hits)
             {
                 if (hit.gameObject == this.gameObject) continue;
