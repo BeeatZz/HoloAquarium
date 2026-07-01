@@ -33,6 +33,9 @@ public class GremData : ScriptableObject
 
     [Header("Role")]
     public GremRole role;
+
+    [Header("Audio Profile")]
+    public AudioPack audioPack;
 }
 
 [System.Serializable]
