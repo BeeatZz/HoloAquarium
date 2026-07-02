@@ -205,7 +205,7 @@ public class LevelManager : MonoBehaviour
         CurrencyManager.Instance.OnCurrencyCollected -= OnCurrencyCollectedHandler;
 
         int stars = EvaluateStars();
-        Debug.Log($"Level Complete — Stars: {stars}, Deaths: {gremDeathCount}, Time: {elapsedTime:F1}s");
+        Debug.Log($"Level Complete  Stars: {stars}, Deaths: {gremDeathCount}, Time: {elapsedTime:F1}s");
 
         OnLevelComplete?.Invoke();
     }

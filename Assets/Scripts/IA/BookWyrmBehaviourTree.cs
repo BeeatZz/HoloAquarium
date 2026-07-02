@@ -87,7 +87,7 @@ public class BookWyrmBehaviorTree : MonoBehaviour
             return BTResult.Success;
         });
 
-        // Attack nodes
+        
 
         BTNode charge = new BTAction("Charge", () =>
         {
@@ -134,7 +134,7 @@ public class BookWyrmBehaviorTree : MonoBehaviour
             return BTResult.Running;
         });
 
-        // Attack wandering phase between attacks
+        
 
         float attackWanderTimer = 0f;
 
@@ -162,7 +162,7 @@ public class BookWyrmBehaviorTree : MonoBehaviour
             return BTResult.Success;
         });
 
-        // Vulnerable entry sequence
+        
 
         BTNode enterVulnerableSequence = new BTSequence(
             new List<BTNode>
@@ -172,7 +172,7 @@ public class BookWyrmBehaviorTree : MonoBehaviour
             }
         );
 
-        // Vulnerable damage reaction logic
+        
 
         BTNode vulnerableBranchWithDamageReactor = new BTReactor(
             new BTAction("HelplessVulnerableIdle", () =>
@@ -207,7 +207,7 @@ public class BookWyrmBehaviorTree : MonoBehaviour
             () => boss.thresholdRetaliationTriggered || !boss.isVulnerable
         );
 
-        // Phase 1 attack selector
+        
 
         BTNode phase1Attacks = new BTAction("Phase1Selector", () =>
         {
@@ -247,7 +247,7 @@ public class BookWyrmBehaviorTree : MonoBehaviour
             return activePhase1Attack.Tick();
         });
 
-        // Phase 2 attack selector
+        
 
         BTNode phase2Attacks = new BTAction("Phase2Selector", () =>
         {
@@ -295,7 +295,7 @@ public class BookWyrmBehaviorTree : MonoBehaviour
             return activePhase2Attack.Tick();
         });
 
-        // Vulnerable branch
+        
 
         BTNode vulnerableBranch = new BTSequence(
             new List<BTNode>
@@ -305,7 +305,7 @@ public class BookWyrmBehaviorTree : MonoBehaviour
             }
         );
 
-        // Root behavior tree
+        
 
         return new BTSelector(
             new List<BTNode>

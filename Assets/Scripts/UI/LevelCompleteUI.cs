@@ -29,13 +29,13 @@ public class LevelCompleteUI : MonoBehaviour
 
     [Header("Song Unlock")]
     public GameObject newSongUnlockPanel;
-    public TextMeshProUGUI newSongUnlockTitleText; // always says "New song unlocked!"
-    public TextMeshProUGUI newSongUnlockNameText;  // the track's name
-    public Image newSongUnlockImage;                // track's cover art
+    public TextMeshProUGUI newSongUnlockTitleText; 
+    public TextMeshProUGUI newSongUnlockNameText;  
+    public Image newSongUnlockImage;                
 
     [Header("Shared Reveal Continue Button")]
-    public Button sharedRevealButton;               // reused for claim / return
-    public TextMeshProUGUI sharedRevealButtonLabel;  // labels updated dynamically
+    public Button sharedRevealButton;               
+    public TextMeshProUGUI sharedRevealButtonLabel;  
 
     [Header("Buttons")]
     public Button replayButton;
@@ -159,7 +159,7 @@ public class LevelCompleteUI : MonoBehaviour
 
         foreach (GameObject star in starObjects) if (star != null) star.SetActive(false);
 
-        // STEP 1: Stars pop up sequentially
+        
         for (int i = 0; i < starObjects.Length; i++)
         {
             if (i < objectives.Length && objectives[i] != null)
@@ -176,12 +176,12 @@ public class LevelCompleteUI : MonoBehaviour
             }
         }
 
-        yield return new WaitForSecondsRealtime(0.3f); // Wait for animations
+        yield return new WaitForSecondsRealtime(0.3f); 
 
         UpdateObjectivesTextList(highlightCompleted: true);
         SaveManager.Instance.CompleteLevel(currentLevelId, stars);
 
-        // Registry configuration 
+        
         string campaignId = LevelLoader.PendingCampaignId;
         if (levelRegistry == null)
         {
@@ -194,11 +194,11 @@ public class LevelCompleteUI : MonoBehaviour
             {
                 int currentIndex = campaign.levels.FindIndex(l => l != null && l.levelId == currentLevelId);
 
-                // CHECK: If this is the last level in the campaign
+                
                 if (currentIndex == campaign.levels.Count - 1)
                 {
                     nextLevelSceneName = "MainMenu";
-                    nextLevelId = ""; // Exiting campaign tracker parameters
+                    nextLevelId = ""; 
                 }
                 else if (currentIndex >= 0 && currentIndex < campaign.levels.Count - 1)
                 {
@@ -225,38 +225,38 @@ public class LevelCompleteUI : MonoBehaviour
             && !SaveManager.Instance.GetSaveData().IsGremUnlocked(levelDef.gremReward.gremName);
 
 
-        // --- LINEAR FLOW ---
+        
 
-        // 1. Stars done -> Prompt first Claim Reward
+        
         yield return StartCoroutine(WaitForSharedReveal("Claim Reward"));
 
-        // 2. Song Unlock Sequence
+        
         if (hasTrackReward)
         {
             SaveManager.Instance.UnlockTrack(levelDef.trackReward.trackName);
             yield return StartCoroutine(RevealSongUnlock(levelDef.trackReward));
 
-            // Once song animation finishes -> Show claim reward button again
+            
             yield return StartCoroutine(WaitForSharedReveal("Claim Reward"));
             newSongUnlockPanel.SetActive(false);
         }
 
-        // 3. Grem Unlock Sequence
+        
         if (hasGremReward)
         {
             SaveManager.Instance.UnlockGrem(levelDef.gremReward.gremName);
             gremUnlockPanel.SetActive(true);
             gremUnlockEgg.Init(levelDef.gremReward);
 
-            // Wait until egg hatches and flavor text animation finishes completely
+            
             yield return StartCoroutine(WaitForFlavorTextComplete());
 
-            // Flavor text is ready -> show claim reward button labeled "Return"
+            
             yield return StartCoroutine(WaitForSharedReveal("Return"));
             gremUnlockPanel.SetActive(false);
         }
 
-        // 4. Final step -> Expose the navigation setup (replay/continue/menu buttons)
+        
         if (sharedRevealButton != null) sharedRevealButton.gameObject.SetActive(false);
 
         SetButtonsInteractable(true);
@@ -284,12 +284,12 @@ public class LevelCompleteUI : MonoBehaviour
         if (newSongUnlockNameText != null)
             newSongUnlockNameText.transform.DOPunchScale(Vector3.one * 0.3f, 0.3f, 5, 0.5f).SetUpdate(true);
 
-        yield return new WaitForSecondsRealtime(0.3f); // let punch clean up
+        yield return new WaitForSecondsRealtime(0.3f); 
     }
 
     private IEnumerator WaitForFlavorTextComplete()
     {
-        // Wait gracefully for the safe completion trigger built into the Egg component
+        
         yield return new WaitUntil(() => gremUnlockEgg.FlavorTextDone);
     }
 

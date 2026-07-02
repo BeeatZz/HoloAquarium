@@ -163,7 +163,7 @@ public class BookWyrmBoss : Enemy
         UpdateFacing(wanderTarget);
     }
 
-    // Attack system
+    
     public void StartChargeAttack(Action onComplete = null)
     {
         if (currentAttackCoroutine != null) StopCoroutine(currentAttackCoroutine);
@@ -250,7 +250,7 @@ public class BookWyrmBoss : Enemy
         }));
     }
 
-    // State
+    
     public void EnterVulnerable()
     {
         isVulnerable = true;
@@ -345,7 +345,7 @@ public class BookWyrmBoss : Enemy
         pageDestroyTimer = window;
     }
 
-    // Helpers
+    
     public bool ShouldEnterVulnerable()
     {
         int baseThreshold = data != null ? data.attacksBeforeVulnerable : 3;
@@ -443,7 +443,7 @@ public class BookWyrmBoss : Enemy
         isAttacking = value;
     }
 
-    // Sequences
+    
     private IEnumerator AttackWanderSequence(float duration, Action onComplete)
     {
         yield return new WaitForSeconds(duration);

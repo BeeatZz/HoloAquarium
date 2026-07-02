@@ -90,7 +90,7 @@ public class GremInfoPopup : MonoBehaviour
 
     private void SwitchTab(bool showEntry)
     {
-        Debug.Log($"SwitchTab called — showEntry: {showEntry}, entryTab null: {entryTab == null}, statusTab null: {statusTab == null}");
+        Debug.Log($"SwitchTab called  showEntry: {showEntry}, entryTab null: {entryTab == null}, statusTab null: {statusTab == null}");
         isEntryTab = showEntry;
         entryTab.SetActive(showEntry);
         statusTab.SetActive(!showEntry);
@@ -181,7 +181,7 @@ public class GremInfoPopup : MonoBehaviour
             bool producing = currentGrem.currentHunger > 0;
             outputText.text = producing
                 ? $"Producing every {currentGrem.data.currencyOutputRate:F1}s"
-                : "<color=red>Starving — not producing</color>";
+                : "<color=red>Starving  not producing</color>";
         }
 
         if (healthSlider != null)

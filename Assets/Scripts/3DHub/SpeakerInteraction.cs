@@ -2,18 +2,18 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 
-/// <summary>
-/// Attach to the speaker GameObject alongside its trigger collider (tag "Speaker").
-/// Detects the PLAYER (not Grems) entering/exiting, shows a "Press E" prompt,
-/// and switches to the next track in the playlist on key press.
-/// </summary>
+
+
+
+
+
 public class SpeakerInteraction : MonoBehaviour
 {
     [Header("Player Detection")]
     public string playerTag = "Player";
 
     [Header("UI Prompt")]
-    public GameObject promptRoot;      // parent object of the prompt (enabled/disabled)
+    public GameObject promptRoot;      
     public TextMeshProUGUI promptText;
     public string promptMessage = "Press E to switch track";
 

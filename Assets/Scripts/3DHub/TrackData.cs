@@ -13,7 +13,7 @@ public class TrackData : ScriptableObject
     public float bpm = 120f;
 
     [Header("Unlock")]
-    public bool unlockedByDefault = true; // starter tracks; set false for reward-only songs
+    public bool unlockedByDefault = true; 
 }
 
 public enum MusicGenre

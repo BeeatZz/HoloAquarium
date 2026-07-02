@@ -47,7 +47,7 @@ public class DropSpawner : MonoBehaviour
     {
         if (gremurin == null) return;
 
-        // Pulls dynamically from the base script, adapting instantly to changes
+        
         outputTimer = gremurin.CurrentCurrencyOutputRate;
     }
 }

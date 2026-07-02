@@ -23,7 +23,7 @@ public class Enemy : MonoBehaviour
     protected Transform visual;
     protected SpriteRenderer sr;
 
-    // Animation reference
+    
     protected Animator animator;
 
     protected virtual void Start()
@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour
 
         sr = GetComponent<SpriteRenderer>();
 
-        // Looks for the Animator on this GameObject or its visual child
+        
         animator = GetComponentInChildren<Animator>();
 
         transform.localScale = Vector3.zero;
@@ -60,7 +60,7 @@ public class Enemy : MonoBehaviour
     {
         if (targetGrem == null)
         {
-            // If there's no target, stop the moving animation
+            
             UpdateMovingAnimation(false);
             return;
         }
@@ -68,7 +68,7 @@ public class Enemy : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, targetGrem.transform.position, moveSpeed * Time.deltaTime);
         UpdateFacing(targetGrem.transform.position);
 
-        // We are moving toward a target, play moving animation
+        
         UpdateMovingAnimation(true);
     }
 
@@ -105,7 +105,7 @@ public class Enemy : MonoBehaviour
         }
         isDead = true;
 
-        // Stop moving animation immediately upon death
+        
         UpdateMovingAnimation(false);
 
         transform.DOKill();

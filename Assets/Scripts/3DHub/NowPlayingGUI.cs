@@ -28,10 +28,10 @@ public class NowPlayingGUI : MonoBehaviour
 
     private void Start()
     {
-        // Try subscribing here if OnEnable missed it due to execution order
+        
         TrySubscribe();
 
-        // Catch-up mechanism: If a song is already playing, display it immediately
+        
         if (MusicManager.Instance != null && MusicManager.Instance.CurrentTrack != null)
         {
             HandleTrackChanged(MusicManager.Instance.CurrentTrack);
@@ -73,7 +73,7 @@ public class NowPlayingGUI : MonoBehaviour
     {
         trackNameText.text = $"Now Playing: {trackName}";
 
-        // Fade In
+        
         while (canvasGroup.alpha < 1f)
         {
             canvasGroup.alpha += Time.deltaTime * fadeSpeed;
@@ -81,10 +81,10 @@ public class NowPlayingGUI : MonoBehaviour
         }
         canvasGroup.alpha = 1f;
 
-        // Wait on screen
+        
         yield return new WaitForSeconds(displayDuration);
 
-        // Fade Out
+        
         while (canvasGroup.alpha > 0f)
         {
             canvasGroup.alpha -= Time.deltaTime * fadeSpeed;

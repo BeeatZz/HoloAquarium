@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
 
-// Type aliases to resolve namespace ambiguity errors
+
 using Random = UnityEngine.Random;
 using Pointer = UnityEngine.InputSystem.Pointer;
 
@@ -130,7 +130,7 @@ public class HubGremurin : MonoBehaviour
     private Coroutine secretShowCoroutine;
     private float initialRoomLightIntensity;
 
-    // --- ANIMATOR INTEGRATION ---
+    
     private Animator animator;
 
     private void Awake()
@@ -138,8 +138,8 @@ public class HubGremurin : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
-        // If data was already assigned by HubManager before Awake fires, 
-        // we want to make sure we don't overwrite the animator!
+        
+        
         if (animator == null)
         {
             animator = GetComponentInChildren<Animator>();
@@ -167,7 +167,7 @@ public class HubGremurin : MonoBehaviour
         SetupTrajectoryLine();
         SetupLandingParticles();
 
-        // REMOVE ApplyDataStats() from here so it doesn't run while _data is empty!
+        
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -192,13 +192,13 @@ public class HubGremurin : MonoBehaviour
     {
         if (_data == null) return;
 
-        // Force a check right now if the field is still null due to instantiation timing
+        
         if (animator == null)
         {
             animator = GetComponentInChildren<Animator>();
         }
 
-        // Apply the override asset
+        
         if (animator != null && _data.hubAnimatorOverride != null)
         {
             animator.runtimeAnimatorController = _data.hubAnimatorOverride;
@@ -226,7 +226,7 @@ public class HubGremurin : MonoBehaviour
         UpdateGremVisuals();
         ScheduleNextMove();
 
-        // 1. Discover all main lights tagged "MainLight"
+        
         roomMainLights.Clear();
         GameObject[] lightObjs = GameObject.FindGameObjectsWithTag("MainLight");
         foreach (GameObject obj in lightObjs)
@@ -235,7 +235,7 @@ public class HubGremurin : MonoBehaviour
             if (l != null) roomMainLights.Add(l);
         }
 
-        // 2. Discover all stage spotlights tagged "StageSpotlight"
+        
         stageSpotlights.Clear();
         GameObject[] spotObjects = GameObject.FindGameObjectsWithTag("StageSpotlight");
         foreach (GameObject obj in spotObjects)
@@ -324,28 +324,28 @@ public class HubGremurin : MonoBehaviour
             MusicManager.Instance.OnTrackChanged -= HandleTrackChanged;
     }
 
-    // ---------------- ANIMATION STATE SYNC ----------------
+    
 
     private void UpdateAnimationStates()
     {
         if (animator == null) return;
 
-        // A much more dependable check for a wandering NavMeshAgent
+        
         bool isMoving = agent.enabled && agent.hasPath && agent.remainingDistance > agent.stoppingDistance;
 
         animator.SetBool("IsMoving", isMoving);
-        // Put this right below animator.SetBool("IsMoving", isMoving);
+        
         if (isMoving)
         {
             Debug.Log($"[{gameObject.name}] script is sending IsMoving = TRUE to the animator.", this);
         }
 
-        // Map matching properties to prevent runtime engine parameters from missing targets
+        
         animator.SetBool("IsPickedUp", (state == GremState.Held || state == GremState.Charging));
-        animator.SetBool("IsCharmed", false); // Hub Gremurins don't experience charm
+        animator.SetBool("IsCharmed", false); 
     }
 
-    // ---------------- WANDER ----------------
+    
 
     private void HandleWander()
     {
@@ -409,7 +409,7 @@ public class HubGremurin : MonoBehaviour
         }
     }
 
-    // ---------------- SLEEP ----------------
+    
 
     private void EnterSleep()
     {
@@ -440,7 +440,7 @@ public class HubGremurin : MonoBehaviour
         ScheduleNextMove();
     }
 
-    // ---------------- IDLE BOB + STRETCH ----------------
+    
 
     private void HandleIdleBob()
     {
@@ -502,7 +502,7 @@ public class HubGremurin : MonoBehaviour
         isStretching = false;
     }
 
-    // ---------------- PICKUP & HOLDING ----------------
+    
 
     private void CheckForPickup()
     {
@@ -618,7 +618,7 @@ public class HubGremurin : MonoBehaviour
         }
     }
 
-    // ---------------- THROW & IMPACT ----------------
+    
 
     private void ReleaseThrow()
     {
@@ -761,7 +761,7 @@ public class HubGremurin : MonoBehaviour
         }
     }
 
-    // ---------------- SPEAKER DETECTIONS ----------------
+    
 
     private void OnTriggerEnter(Collider other)
     {
@@ -814,7 +814,7 @@ public class HubGremurin : MonoBehaviour
         spriteRenderer.transform.localPosition = initialSpriteLocalPos + new Vector3(0, hop, 0);
     }
 
-    // ---------------- SECRET LOOKUP COUPLING ----------------
+    
 
     private void TriggerSecretShowIfEligible()
     {
@@ -828,21 +828,21 @@ public class HubGremurin : MonoBehaviour
         }
     }
 
-    // ---------------- LIGHT SHOW COROUTINE ----------------
+    
 
     private IEnumerator PlaySecretSpotlightShow()
     {
-        // Ensure we have at least one light to work with
+        
         if (_data == null || roomMainLights.Count == 0 || stageSpotlights.Count == 0) yield break;
 
-        // 1. CAPTURE INITIAL STATE
+        
         float[] initialRoomIntensities = new float[roomMainLights.Count];
         for (int i = 0; i < roomMainLights.Count; i++)
         {
             initialRoomIntensities[i] = roomMainLights[i] != null ? roomMainLights[i].intensity : 0f;
         }
 
-        // Determine focus
+        
         Vector3 focusCenterPosition = transform.position;
         if (!_data.trackGremurin && !string.IsNullOrEmpty(_data.sceneAnchorTag))
         {
@@ -850,7 +850,7 @@ public class HubGremurin : MonoBehaviour
             if (anchor != null) focusCenterPosition = anchor.transform.position;
         }
 
-        // 2. SETUP SPOTLIGHTS
+        
         float[] baseSpotIntensities = new float[stageSpotlights.Count];
         Vector3[] spotOrigins = new Vector3[stageSpotlights.Count];
         float[] spotSpeedMultipliers = new float[stageSpotlights.Count];
@@ -868,13 +868,13 @@ public class HubGremurin : MonoBehaviour
         float timer = 0f;
         bool secretTriggered = false;
 
-        // 3. MAIN LOOP
+        
         while (timer < _data.showTotalDuration)
         {
             timer += Time.deltaTime;
             float progress = timer / _data.showTotalDuration;
 
-            // Dim ALL main lights in the list
+            
             float dimFactor = Mathf.Sin(progress * Mathf.PI);
             for (int i = 0; i < roomMainLights.Count; i++)
             {
@@ -883,7 +883,7 @@ public class HubGremurin : MonoBehaviour
                 roomMainLights[i].intensity = Mathf.Lerp(initialRoomIntensities[i], target, dimFactor);
             }
 
-            // Pulse logic
+            
             float pulseWave = Mathf.Abs(Mathf.Sin(Time.time * Mathf.PI * (currentBpm / 60f)));
             if (_data.trackGremurin) focusCenterPosition = transform.position;
 
@@ -891,7 +891,7 @@ public class HubGremurin : MonoBehaviour
             {
                 if (stageSpotlights[i] == null) continue;
 
-                // Calculate movement
+                
                 float evaluatedSpeed = Time.time * _data.spotlightOrbitSpeed * spotSpeedMultipliers[i];
                 float seedX = evaluatedSpeed + (i * 243.19f);
                 float seedY = evaluatedSpeed + (i * 711.83f) + 1200f;
@@ -903,7 +903,7 @@ public class HubGremurin : MonoBehaviour
                 dynamicTarget.x += noiseX * _data.spotlightRadiusScale;
                 dynamicTarget.z += noiseY * _data.spotlightRadiusScale;
 
-                // Apply rotation (The missing movement piece)
+                
                 Vector3 lookDirection = dynamicTarget - spotOrigins[i];
                 if (lookDirection.sqrMagnitude > 0.01f)
                 {
@@ -914,7 +914,7 @@ public class HubGremurin : MonoBehaviour
                     );
                 }
 
-                // Apply pulse
+                
                 stageSpotlights[i].intensity = baseSpotIntensities[i] * Mathf.Lerp(0.5f, 1.5f, pulseWave);
             }
 
@@ -927,7 +927,7 @@ public class HubGremurin : MonoBehaviour
             yield return null;
         }
 
-        // 4. RESTORE ALL MAIN LIGHTS
+        
         float restoreTimer = 0f;
         while (restoreTimer < 0.3f)
         {
@@ -941,7 +941,7 @@ public class HubGremurin : MonoBehaviour
             yield return null;
         }
 
-        // Reset spotlights
+        
         for (int i = 0; i < stageSpotlights.Count; i++)
         {
             if (stageSpotlights[i] != null)
@@ -953,7 +953,7 @@ public class HubGremurin : MonoBehaviour
         secretShowCoroutine = null;
     }
 
-    // ---------------- SETUP & VISUALS ----------------
+    
 
     private void UpdateGremVisuals()
     {

@@ -1,11 +1,11 @@
 using UnityEngine;
-using TMPro; // Replace with 'using UnityEngine.UI;' if using legacy Text
+using TMPro; 
 using System.Collections;
 
 public class InitialLoader : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private TMP_Text loadingText; // Change to 'public Text loadingText;' if using legacy UI
+    [SerializeField] private TMP_Text loadingText; 
 
     [Header("Configuration")]
     [SerializeField] private string targetSceneName = "MainMenu";
@@ -16,10 +16,10 @@ public class InitialLoader : MonoBehaviour
 
     private void Start()
     {
-        // Start animating the text dots immediately
+        
         StartCoroutine(AnimateLoadingText());
 
-        // Start the countdown to switch scenes
+        
         StartCoroutine(SequenceRoutine());
     }
 
@@ -29,22 +29,22 @@ public class InitialLoader : MonoBehaviour
 
         while (true)
         {
-            // Generates "Loading", "Loading.", "Loading..", or "Loading..."
+            
             loadingText.text = BaseText + new string('.', dotCount);
 
             yield return new WaitForSeconds(dotAnimationSpeed);
 
-            // Cycle dotCount from 0 to 3, then reset to 0
+            
             dotCount = (dotCount + 1) % 4;
         }
     }
 
     private IEnumerator SequenceRoutine()
     {
-        // Wait for the initial 2 seconds
+        
         yield return new WaitForSeconds(waitBeforeFade);
 
-        // Trigger your SceneFader singleton
+        
         if (SceneFader.Instance != null)
         {
             SceneFader.Instance.FadeToScene(targetSceneName);
@@ -52,7 +52,7 @@ public class InitialLoader : MonoBehaviour
         else
         {
             Debug.LogError("SceneFader Instance not found in the scene!");
-            // Fallback just in case SceneFader isn't ready
+            
             UnityEngine.SceneManagement.SceneManager.LoadScene(targetSceneName);
         }
     }

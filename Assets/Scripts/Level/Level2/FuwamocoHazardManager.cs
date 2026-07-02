@@ -94,28 +94,28 @@ public class FuwamocoHazardManager : MonoBehaviour
 
     private IEnumerator BerserkRoutine(BerserkEvent settings)
     {
-        standardActive = false; // Stop the random background stomps
+        standardActive = false; 
 
-        // Initial build up shake
+        
         Camera.main.transform.DOShakePosition(0.5f, 0.3f).SetUpdate(true);
         yield return new WaitForSecondsRealtime(0.5f);
 
         for (int i = 0; i < settings.stompCount; i++)
         {
-            // Pick a random location
+            
             Vector3 spawnPos = GetRandomPlayPos();
 
-            // Create the stomp
+            
             GameObject obj = Instantiate(stompPrefab, spawnPos, Quaternion.identity);
             StompEffect effect = obj.GetComponent<StompEffect>();
 
             if (effect != null)
             {
-                // FORCE the logic to start
+                
                 effect.ExecuteAttack(spawnPos, settings.warningTime, bauBauSfx);
             }
 
-            // This wait is CRITICAL. If this is too low, it looks like a mess.
+            
             yield return new WaitForSecondsRealtime(settings.spawnInterval);
         }
 

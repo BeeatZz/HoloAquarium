@@ -1,9 +1,9 @@
 using UnityEngine;
 
-/// <summary>
-/// Static tracker ensuring only one HubGremurin can be picked up / held / charging
-/// at any given time. No scene setup required - just exists automatically.
-/// </summary>
+
+
+
+
 public static class GrabManager
 {
     public static HubGremurin CurrentlyHeld { get; private set; }

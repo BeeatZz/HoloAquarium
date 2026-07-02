@@ -71,7 +71,7 @@ public class NerissaHazardManager : MonoBehaviour
 
     private IEnumerator SirenRoutine(float speed)
     {
-        // 1. Warning Phase
+        
         for (int i = 0; i < 4; i++)
         {
             Vector3 rPos = new Vector3(UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-3f, 3f), 0);
@@ -80,7 +80,7 @@ public class NerissaHazardManager : MonoBehaviour
         }
         yield return new WaitForSeconds(1.5f);
 
-        // 2. Setup Sweep (Horizontal Example)
+        
         waveVisual.gameObject.SetActive(true);
         Vector3 start = new Vector3(-12, 0, 0);
         Vector3 end = new Vector3(12, 0, 0);
@@ -89,13 +89,13 @@ public class NerissaHazardManager : MonoBehaviour
         bool moving = true;
         waveVisual.DOMove(end, 24f / speed).SetEase(Ease.Linear).OnComplete(() => moving = false);
 
-        // 3. Active Detection Loop
+        
         while (moving)
         {
             Gremurin[] all = UnityEngine.Object.FindObjectsByType<Gremurin>(FindObjectsSortMode.None);
             foreach (var g in all)
             {
-                // Detection logic: check if Grem is hit by the moving x-coordinate of the wave
+                
                 if (Mathf.Abs(g.transform.position.x - waveVisual.position.x) < 0.6f)
                 {
                     g.BeCharmed(charmColor);

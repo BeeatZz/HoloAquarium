@@ -134,7 +134,7 @@ public class Gremurin : MonoBehaviour
         {
             isMoving = true;
 
-            // Charmed movement speed adjustment preserved
+            
             Vector3 newPos = Vector3.MoveTowards(transform.position, charmTarget.transform.position, (moveSpeed * 0.5f) * Time.deltaTime);
             transform.position = LevelManager.Instance.ClampToPlayArea(newPos);
             UpdateFacing(charmTarget.transform.position);
@@ -144,7 +144,7 @@ public class Gremurin : MonoBehaviour
                 charmTarget.TakeDamage(2f);
                 if (animator != null) animator.SetTrigger("Attack");
 
-                // --- PLAY CHARM ATTACK CRY ---
+                
                 data.audioPack?.PlayAttack();
             }
         }

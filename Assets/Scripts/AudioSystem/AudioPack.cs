@@ -22,10 +22,10 @@ public class AudioPack : ScriptableObject
     {
         if (array == null || array.Length == 0) return;
 
-        // Pick a random sound for variations
+        
         AudioClip randomClip = array[UnityEngine.Random.Range(0, array.Length)];
 
-        // Radio it out to the global bridge
+        
         GlobalAudioBridge.RaisePlaySFX(randomClip);
     }
 }

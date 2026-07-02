@@ -11,7 +11,7 @@ public class PeroEnemy : Enemy
 
     private float patternTimer;
     private Vector3 randomOffset;
-    private bool isKnockedBack; // Prevents animation/movement updates during punch hit
+    private bool isKnockedBack; 
 
     protected override void Start()
     {
@@ -21,7 +21,7 @@ public class PeroEnemy : Enemy
 
     protected override void Think()
     {
-        if (isKnockedBack) return; // Don't process normal pathing while flying backward
+        if (isKnockedBack) return; 
 
         HandleErraticMovement();
         base.Think();
@@ -68,7 +68,7 @@ public class PeroEnemy : Enemy
     {
         if (targetGrem == null)
         {
-            // Tell the base animator to stop moving if there are no targets
+            
             UpdateMovingAnimation(false);
             return;
         }
@@ -81,7 +81,7 @@ public class PeroEnemy : Enemy
         transform.position = LevelManager.Instance.ClampToPlayArea(transform.position);
         UpdateFacing(targetGrem.transform.position);
 
-        // FIX: Explicitly turn on moving animation state
+        
         UpdateMovingAnimation(true);
     }
 
@@ -90,7 +90,7 @@ public class PeroEnemy : Enemy
         base.OnPlayerPunch(damage);
 
         isKnockedBack = true;
-        UpdateMovingAnimation(false); // Stop running frames while flying back
+        UpdateMovingAnimation(false); 
 
         Vector2 escapeDir = UnityEngine.Random.insideUnitCircle.normalized * 2f;
         transform.DOMove(transform.position + (Vector3)escapeDir, 0.3f)
@@ -101,7 +101,7 @@ public class PeroEnemy : Enemy
             })
             .OnComplete(() =>
             {
-                isKnockedBack = false; // Resume normal hunting
+                isKnockedBack = false; 
             });
     }
 }

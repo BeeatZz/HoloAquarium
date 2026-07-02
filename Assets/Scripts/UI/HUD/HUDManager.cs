@@ -39,21 +39,21 @@ public class HUDManager : MonoBehaviour
 
     private void Start()
     {
-        // Subscribe to currency updates
+        
         if (CurrencyManager.Instance != null)
         {
             CurrencyManager.Instance.OnCurrencyChanged += UpdateCurrency;
             UpdateCurrency(CurrencyManager.Instance.currentCurrency);
         }
 
-        // Subscribe to LevelManager lifecycle changes
+        
         if (LevelManager.Instance != null)
         {
             LevelManager.Instance.OnCurrencyThresholdReached += OnThresholdReached;
             LevelManager.Instance.OnPurchaseMade += OnPurchaseMade;
         }
 
-        // Set up local click listeners
+        
         buyButton.onClick.AddListener(OnBuyClicked);
         feedingToggleButton.onClick.AddListener(OnFeedingToggleClicked);
         shopButton.onClick.AddListener(OnShopClicked);
@@ -71,7 +71,7 @@ public class HUDManager : MonoBehaviour
             }
         }
 
-        // Run the visual updates on frame one to eliminate placeholder values
+        
         RefreshBuyButtonVisuals();
         UpdateToggleVisuals();
     }
@@ -142,7 +142,7 @@ public class HUDManager : MonoBehaviour
     {
         if (currencyText != null) currencyText.text = $"{Mathf.FloorToInt(amount)}";
 
-        // Re-evaluate whenever currency naturally fluctuates
+        
         RefreshBuyButtonVisuals();
     }
 
@@ -157,7 +157,7 @@ public class HUDManager : MonoBehaviour
 
     private void OnThresholdReached(float cost)
     {
-        // Re-evaluate button visuals when threshold flags alter inside LevelManager
+        
         RefreshBuyButtonVisuals();
     }
 
@@ -168,21 +168,21 @@ public class HUDManager : MonoBehaviour
 
     private void OnPurchaseMade(int count)
     {
-        // Re-evaluate instantly after purchase changes indexes & scales up cost
+        
         RefreshBuyButtonVisuals();
     }
 
-    /// <summary>
-    /// Reads direct live values out of the Singletons to ensure UI text 
-    /// and interaction states match exactly.
-    /// </summary>
+    
+    
+    
+    
     private void RefreshBuyButtonVisuals()
     {
         if (buyButton == null || LevelManager.Instance == null || CurrencyManager.Instance == null) return;
 
         float currentCost = LevelManager.Instance.currentCost;
 
-        // Update Text to display the exact live tier cost
+        
         if (buyButtonText != null)
         {
             if (currentCost == float.MaxValue)
@@ -195,7 +195,7 @@ public class HUDManager : MonoBehaviour
             }
         }
 
-        // Evaluate interaction state matching remaining balance
+        
         bool canAfford = CurrencyManager.Instance.currentCurrency >= currentCost && currentCost != float.MaxValue;
         SetBuyButtonState(canAfford);
     }

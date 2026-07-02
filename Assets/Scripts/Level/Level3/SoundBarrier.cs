@@ -7,11 +7,11 @@ public class SoundBarrier : MonoBehaviour
 
     void Start()
     {
-        // Visual "pop in"
+        
         transform.localScale = Vector3.zero;
         transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
 
-        // Auto-destroy after time
+        
         Invoke("Expire", duration);
     }
 

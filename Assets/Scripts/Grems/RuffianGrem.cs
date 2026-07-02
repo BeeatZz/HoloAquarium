@@ -4,11 +4,11 @@ using DG.Tweening;
 public class RuffianGrem : Gremurin
 {
     [Header("Ruffian Currency Settings")]
-    public float baseDropCooldown = 15f;    // Drop money every 15 seconds normally
-    public float twinDropCooldown = 7.5f;   // Drop money twice as fast if a twin is close!
+    public float baseDropCooldown = 15f;    
+    public float twinDropCooldown = 7.5f;   
 
     [Header("Proximity Settings")]
-    public float synergyRadius = 3.0f;      // How close they must be to trigger the boost
+    public float synergyRadius = 3.0f;      
 
     [Header("Visual Synergy Cue")]
     public Color twinSynergyColor = new Color(1f, 0.8f, 0.9f);
@@ -16,7 +16,7 @@ public class RuffianGrem : Gremurin
     private bool hasTwinSynergy = false;
     private DropSpawner dropSpawner;
 
-    // Overrides Gremurin base implementation to deliver current speed modifiers
+    
     public override float CurrentCurrencyOutputRate
     {
         get { return hasTwinSynergy ? twinDropCooldown : baseDropCooldown; }
@@ -27,7 +27,7 @@ public class RuffianGrem : Gremurin
         base.Start();
         dropSpawner = GetComponent<DropSpawner>();
 
-        // Desynchronize initial spawner startup times
+        
         if (dropSpawner != null)
         {
             dropSpawner.outputTimer = UnityEngine.Random.Range(baseDropCooldown * 0.5f, baseDropCooldown);
@@ -42,10 +42,10 @@ public class RuffianGrem : Gremurin
             return;
         }
 
-        // 1. Check if a partner is active AND close enough
+        
         CheckForTwinProximity();
 
-        // 2. Continue regular wandering/bobbing behavior (DropSpawner handles timing loops automatically)
+        
         base.HandleWander();
     }
 
@@ -57,25 +57,25 @@ public class RuffianGrem : Gremurin
 
         foreach (var ruffian in allRuffians)
         {
-            // Skip self, dead ones, or ones currently picked up by the player
+            
             if (ruffian == this || ruffian.isDead || ruffian.isPickedUp) continue;
 
-            // Check distance between this twin and the other
+            
             float distance = Vector3.Distance(transform.position, ruffian.transform.position);
             if (distance <= synergyRadius)
             {
                 foundValidPartner = true;
-                break; // One nearby partner is enough to trigger the link!
+                break; 
             }
         }
 
-        // Apply state change if it's different from the last frame
+        
         if (foundValidPartner != hasTwinSynergy)
         {
             hasTwinSynergy = foundValidPartner;
             UpdateSynergyVisuals();
 
-            // Refresh the drop spawner timer calculation to process state changes on-the-fly
+            
             if (dropSpawner != null)
             {
                 dropSpawner.ResetTimer();
@@ -101,10 +101,10 @@ public class RuffianGrem : Gremurin
         }
     }
 
-    // Draws a visual guide in the editor when you select a Ruffian Grem
+    
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = new Color(0f, 1f, 1f, 0.2f); // Light Cyan Circle
+        Gizmos.color = new Color(0f, 1f, 1f, 0.2f); 
         Gizmos.DrawWireSphere(transform.position, synergyRadius);
     }
 }

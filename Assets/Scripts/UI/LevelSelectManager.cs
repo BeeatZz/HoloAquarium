@@ -46,7 +46,7 @@ public class LevelSelectManager : MonoBehaviour
                 GameObject levelBtn = Instantiate(levelButtonTemplate, levelContainer);
                 levelBtn.SetActive(true);
 
-                // Name
+                
                 TextMeshProUGUI[] texts = levelBtn.GetComponentsInChildren<TextMeshProUGUI>();
                 foreach (TextMeshProUGUI t in texts)
                 {

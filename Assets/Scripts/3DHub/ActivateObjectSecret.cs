@@ -31,22 +31,22 @@ public class ActivateObjectSecret : GremSecretEffect
             return;
         }
 
-        // 1. Find the object in the scene (even if it's currently inactive)
+        
         GameObject target = FindInactiveObjectByName(targetObjectName);
 
         if (target != null)
         {
-            // Activate the hidden object!
+            
             target.SetActive(true);
             Debug.Log($"[SECRET REVEALED] {grem.gameObject.name} unlocked hidden object: '{targetObjectName}'!", target);
 
-            // 2. Play the discovery sound directly at the object's spot
+            
             if (discoverySound != null)
             {
                 AudioSource.PlayClipAtPoint(discoverySound, target.transform.position, volume);
             }
 
-            // 3. Spawn a custom "landing style" dust puff directly on it
+            
             SpawnDustPuff(target.transform.position);
         }
         else
@@ -55,16 +55,16 @@ public class ActivateObjectSecret : GremSecretEffect
         }
     }
 
-    /// <summary>
-    /// Deep-searches the entire scene hierarchy for objects matching a name, 
-    /// even if they started the game disabled (GameObject.Find skips inactive ones).
-    /// </summary>
+    
+    
+    
+    
     private GameObject FindInactiveObjectByName(string nameToFind)
     {
         Transform[] allTransforms = Resources.FindObjectsOfTypeAll<Transform>();
         foreach (Transform t in allTransforms)
         {
-            // Ensure it belongs to the active gameplay world, not a prefab file asset inside project folders
+            
             if (t.gameObject.hideFlags == HideFlags.None && t.name == nameToFind)
             {
                 return t.gameObject;
@@ -73,10 +73,10 @@ public class ActivateObjectSecret : GremSecretEffect
         return null;
     }
 
-    /// <summary>
-    /// Generates a quick dust-puff particle burst dynamically at runtime 
-    /// mirroring the HubGremurin landing effect settings.
-    /// </summary>
+    
+    
+    
+    
     private void SpawnDustPuff(Vector3 spawnPosition)
     {
         GameObject psObj = new GameObject("Secret_DustPuff");
@@ -107,13 +107,13 @@ public class ActivateObjectSecret : GremSecretEffect
 
         var renderer = ps.GetComponent<ParticleSystemRenderer>();
 
-        // If you forget to assign a material in the inspector, it fallbacks gracefully to the engine sprite material
+        
         renderer.material = particleMaterial != null ? particleMaterial : new Material(Shader.Find("Sprites/Default"));
 
-        // Play and self-destruct the gameobject container once finished
+        
         ps.Emit(particleCount);
 
-        // Explicitly invoke Object level destruction since ScriptableObject context lacks an instance MonoBehaviour shortcut
+        
         UnityEngine.Object.Destroy(psObj, particleLifetime + 0.1f);
     }
 }

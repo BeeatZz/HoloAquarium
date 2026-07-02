@@ -11,7 +11,7 @@ public class FallingHazard : MonoBehaviour
 
     [Header("Combat Settings")]
     public float damageRadius = 2.0f;
-    public float damageAmount = 20f; // Set to 20 as requested
+    public float damageAmount = 20f; 
 
     [Header("References")]
     public SpriteRenderer warningShadow;

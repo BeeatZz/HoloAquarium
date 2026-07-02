@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Central music player for the hub scene. Plays TrackData clips through a
-/// local AudioSource and broadcasts OnTrackChanged so any listener (like
-/// HubGremurin) can react without needing a direct reference back.
-/// </summary>
+
+
+
+
+
 [RequireComponent(typeof(AudioSource))]
 public class MusicManager : MonoBehaviour
 {
@@ -15,7 +15,7 @@ public class MusicManager : MonoBehaviour
     public event Action<TrackData> OnTrackChanged;
 
     [Header("Playlist")]
-    public TrackData[] fullPlaylist; // every track that exists, including locked ones
+    public TrackData[] fullPlaylist; 
     private List<TrackData> activePlaylist = new List<TrackData>();
 
     [Header("Playback")]
@@ -27,13 +27,13 @@ public class MusicManager : MonoBehaviour
 
     public TrackData CurrentTrack => currentTrack;
 
-    // Exposes the current playback time of the audio source in seconds for rhythm sync
+    
     public float SongTime => audioSource != null ? audioSource.time : 0f;
 
     private void Awake()
     {
-        // Simple singleton - if you already have a broader service locator /
-        // bootstrap pattern elsewhere, swap this for that instead.
+        
+        
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -55,11 +55,11 @@ public class MusicManager : MonoBehaviour
             PlayTrack(activePlaylist[0]);
     }
 
-    /// <summary>
-    /// Filters fullPlaylist down to tracks that are either unlockedByDefault
-    /// or present in the player's save data. Call again after a new unlock
-    /// (e.g. from LevelCompleteUI) if you want it reflected immediately.
-    /// </summary>
+    
+    
+    
+    
+    
     public void RebuildActivePlaylist()
     {
         activePlaylist.Clear();
@@ -81,7 +81,7 @@ public class MusicManager : MonoBehaviour
 
     private void Update()
     {
-        // auto-advance to next track when current one finishes
+        
         if (currentTrack != null && !audioSource.isPlaying && audioSource.time == 0f)
         {
             PlayNext();

@@ -9,10 +9,10 @@ public class RedInkHazard : MonoBehaviour
 
     private void Update()
     {
-        // If player picks them up, the Gremurin script handles isPickedUp
+        
         if (grem.isPickedUp)
         {
-            Destroy(this); // Hazard cleared!
+            Destroy(this); 
             return;
         }
 

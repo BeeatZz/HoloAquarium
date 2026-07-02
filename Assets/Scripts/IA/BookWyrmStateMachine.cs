@@ -26,7 +26,7 @@ public class BookWyrmStateMachine : MonoBehaviour
 
     private void Start()
     {
-        // Phase transition (half health)
+        
         boss.OnHalfHealth += () =>
         {
             if (retaliationInProgress)
@@ -45,7 +45,7 @@ public class BookWyrmStateMachine : MonoBehaviour
             }
         };
 
-        // Damage threshold reached during vulnerable state
+        
         boss.OnVulnerableDamageThresholdReached += () =>
         {
             if (currentState == State.Vulnerable && !retaliationInProgress)
@@ -54,7 +54,7 @@ public class BookWyrmStateMachine : MonoBehaviour
             }
         };
 
-        // Natural vulnerable end
+        
         boss.OnVulnerableEnd += () =>
         {
             if (currentState == State.Vulnerable)
