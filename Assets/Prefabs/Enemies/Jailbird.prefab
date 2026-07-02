@@ -71,7 +71,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   facingLeftByDefault: 0
-  maxHealth: 10
+  maxHealth: 5
   moveSpeed: 3
   damage: 25
   attackCooldown: 1.5

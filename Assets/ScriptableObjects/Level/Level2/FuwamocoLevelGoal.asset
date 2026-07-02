@@ -17,9 +17,9 @@ MonoBehaviour:
   - label: Tier1
     cost: 10
   - label: Tier2
-    cost: 20
+    cost: 10
   - label: Tier3
-    cost: 30
+    cost: 20
   requireAllWavesComplete: 0
   requiredWaveIndex: -1
   timeLimitSeconds: 140

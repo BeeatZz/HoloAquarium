@@ -6043,7 +6043,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f7f71858fa3cd049b754c966c7206e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelCompleteUI: {fileID: 0}
+  levelCompleteUI: {fileID: 253212833}
 --- !u!1001 &1185081515
 PrefabInstance:
   m_ObjectHideFlags: 0

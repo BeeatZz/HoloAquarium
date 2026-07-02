@@ -229,9 +229,13 @@ public class LevelManager : MonoBehaviour
 
     public void TriggerDefeat()
     {
-        Time.timeScale = 0f;
-        Debug.Log("defeat");
-        defeatScreen.SetActive(true);
+        if(!levelComplete)
+        {
+            Time.timeScale = 0f;
+            Debug.Log("defeat");
+            defeatScreen.SetActive(true);
+        }
+        
     }
     private void OnDestroy()
     {

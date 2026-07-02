@@ -308,7 +308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f7f71858fa3cd049b754c966c7206e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelCompleteUI: {fileID: 0}
+  levelCompleteUI: {fileID: 898990008}
 --- !u!114 &8371745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11609,34 +11609,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2faafe0100eb36b469248686b4351bf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sirenTimeline:
-  - triggerTime: 10
-    waveSpeed: 4
-    hasFired: 0
-  - triggerTime: 20
-    waveSpeed: 4
-    hasFired: 0
-  - triggerTime: 35
-    waveSpeed: 4
-    hasFired: 0
-  - triggerTime: 50
-    waveSpeed: 4
-    hasFired: 0
-  - triggerTime: 60
-    waveSpeed: 4
-    hasFired: 0
-  - triggerTime: 70
-    waveSpeed: 4
-    hasFired: 0
-  - triggerTime: 80
-    waveSpeed: 4
-    hasFired: 0
-  - triggerTime: 90
-    waveSpeed: 4
-    hasFired: 0
-  - triggerTime: 100
-    waveSpeed: 4
-    hasFired: 0
+  sirenTimeline: []
   allowRandomSirens: 1
   checkInterval: 15
   baseChance: 10

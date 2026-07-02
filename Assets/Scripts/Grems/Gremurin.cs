@@ -308,6 +308,7 @@ public class Gremurin : MonoBehaviour
         if(gremsAlive.Length -1 == 0)
         {
             LevelManager.Instance.TriggerDefeat();
+
         }
         
         
