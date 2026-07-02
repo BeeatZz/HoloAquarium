@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f323605152e87743bba7c8ec92b8edb, type: 3}
   m_Name: Buadol
   m_EditorClassIdentifier: 
-  trackName: "Born to be \"BAU\"DOL\u2606\u2605"
+  trackName: Born to be "BAU"DOL!
   clip: {fileID: 8300000, guid: b960a8027da49514b9e10eb92a768ed6, type: 3}
   coverArt: {fileID: 21300000, guid: adb05fa4a9efc0745a732ae505573713, type: 3}
   genre: 1

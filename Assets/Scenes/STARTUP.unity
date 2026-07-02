@@ -553,7 +553,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loadingText: {fileID: 1679119460}
-  targetSceneName: MainMenu
+  targetSceneName: IntroMenu
   waitBeforeFade: 2
   dotAnimationSpeed: 0.5
 --- !u!4 &1018854754
