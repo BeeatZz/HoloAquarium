@@ -2,6 +2,7 @@
 using UnityEngine;
 using DG.Tweening;
 using System.Diagnostics;
+using System.Linq;
 
 public class Gremurin : MonoBehaviour
 {
@@ -297,6 +298,18 @@ public class Gremurin : MonoBehaviour
         if (LevelManager.Instance != null) LevelManager.Instance.RegisterGremDeath();
         UnityEngine.Object.Destroy(gameObject);
 
+        Gremurin[] gremsAlive = FindObjectsByType<Gremurin>(FindObjectsSortMode.None);
+        UnityEngine.Debug.Log(gremsAlive.Length);
+        foreach(var g in gremsAlive)
+        {
+            UnityEngine.Debug.Log(g);
+        }
+
+        if(gremsAlive.Length -1 == 0)
+        {
+            LevelManager.Instance.TriggerDefeat();
+        }
+        
         
     }
 }

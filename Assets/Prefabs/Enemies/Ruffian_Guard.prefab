@@ -49,8 +49,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bf0fefbec7d98340b799f753d63712c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  facingLeftByDefault: 0
-  maxHealth: 3
+  facingLeftByDefault: 1
+  maxHealth: 12
   moveSpeed: 1.5
   damage: 1
   attackCooldown: 1.5

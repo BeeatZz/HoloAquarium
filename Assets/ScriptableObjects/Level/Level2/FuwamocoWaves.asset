@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a07d6345064a5804faa1edcdcad214cc, type: 3}
+  m_Name: FuwamocoWaves
+  m_EditorClassIdentifier: 
+  initialDelay: 5
+  waves:
+  - label: First Ruffian Attack
+    delayBefore: 0
+    waitForClear: 0
+    entries:
+    - enemyPrefab: {fileID: 2247522750972301891, guid: 8484a8751e4c8f3409dca6223317fc39, type: 3}
+      count: 1
+      spawnInterval: 0
+    - enemyPrefab: {fileID: 1817759906632933024, guid: f27166d742ce6df419f890f7be01bb45, type: 3}
+      count: 1
+      spawnInterval: 0
+  - label: Second Ruffian Attack
+    delayBefore: 20
+    waitForClear: 0
+    entries:
+    - enemyPrefab: {fileID: 2247522750972301891, guid: 8484a8751e4c8f3409dca6223317fc39, type: 3}
+      count: 2
+      spawnInterval: 0
+    - enemyPrefab: {fileID: 1817759906632933024, guid: f27166d742ce6df419f890f7be01bb45, type: 3}
+      count: 2
+      spawnInterval: 0
+  - label: Pero, ENGAGE
+    delayBefore: 30
+    waitForClear: 1
+    entries:
+    - enemyPrefab: {fileID: 2247522750972301891, guid: 8484a8751e4c8f3409dca6223317fc39, type: 3}
+      count: 1
+      spawnInterval: 0
+    - enemyPrefab: {fileID: 1817759906632933024, guid: f27166d742ce6df419f890f7be01bb45, type: 3}
+      count: 1
+      spawnInterval: 0
+    - enemyPrefab: {fileID: 7417557367372351461, guid: dd7cbb59a324dd84a9ddbedf3e96a1c5, type: 3}
+      count: 1
+      spawnInterval: 2
+  - label: Final Ruffian Wave
+    delayBefore: 10
+    waitForClear: 0
+    entries:
+    - enemyPrefab: {fileID: 2247522750972301891, guid: 8484a8751e4c8f3409dca6223317fc39, type: 3}
+      count: 3
+      spawnInterval: 0
+    - enemyPrefab: {fileID: 1817759906632933024, guid: f27166d742ce6df419f890f7be01bb45, type: 3}
+      count: 3
+      spawnInterval: 0
+    - enemyPrefab: {fileID: 7417557367372351461, guid: dd7cbb59a324dd84a9ddbedf3e96a1c5, type: 3}
+      count: 0
+      spawnInterval: 0
+  - label: Pero, ENGAGE
+    delayBefore: 30
+    waitForClear: 1
+    entries:
+    - enemyPrefab: {fileID: 2247522750972301891, guid: 8484a8751e4c8f3409dca6223317fc39, type: 3}
+      count: 2
+      spawnInterval: 0
+    - enemyPrefab: {fileID: 1817759906632933024, guid: f27166d742ce6df419f890f7be01bb45, type: 3}
+      count: 2
+      spawnInterval: 0
+    - enemyPrefab: {fileID: 7417557367372351461, guid: dd7cbb59a324dd84a9ddbedf3e96a1c5, type: 3}
+      count: 1
+      spawnInterval: 2

@@ -104,9 +104,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   facingLeftByDefault: 0
-  maxHealth: 3
+  maxHealth: 20
   moveSpeed: 1.5
-  damage: 1
+  damage: 3
   attackCooldown: 1.5
   bossDamageValue: 10
   currentHealth: 0

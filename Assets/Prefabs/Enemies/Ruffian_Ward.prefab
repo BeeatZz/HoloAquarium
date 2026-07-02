@@ -137,19 +137,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bf0fefbec7d98340b799f753d63712c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  facingLeftByDefault: 0
-  maxHealth: 3
+  facingLeftByDefault: 1
+  maxHealth: 12
   moveSpeed: 1.5
-  damage: 1
+  damage: 2
   attackCooldown: 1.5
   bossDamageValue: 10
   currentHealth: 0
   isDead: 0
   role: 1
-  ruffianSprite: {fileID: 21300000, guid: 54d8baa7c3e7a5242aa01314a8493842, type: 3}
+  ruffianSprite: {fileID: -2091625246, guid: 44a3a18d90f9aa244b4be39ae5a8b039, type: 3}
   partner: {fileID: 0}
   isLinked: 0
-  enrageSpeedMultiplier: 1.8
+  enrageSpeedMultiplier: 2
   stunColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   enrageColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &960106645933156132
@@ -278,7 +278,7 @@ Animator:
   m_GameObject: {fileID: 1817759906632933024}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 22f1ab5d302956643a5f041dd2f83af2, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

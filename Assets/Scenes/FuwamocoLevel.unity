@@ -4233,7 +4233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f356261d5020ba4685654e468d94cff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  label: Complete the level in under 20 seconds
+  label: Complete the level in under 100 seconds
   isComplete: 0
   timeLimitSeconds: 20
 --- !u!1 &909664001
@@ -4970,10 +4970,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   berserkTimeline:
-  - label: Berserk Test
+  - label: First RAGE
     triggerTime: 20
-    stompCount: 5
+    stompCount: 10
     spawnInterval: 2
+    warningTime: 1.5
+    hasFired: 0
+  - label: Second RAGE
+    triggerTime: 40
+    stompCount: 10
+    spawnInterval: 2
+    warningTime: 1.5
+    hasFired: 0
+  - label: FINAL RAGE
+    triggerTime: 70
+    stompCount: 12
+    spawnInterval: 1.3
     warningTime: 1.5
     hasFired: 0
   allowRandomTantrums: 0
@@ -5132,6 +5144,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gremurin
       objectReference: {fileID: 0}
+    - target: {fileID: 6832751554287062526, guid: 592ec362faec6a145893536569607d1e, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: f585d4434832a9646a28066be982ab8b, type: 2}
     - target: {fileID: 7014580535090944394, guid: 592ec362faec6a145893536569607d1e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -6528,7 +6544,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd52878c2b7098f44a6b3c43a4086b11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveData: {fileID: 11400000, guid: cb90167df96033d40bacaaeaed5789b5, type: 2}
+  waveData: {fileID: 11400000, guid: 8e920d03cb6741a41aebe34154f84251, type: 2}
   spawnPoints:
   - {fileID: 326536984}
   - {fileID: 742119443}
@@ -7395,7 +7411,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52e0d1ec7fd6e73499194ee7ff122f01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelGoal: {fileID: 11400000, guid: 6c30e689aca8c5e418b3ce1d0484b26e, type: 2}
+  levelGoal: {fileID: 11400000, guid: 3b0d806112a62b743864feebd325647e, type: 2}
   waveSpawner: {fileID: 1497084574}
   playAreaMin: {x: -7.5, y: -3}
   playAreaMax: {x: 8, y: 3.2}
@@ -7407,6 +7423,7 @@ MonoBehaviour:
   levelComplete: 0
   is3DPerspectiveMode: 0
   timerText: {fileID: 0}
+  defeatScreen: {fileID: 0}
 --- !u!1 &1633306386
 GameObject:
   m_ObjectHideFlags: 0
@@ -9521,7 +9538,12 @@ MonoBehaviour:
   starConditionsText: {fileID: 1021124329}
   gremUnlockPanel: {fileID: 1761830743}
   gremUnlockEgg: {fileID: 1247293486}
-  claimRewardButton: {fileID: 945209820}
+  newSongUnlockPanel: {fileID: 0}
+  newSongUnlockTitleText: {fileID: 0}
+  newSongUnlockNameText: {fileID: 0}
+  newSongUnlockImage: {fileID: 0}
+  sharedRevealButton: {fileID: 0}
+  sharedRevealButtonLabel: {fileID: 0}
   replayButton: {fileID: 682813266}
   continueButton: {fileID: 601919016}
   menuButton: {fileID: 1568220891}

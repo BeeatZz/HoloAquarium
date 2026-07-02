@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f093221c6c6d4c949ba5e8f6a672b7ba, type: 3}
   m_Name: FuwamocoLevel
   m_EditorClassIdentifier: 
-  levelId: 1
-  displayName: Fuwamoco Level
+  levelId: 2
+  displayName: Twin Demon Guard Dogs Lair
   sceneName: FuwamocoLevel
   thumbnail: {fileID: 0}
   gremReward: {fileID: 11400000, guid: b04ae1e24717e6d408e11fc98fa5a0ce, type: 2}
+  trackReward: {fileID: 11400000, guid: 44908a397024a054580606ecb81a574d, type: 2}
   unlockType: 1
-  previousLevelId: 0
+  previousLevelId: 1
   requiredTotalStars: 0

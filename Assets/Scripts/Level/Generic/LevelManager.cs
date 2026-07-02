@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using System.Runtime.CompilerServices;
 
 public class LevelManager : MonoBehaviour
 {
@@ -35,7 +36,7 @@ public class LevelManager : MonoBehaviour
     public event Action OnLevelComplete;
     public event Action<int> OnPurchaseMade;
     public event Action<float> OnCurrencyThresholdReached;
-
+    public GameObject defeatScreen;
     private int currentTierIndex;
     private bool thresholdReached;
 
@@ -94,6 +95,8 @@ public class LevelManager : MonoBehaviour
                 CompleteLevel();
             }
         }
+
+
     }
 
     public void StartSurvivalTimer(float duration)
@@ -111,19 +114,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    public void CheckForDefeat()
-    {
-        if (!levelActive || levelComplete) return;
-
-        Gremurin[] remainingGrems = UnityEngine.Object.FindObjectsByType<Gremurin>(FindObjectsSortMode.None);
-
-        if (remainingGrems.Length == 0)
-        {
-            Debug.Log("Game Over");
-            levelActive = false;
-            
-        }
-    }
+    
 
     public Vector3 ClampToPlayArea(Vector3 position)
     {
@@ -185,7 +176,7 @@ public class LevelManager : MonoBehaviour
         if (!levelActive || levelComplete) return;
         gremDeathCount++;
 
-        CheckForDefeat();
+        //CheckForDefeat();
     }
 
     private void OnCurrencyCollectedHandler(float amount)
@@ -234,6 +225,13 @@ public class LevelManager : MonoBehaviour
 
             return levelGoal.purchaseTiers[currentTierIndex].cost;
         }
+    }
+
+    public void TriggerDefeat()
+    {
+        Time.timeScale = 0f;
+        Debug.Log("defeat");
+        defeatScreen.SetActive(true);
     }
     private void OnDestroy()
     {

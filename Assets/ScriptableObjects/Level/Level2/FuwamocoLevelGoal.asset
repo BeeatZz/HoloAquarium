@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4f9a76a7c81afd04494285b977ce069b, type: 3}
-  m_Name: LevelGoalTest
+  m_Name: FuwamocoLevelGoal
   m_EditorClassIdentifier: 
   totalPurchasesRequired: 3
   purchaseTiers:
   - label: Tier1
     cost: 25
   - label: Tier2
-    cost: 50
+    cost: 25
   - label: Tier3
     cost: 50
   requireAllWavesComplete: 0
   requiredWaveIndex: -1
-  timeLimitSeconds: 120
+  timeLimitSeconds: 140

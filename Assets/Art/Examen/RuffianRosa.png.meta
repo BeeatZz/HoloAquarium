@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: aa74bae4ba428f64ab7ac99bff5136b4
+guid: 44a3a18d90f9aa244b4be39ae5a8b039
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -93,30 +93,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: spritesheet(7)_0
+      name: RuffianRosa_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 1012
-        width: 504
-        height: 506
+        y: 1032
+        width: 600
+        height: 516
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -125,20 +112,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cbad4fb5c7b9d1843bc80c572ab1553f
-      internalID: -1205484923
+      spriteID: 37fbc39fc7160b848b9513f1942d8d9b
+      internalID: -2091625246
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet(7)_1
+      name: RuffianRosa_1
       rect:
         serializedVersion: 2
-        x: 504
-        y: 1012
-        width: 504
-        height: 506
+        x: 600
+        y: 1032
+        width: 600
+        height: 516
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -147,20 +134,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 419760553d29d1d4d8ebe45f352b3ed4
-      internalID: -1779021827
+      spriteID: 5026ad480e81ed34e9b75237c751e663
+      internalID: 1640049131
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet(7)_2
+      name: RuffianRosa_2
       rect:
         serializedVersion: 2
-        x: 1008
-        y: 1012
-        width: 504
-        height: 506
+        x: 1200
+        y: 1032
+        width: 600
+        height: 516
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -169,20 +156,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fc916dc0b7d61154ab21f49be94e96de
-      internalID: 515972772
+      spriteID: 391a7b65fed2ef542a59572e7eb5a0c2
+      internalID: -500349387
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet(7)_3
+      name: RuffianRosa_3
       rect:
         serializedVersion: 2
-        x: 1512
-        y: 1012
-        width: 504
-        height: 506
+        x: 1800
+        y: 1032
+        width: 600
+        height: 516
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -191,20 +178,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a95f1d0eeb4a6f34a9e0995a544b4550
-      internalID: 926226667
+      spriteID: efffcb2cb1b3bea4da895f9ae7ce2ab1
+      internalID: 1676570
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet(7)_4
+      name: RuffianRosa_4
       rect:
         serializedVersion: 2
         x: 0
-        y: 506
-        width: 504
-        height: 506
+        y: 516
+        width: 600
+        height: 516
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -213,20 +200,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 03deb03b96f638b409bc3d25861701e3
-      internalID: -1827710535
+      spriteID: 1315c8577c9113145a2a6a34cbf1c171
+      internalID: 1670624599
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet(7)_5
+      name: RuffianRosa_5
       rect:
         serializedVersion: 2
-        x: 504
-        y: 506
-        width: 504
-        height: 506
+        x: 600
+        y: 516
+        width: 600
+        height: 516
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -235,20 +222,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bcbbda0ef7786854bb5aee2d00ad931f
-      internalID: 627126607
+      spriteID: bd766e826886324498568785cbd095fd
+      internalID: -434143392
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet(7)_6
+      name: RuffianRosa_6
       rect:
         serializedVersion: 2
-        x: 1008
-        y: 506
-        width: 504
-        height: 506
+        x: 1200
+        y: 516
+        width: 600
+        height: 516
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -257,20 +244,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ae312153363d42c4e8c8f27625a72aeb
-      internalID: -2120717451
+      spriteID: c8a0b813bef410045ae31607361414b9
+      internalID: -16750667
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet(7)_7
+      name: RuffianRosa_7
       rect:
         serializedVersion: 2
-        x: 1512
-        y: 506
-        width: 504
-        height: 506
+        x: 1800
+        y: 516
+        width: 600
+        height: 516
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -279,20 +266,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7bef68239729ad844bbc394aa8fc680f
-      internalID: -1036310228
+      spriteID: dc0dab6e373123b4fadc568304d09068
+      internalID: 1838607257
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet(7)_8
+      name: RuffianRosa_8
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 504
-        height: 506
+        width: 600
+        height: 516
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -301,20 +288,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 27c71ac396fa0c74e94209ea25cfd9a4
-      internalID: 1575045463
+      spriteID: 377d017900149a041ae4994f67e91875
+      internalID: -1817829196
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet(7)_9
+      name: RuffianRosa_9
       rect:
         serializedVersion: 2
-        x: 504
+        x: 600
         y: 0
-        width: 504
-        height: 506
+        width: 600
+        height: 516
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -323,20 +310,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9d78a9d414379b14096256c993c59b06
-      internalID: 126317613
+      spriteID: 934afc4eedf3a6c408f5e1764f37f683
+      internalID: 1960815623
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spritesheet(7)_10
+      name: RuffianRosa_10
       rect:
         serializedVersion: 2
-        x: 1008
+        x: 1200
         y: 0
-        width: 504
-        height: 506
+        width: 600
+        height: 516
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -345,8 +332,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9fe21b3d5dea0524a9b758ad150b7f60
-      internalID: -1222816525
+      spriteID: f5562ba485cd18d419a59cf3be2669fc
+      internalID: -1993441555
       vertices: []
       indices: 
       edges: []
@@ -355,7 +342,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 3a723b1786dfa42479eb7a794e532d04
+    spriteID: c0dd0881e515f00459b9e71ac043311c
     internalID: 0
     vertices: []
     indices: 
@@ -365,17 +352,17 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      spritesheet(7)_0: -1205484923
-      spritesheet(7)_1: -1779021827
-      spritesheet(7)_10: -1222816525
-      spritesheet(7)_2: 515972772
-      spritesheet(7)_3: 926226667
-      spritesheet(7)_4: -1827710535
-      spritesheet(7)_5: 627126607
-      spritesheet(7)_6: -2120717451
-      spritesheet(7)_7: -1036310228
-      spritesheet(7)_8: 1575045463
-      spritesheet(7)_9: 126317613
+      RuffianRosa_0: -2091625246
+      RuffianRosa_1: 1640049131
+      RuffianRosa_10: -1993441555
+      RuffianRosa_2: -500349387
+      RuffianRosa_3: 1676570
+      RuffianRosa_4: 1670624599
+      RuffianRosa_5: -434143392
+      RuffianRosa_6: -16750667
+      RuffianRosa_7: 1838607257
+      RuffianRosa_8: -1817829196
+      RuffianRosa_9: 1960815623
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
