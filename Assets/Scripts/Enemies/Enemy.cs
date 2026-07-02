@@ -44,6 +44,7 @@ public class Enemy : MonoBehaviour
     {
         if (isDead) return;
         attackTimer -= Time.deltaTime;
+        if (visualEffectCooldown > 0) visualEffectCooldown -= Time.deltaTime;
         Think();
     }
 
@@ -82,17 +83,27 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    // Add this variable at the top of your Enemy class
+    private float visualEffectCooldown = 0f;
+
     public virtual void TakeDamage(float amount)
     {
         if (isDead) return;
         currentHealth -= amount;
 
-        transform.DOKill();
-        transform.DOPunchScale(new Vector3(0.2f, -0.2f, 0), 0.15f, 10, 1);
+        // Only run visual effects if the cooldown has passed
+        if (visualEffectCooldown <= 0f)
+        {
+            transform.DOKill();
+            transform.DOPunchScale(new Vector3(0.2f, -0.2f, 0), 0.15f, 10, 1);
 
-        sr.DOKill();
-        sr.color = Color.white;
-        sr.DOColor(Color.red, 0.1f).SetLoops(2, LoopType.Yoyo);
+            sr.DOKill();
+            sr.color = Color.white;
+            sr.DOColor(Color.red, 0.1f).SetLoops(2, LoopType.Yoyo);
+
+            // Reset the visual cooldown (e.g., 0.2 seconds between punches)
+            visualEffectCooldown = 0.2f;
+        }
 
         if (currentHealth <= 0) Die();
     }

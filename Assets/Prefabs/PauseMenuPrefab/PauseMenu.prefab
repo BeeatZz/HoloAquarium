@@ -574,6 +574,7 @@ GameObject:
   - component: {fileID: 7903245406780086457}
   - component: {fileID: 2625145122249858185}
   - component: {fileID: 9051161872458164318}
+  - component: {fileID: 3181714930555482721}
   m_Layer: 5
   m_Name: 'MainMenuButton '
   m_TagString: Untagged
@@ -695,6 +696,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &3181714930555482721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5457162633633178723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42b8fc05bd805f646b47f847e6602991, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiltDirection: 1
+  tiltStrength: 10
+  scaleStrength: 1.1
+  animationSpeed: 0.15
 --- !u!1 &7161342755662715105
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,6 +724,7 @@ GameObject:
   - component: {fileID: 4125695862726032798}
   - component: {fileID: 6018127772140828780}
   - component: {fileID: 8501291221062639102}
+  - component: {fileID: 7014831599903925206}
   m_Layer: 5
   m_Name: ResumeButton
   m_TagString: Untagged
@@ -828,3 +846,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7014831599903925206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7161342755662715105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42b8fc05bd805f646b47f847e6602991, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiltDirection: 0
+  tiltStrength: 10
+  scaleStrength: 1.1
+  animationSpeed: 0.15

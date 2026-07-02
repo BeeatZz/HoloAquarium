@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f093221c6c6d4c949ba5e8f6a672b7ba, type: 3}
   m_Name: KosekiLevel
   m_EditorClassIdentifier: 
-  levelId: 1
+  levelId: 0
   displayName: Gemstone Lair
   sceneName: KosekiLevel
   thumbnail: {fileID: 0}

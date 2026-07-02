@@ -1,13 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.InputSystem; 
+using UnityEngine.InputSystem;
 
 public class BossHealthBar : MonoBehaviour
 {
     public static BossHealthBar Instance;
 
     [Header("UI References")]
-    public Slider healthSlider;
+    // Changed from Slider to Image for custom rectangle bar
+    public Image healthBarImage;
     public ShioriTransition transitionScript;
 
     [Header("Health Settings")]
@@ -25,15 +26,16 @@ public class BossHealthBar : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
-        if (healthSlider != null)
+        // Initialize the bar to be full
+        if (healthBarImage != null)
         {
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = maxHealth;
+            healthBarImage.fillAmount = 1f;
         }
     }
 
     void Update()
     {
+        // Debug shortcut
         if (Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
         {
             Debug.Log("Debug: K pressed. Triggering 50% damage.");
@@ -48,11 +50,13 @@ public class BossHealthBar : MonoBehaviour
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        if (healthSlider != null)
+        // Update the visual bar using fillAmount (0 to 1 range)
+        if (healthBarImage != null)
         {
-            healthSlider.value = currentHealth;
+            healthBarImage.fillAmount = currentHealth / maxHealth;
         }
 
+        // Check phase transitions
         if (currentHealth <= maxHealth * 0.5f && !transitionTriggered)
         {
             TriggerPhaseTwo();

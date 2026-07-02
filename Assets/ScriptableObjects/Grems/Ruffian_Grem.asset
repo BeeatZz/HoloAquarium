@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Ruffian_Grem
   m_EditorClassIdentifier: 
   gremName: Ruffian Grem
-  sprite: {fileID: 21300000, guid: f13176795b3095540ad2ad82b8522561, type: 3}
+  sprite: {fileID: 1763920427, guid: 181a7f6faec14db49a479d608018f749, type: 3}
   speciesPrefab: {fileID: 3485767565064571701, guid: a06269f1930f67449b6af4b8a2574f2c, type: 3}
+  hubAnimatorOverride: {fileID: 22100000, guid: 362ec1013051deb429dcfe8df0fe1fe6, type: 2}
   flavorText: 'These stylish grems can be a good economic investment when placed
     together! '
   skills:
@@ -31,3 +32,14 @@ MonoBehaviour:
   wanderPauseMax: 5
   moveSpeed: 1.5
   role: 0
+  audioPack: {fileID: 0}
+  favoriteTrack: {fileID: 11400000, guid: 44908a397024a054580606ecb81a574d, type: 2}
+  spotlightColor: {r: 0, g: 0.9482002, b: 1, a: 1}
+  danceShowIntensity: 0.103
+  trackGremurin: 1
+  sceneAnchorTag: StageCenter
+  spotlightOrbitSpeed: 2
+  spotlightRadiusScale: 4
+  showTotalDuration: 2
+  secretActivationDelay: 0.8
+  secretEffect: {fileID: 0}

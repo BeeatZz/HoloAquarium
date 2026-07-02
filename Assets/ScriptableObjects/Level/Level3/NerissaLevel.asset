@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: NerissaLevel
   m_EditorClassIdentifier: 
   levelId: 2
-  displayName: Nerissa Level
+  displayName: Demon of Song
   sceneName: NerissaLevel
   thumbnail: {fileID: 0}
-  gremReward: {fileID: 0}
+  gremReward: {fileID: 11400000, guid: 665a8ed8b5e16b0429b073b750e96580, type: 2}
+  trackReward: {fileID: 11400000, guid: b926c9b4a2402aa44bf1e8497961f7e8, type: 2}
   unlockType: 1
   previousLevelId: 1
   requiredTotalStars: 0

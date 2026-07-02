@@ -102,6 +102,7 @@ public class HUDManager : MonoBehaviour
         if (ProtectionSystem.Instance == null) return;
 
         bool newProtectionState = !ProtectionSystem.Instance.protectionModeActive;
+
         ProtectionSystem.Instance.ToggleProtectionMode(newProtectionState);
 
         if (newProtectionState && FeedingSystem.Instance != null)
@@ -112,7 +113,7 @@ public class HUDManager : MonoBehaviour
         UpdateToggleVisuals();
     }
 
-    private void UpdateToggleVisuals()
+    public void UpdateToggleVisuals()
     {
         if (feedingToggleText != null && FeedingSystem.Instance != null)
         {

@@ -26,6 +26,8 @@ public class ProtectionSystem : MonoBehaviour
     public void ToggleProtectionMode(bool active)
     {
         protectionModeActive = active;
+           
+        
         if (active && FeedingSystem.Instance != null)
         {
             FeedingSystem.Instance.ToggleFeedingMode(false);
@@ -41,11 +43,18 @@ public class ProtectionSystem : MonoBehaviour
             new Vector3(position.x, position.y, 0)
         );
 
-        UnityEngine.Collider2D hit = Physics2D.OverlapPoint(worldPoint);
+        Collider2D hit = Physics2D.OverlapPoint(worldPoint);
         if (hit != null && hit.GetComponent<Enemy>() != null) return;
 
         CurrencyManager.Instance.Spend(barrierCost);
         SpawnBarrier(worldPoint);
+
+        protectionModeActive = false;
+
+        if (HUDManager.Instance != null)
+        {
+            HUDManager.Instance.UpdateToggleVisuals();
+        }
     }
 
     private void SpawnBarrier(Vector3 position)

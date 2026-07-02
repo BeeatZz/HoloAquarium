@@ -15,13 +15,9 @@ MonoBehaviour:
   gremName: Gremurin
   sprite: {fileID: -801666026, guid: 014756d30627711418157539d4d6f1ed, type: 3}
   speciesPrefab: {fileID: 3485767565064571701, guid: 592ec362faec6a145893536569607d1e, type: 3}
-  hubAnimatorOverride: {fileID: 22100000, guid: bfedf76c15a6bfc4393dad319a73a3fb, type: 2}
+  hubAnimatorOverride: {fileID: 22100000, guid: 43a66069d1ae9a04abb66ec7f3064139, type: 2}
   flavorText: Just a regular ol Grem
-  skills:
-  - skillName: Test
-    skillDescription: Skill test
-  - skillName: Test2
-    skillDescription: Skill test2
+  skills: []
   maxHealth: 3
   maxHunger: 100
   hungerRate: 2

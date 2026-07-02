@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b3a705fda00f53459a45d83aa1dc0a8, type: 3}
+  m_Name: Jailgrem
+  m_EditorClassIdentifier: 
+  gremName: Grembird
+  sprite: {fileID: -835090406, guid: 6f89ce339f73c0d459113c8c8da9c35b, type: 3}
+  speciesPrefab: {fileID: 3485767565064571701, guid: e02bcf667c3d2f94da284fd72f6241dd, type: 3}
+  hubAnimatorOverride: {fileID: 22100000, guid: b52b5ba68e35e1942980e1df98ecb3df, type: 2}
+  flavorText: This Grem is a weird hybrid rumored to come from an egg? the first
+    sighting was on the second of August of 2025
+  skills:
+  - skillName: Raven Aria
+    skillDescription: This grems gentle hums can slow down enemies around itself,
+      and it also lures? inanimate objects closer to them
+  maxHealth: 3
+  maxHunger: 100
+  hungerRate: 2
+  currencyOutputRate: 5
+  currencyOutputAmount: 1
+  wanderRadius: 1.5
+  wanderPauseMin: 2
+  wanderPauseMax: 5
+  moveSpeed: 1.5
+  role: 3
+  audioPack: {fileID: 0}
+  favoriteTrack: {fileID: 11400000, guid: b926c9b4a2402aa44bf1e8497961f7e8, type: 2}
+  spotlightColor: {r: 0, g: 0.22404146, b: 1, a: 1}
+  danceShowIntensity: 0
+  trackGremurin: 1
+  sceneAnchorTag: StageCenter
+  spotlightOrbitSpeed: 0.5
+  spotlightRadiusScale: 4
+  showTotalDuration: 10
+  secretActivationDelay: 10
+  secretEffect: {fileID: 0}

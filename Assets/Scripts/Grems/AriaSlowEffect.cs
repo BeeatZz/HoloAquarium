@@ -5,23 +5,25 @@ public class AriaSlowEffect : MonoBehaviour
     private Enemy targetEnemy;
     private float originalSpeed;
     private float slowFactor;
-    private float overlapCheckRadius = 4.0f; 
-    private float lifeTimer = 0.2f; 
+    private bool isInitialized = false;
+    private float lifeTimer = 0.2f;
 
     public void Initialize(Enemy enemy, float reduction)
     {
+        // Only run initialization logic once
+        if (isInitialized) return;
+
         targetEnemy = enemy;
         originalSpeed = enemy.moveSpeed;
         slowFactor = reduction;
 
-        
+        // Apply the slow
         targetEnemy.moveSpeed = originalSpeed * (1f - slowFactor);
+        isInitialized = true;
     }
 
     private void Update()
     {
-        
-        
         lifeTimer -= Time.deltaTime;
         if (lifeTimer <= 0f || targetEnemy == null)
         {
@@ -29,20 +31,17 @@ public class AriaSlowEffect : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay2D(Collider2D other)
+    // Called by JailbirdGrem to refresh the timer
+    public void Refresh()
     {
-        
-        if (other.GetComponent<JailbirdGrem>())
-        {
-            lifeTimer = 0.2f;
-        }
+        lifeTimer = 0.2f;
     }
 
     private void CleanUp()
     {
         if (targetEnemy != null)
         {
-            targetEnemy.moveSpeed = originalSpeed; 
+            targetEnemy.moveSpeed = originalSpeed; // Restore original speed
         }
         Destroy(this);
     }

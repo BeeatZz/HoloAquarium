@@ -37,45 +37,7 @@ public class PlayerInput : MonoBehaviour
         if (Mouse.current.leftButton.wasReleasedThisFrame) HandleRelease();
     }
 
-    private void HandlePress()
-    {
-        Vector2 mouseScreen = Mouse.current.position.ReadValue();
-        Vector2 worldPoint = Camera.main.ScreenToWorldPoint(mouseScreen);
-
-        if (GremInfoPopup.Instance != null && GremInfoPopup.Instance.IsClickInsidePopup(mouseScreen)) return;
-
-        int currencyLayer = LayerMask.GetMask("Currency");
-        Collider2D coinHit = Physics2D.OverlapPoint(worldPoint, currencyLayer);
-        if (coinHit != null && coinHit.TryGetComponent(out CurrencyDrop drop)) { drop.Collect(); return; }
-
-        Collider2D generalHit = Physics2D.OverlapPoint(worldPoint);
-        if (generalHit != null)
-        {
-            if (generalHit.TryGetComponent(out Enemy enemy)) { enemy.OnPlayerPunch(punchDamage); return; }
-            if (generalHit.TryGetComponent(out GremEgg egg)) { egg.Hatch(); return; }
-            if (generalHit.TryGetComponent(out PageSuckPage page)) { page.OnMouseDown(); return; } 
-        }
-
-        if (IsWithinPlayArea(worldPoint))
-        {
-            if (FeedingSystem.Instance != null && FeedingSystem.Instance.feedingModeActive) { FeedingSystem.Instance.TryPlaceFoodAt(worldPoint); return; }
-            else if (ProtectionSystem.Instance != null && ProtectionSystem.Instance.protectionModeActive) { ProtectionSystem.Instance.TryPlaceBarrierAt(worldPoint); return; }
-        }
-
-        int pickupLayer = LayerMask.GetMask("GremPickup");
-        Collider2D gremHit = Physics2D.OverlapPoint(worldPoint, pickupLayer);
-        if (gremHit != null && gremHit.TryGetComponent(out Gremurin grem) && !grem.isDead)
-        {
-            if (grem.isCharmed) grem.OnSpamClicked();
-            pressedGrem = grem;
-            holdTimer = 0f;
-            isDragging = false;
-            Vector3 wp3 = (Vector3)worldPoint; wp3.z = 0;
-            dragOffset = grem.transform.position - wp3;
-            return;
-        }
-        GremInfoPopup.Instance?.Hide();
-    }
+    
 
     private void HandleHold()
     {
@@ -98,42 +60,143 @@ public class PlayerInput : MonoBehaviour
             draggedGrem.SetBasePosition(draggedGrem.transform.position);
         }
     }
-
-    private void HandlePress3D()
+    private void HandlePress()
     {
         Vector2 mouseScreen = Mouse.current.position.ReadValue();
-        Ray ray = Camera.main.ScreenPointToRay(mouseScreen);
-        RaycastHit2D hit = Physics2D.GetRayIntersection(ray);
+        Vector2 worldPoint = Camera.main.ScreenToWorldPoint(mouseScreen);
 
         if (GremInfoPopup.Instance != null && GremInfoPopup.Instance.IsClickInsidePopup(mouseScreen)) return;
 
-        Plane groundPlane = new Plane(Vector3.forward, Vector3.zero);
-        Vector3 worldPoint = Vector3.zero;
-        if (groundPlane.Raycast(ray, out float dist)) worldPoint = ray.GetPoint(dist);
+        // 1. Get ALL objects at the click point
+        Collider2D[] hits = Physics2D.OverlapPointAll(worldPoint);
 
-        if (hit.collider != null)
+        // 2. Define priority order by checking types
+        // Priority: 1. Enemy, 2. Currency, 3. GremEgg, 4. Page, 5. Gremurin
+
+        // Check for Enemy first
+        foreach (var hit in hits)
         {
-            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Currency") && hit.collider.TryGetComponent(out CurrencyDrop drop)) { drop.Collect(); return; }
-            if (hit.collider.TryGetComponent(out Enemy enemy)) { enemy.OnPlayerPunch(punchDamage); return; }
-            if (hit.collider.TryGetComponent(out GremEgg egg)) { egg.Hatch(); return; }
-            if (hit.collider.TryGetComponent(out PageSuckPage page)) { page.OnMouseDown(); return; }
+            if (hit.TryGetComponent(out Enemy enemy)) { enemy.OnPlayerPunch(punchDamage); return; }
+        }
 
-            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("GremPickup") && hit.collider.TryGetComponent(out Gremurin grem) && !grem.isDead)
+        // Check for Currency/Eggs/Pages
+        foreach (var hit in hits)
+        {
+            if (hit.gameObject.layer == LayerMask.NameToLayer("Currency") && hit.TryGetComponent(out CurrencyDrop drop)) { drop.Collect(); return; }
+            if (hit.TryGetComponent(out GremEgg egg)) { egg.Hatch(); return; }
+            if (hit.TryGetComponent(out PageSuckPage page)) { page.OnMouseDown(); return; }
+        }
+
+        // Finally, handle Gremurin
+        foreach (var hit in hits)
+        {
+            if (hit.gameObject.layer == LayerMask.NameToLayer("GremPickup") && hit.TryGetComponent(out Gremurin grem) && !grem.isDead)
             {
-                if (grem.isCharmed) grem.OnSpamClicked();
+                if (grem.isCharmed) { grem.OnSpamClicked(); return; }
+
                 pressedGrem = grem;
                 holdTimer = 0f;
                 isDragging = false;
-                dragOffset = grem.transform.position - worldPoint;
+                Vector3 wp3 = (Vector3)worldPoint; wp3.z = 0;
+                dragOffset = grem.transform.position - wp3;
                 return;
             }
         }
 
+        // Check for world interactions
         if (IsWithinPlayArea(worldPoint))
         {
-            if (FeedingSystem.Instance != null && FeedingSystem.Instance.feedingModeActive) FeedingSystem.Instance.TryPlaceFoodAt(worldPoint);
-            else if (ProtectionSystem.Instance != null && ProtectionSystem.Instance.protectionModeActive) ProtectionSystem.Instance.TryPlaceBarrierAt(worldPoint);
+            if (FeedingSystem.Instance != null && FeedingSystem.Instance.feedingModeActive) { FeedingSystem.Instance.TryPlaceFoodAt(worldPoint); return; }
+            if (ProtectionSystem.Instance != null && ProtectionSystem.Instance.protectionModeActive) { ProtectionSystem.Instance.TryPlaceBarrierAt(worldPoint); return; }
         }
+        GremInfoPopup.Instance?.Hide();
+    }
+
+        
+    private void HandlePress3D()
+    {
+        Vector2 mouseScreen = Mouse.current.position.ReadValue();
+        Ray ray = Camera.main.ScreenPointToRay(mouseScreen);
+
+        // 1. UI Check (Highest Priority)
+        if (GremInfoPopup.Instance != null && GremInfoPopup.Instance.IsClickInsidePopup(mouseScreen)) return;
+
+        // 2. Get ALL objects hit by the ray
+        RaycastHit2D[] hits = Physics2D.GetRayIntersectionAll(ray);
+
+        // 3. Priority Order Evaluation
+
+        // Check for Enemy first (Highest Game-Interaction Priority)
+        foreach (var hit in hits)
+        {
+            if (hit.collider.TryGetComponent(out Enemy enemy))
+            {
+                enemy.OnPlayerPunch(punchDamage);
+                return; // Exit immediately after punching
+            }
+        }
+
+        // Check for Currency, Eggs, and Pages
+        foreach (var hit in hits)
+        {
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Currency") && hit.collider.TryGetComponent(out CurrencyDrop drop))
+            {
+                drop.Collect();
+                return;
+            }
+            if (hit.collider.TryGetComponent(out GremEgg egg))
+            {
+                egg.Hatch();
+                return;
+            }
+            if (hit.collider.TryGetComponent(out PageSuckPage page))
+            {
+                page.OnMouseDown();
+                return;
+            }
+        }
+
+        // Finally, check for Gremurin
+        foreach (var hit in hits)
+        {
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("GremPickup") && hit.collider.TryGetComponent(out Gremurin grem) && !grem.isDead)
+            {
+                if (grem.isCharmed)
+                {
+                    grem.OnSpamClicked();
+                    return;
+                }
+
+                // Set up drag state
+                pressedGrem = grem;
+                holdTimer = 0f;
+                isDragging = false;
+
+                // Calculate world position on the ground plane
+                Plane groundPlane = new Plane(Vector3.forward, Vector3.zero);
+                if (groundPlane.Raycast(ray, out float dist))
+                {
+                    Vector3 worldPoint = ray.GetPoint(dist);
+                    dragOffset = grem.transform.position - worldPoint;
+                }
+                return;
+            }
+        }
+
+        // 4. World Interactions (If nothing else was hit)
+        Plane playPlane = new Plane(Vector3.forward, Vector3.zero);
+        if (playPlane.Raycast(ray, out float d))
+        {
+            Vector3 worldPoint = ray.GetPoint(d);
+            if (IsWithinPlayArea(worldPoint))
+            {
+                if (FeedingSystem.Instance != null && FeedingSystem.Instance.feedingModeActive)
+                    FeedingSystem.Instance.TryPlaceFoodAt(worldPoint);
+                else if (ProtectionSystem.Instance != null && ProtectionSystem.Instance.protectionModeActive)
+                    ProtectionSystem.Instance.TryPlaceBarrierAt(worldPoint);
+            }
+        }
+
         GremInfoPopup.Instance?.Hide();
     }
 

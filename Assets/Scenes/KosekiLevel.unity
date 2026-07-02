@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 28709958}
   - component: {fileID: 28709957}
   - component: {fileID: 28709956}
+  - component: {fileID: 28709959}
   m_Layer: 5
   m_Name: Button (4)
   m_TagString: Untagged
@@ -240,6 +241,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 28709954}
   m_CullTransparentMesh: 1
+--- !u!114 &28709959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 28709954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42b8fc05bd805f646b47f847e6602991, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiltDirection: 1
+  tiltStrength: 10
+  scaleStrength: 1.1
+  animationSpeed: 0.15
 --- !u!1 &65676127
 GameObject:
   m_ObjectHideFlags: 0
@@ -1270,7 +1287,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_TargetDisplay: 0
 --- !u!224 &248575269
 RectTransform:
@@ -3243,6 +3260,7 @@ GameObject:
   - component: {fileID: 601919018}
   - component: {fileID: 601919017}
   - component: {fileID: 601919016}
+  - component: {fileID: 601919019}
   m_Layer: 5
   m_Name: Button (1)
   m_TagString: Untagged
@@ -3352,6 +3370,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 601919014}
   m_CullTransparentMesh: 1
+--- !u!114 &601919019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601919014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42b8fc05bd805f646b47f847e6602991, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiltDirection: 1
+  tiltStrength: 10
+  scaleStrength: 1.1
+  animationSpeed: 0.15
 --- !u!1 &613403816
 GameObject:
   m_ObjectHideFlags: 0
@@ -4243,6 +4277,7 @@ GameObject:
   - component: {fileID: 682813268}
   - component: {fileID: 682813267}
   - component: {fileID: 682813266}
+  - component: {fileID: 682813269}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -4352,6 +4387,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 682813264}
   m_CullTransparentMesh: 1
+--- !u!114 &682813269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 682813264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42b8fc05bd805f646b47f847e6602991, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiltDirection: 0
+  tiltStrength: 0
+  scaleStrength: 1.1
+  animationSpeed: 0.15
 --- !u!1 &687452570
 GameObject:
   m_ObjectHideFlags: 0
@@ -5424,7 +5475,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: c72c001675d6bea439248b9d937ba15c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: de4c7ca388aae2c40ae950b1674516ea, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -5563,7 +5614,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: c72c001675d6bea439248b9d937ba15c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: de4c7ca388aae2c40ae950b1674516ea, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -7488,7 +7539,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: c72c001675d6bea439248b9d937ba15c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: de4c7ca388aae2c40ae950b1674516ea, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -7783,6 +7834,7 @@ GameObject:
   - component: {fileID: 1568220893}
   - component: {fileID: 1568220892}
   - component: {fileID: 1568220891}
+  - component: {fileID: 1568220894}
   m_Layer: 5
   m_Name: Button (2)
   m_TagString: Untagged
@@ -7800,7 +7852,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2052003337}
   m_Father: {fileID: 207231669}
@@ -7874,9 +7926,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -7892,6 +7944,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1568220889}
   m_CullTransparentMesh: 1
+--- !u!114 &1568220894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568220889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42b8fc05bd805f646b47f847e6602991, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiltDirection: 0
+  tiltStrength: 10
+  scaleStrength: 1.1
+  animationSpeed: 0.15
 --- !u!1 &1579171233
 GameObject:
   m_ObjectHideFlags: 0
@@ -8211,7 +8279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52e0d1ec7fd6e73499194ee7ff122f01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelGoal: {fileID: 11400000, guid: 6c30e689aca8c5e418b3ce1d0484b26e, type: 2}
+  levelGoal: {fileID: 11400000, guid: 4faad24415786464391b02ef1005b8c4, type: 2}
   waveSpawner: {fileID: 1497084574}
   playAreaMin: {x: -7.5, y: -3}
   playAreaMax: {x: 8, y: 3.2}
@@ -8835,7 +8903,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: c72c001675d6bea439248b9d937ba15c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: de4c7ca388aae2c40ae950b1674516ea, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -10142,9 +10210,15 @@ MonoBehaviour:
   availableGrems:
   - gremData: {fileID: 11400000, guid: 81acb4240deb57941bc2c77d1238b857, type: 2}
     cost: 2
-    isAlwaysUnlocked: 0
+    isAlwaysUnlocked: 1
   - gremData: {fileID: 11400000, guid: 9f69d480cf1ff7f4d93ce08c1a6a8c2b, type: 2}
     cost: 2
+    isAlwaysUnlocked: 0
+  - gremData: {fileID: 11400000, guid: b04ae1e24717e6d408e11fc98fa5a0ce, type: 2}
+    cost: 3
+    isAlwaysUnlocked: 0
+  - gremData: {fileID: 11400000, guid: 665a8ed8b5e16b0429b073b750e96580, type: 2}
+    cost: 4
     isAlwaysUnlocked: 0
   isVisible: 0
 --- !u!1 &2041822366
@@ -10609,7 +10683,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: c72c001675d6bea439248b9d937ba15c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: de4c7ca388aae2c40ae950b1674516ea, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
