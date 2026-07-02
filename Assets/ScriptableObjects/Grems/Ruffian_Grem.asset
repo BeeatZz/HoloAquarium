@@ -22,11 +22,11 @@ MonoBehaviour:
   - skillName: Money Pair
     skillDescription: When two or more ruffian grems are in proximity, they generate
       money twice as fast
-  maxHealth: 3
+  maxHealth: 2
   maxHunger: 100
   hungerRate: 2
   currencyOutputRate: 5
-  currencyOutputAmount: 1
+  currencyOutputAmount: 2
   wanderRadius: 1.5
   wanderPauseMin: 2
   wanderPauseMax: 5

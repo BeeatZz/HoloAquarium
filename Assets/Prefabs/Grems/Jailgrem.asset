@@ -25,8 +25,8 @@ MonoBehaviour:
   maxHealth: 3
   maxHunger: 100
   hungerRate: 2
-  currencyOutputRate: 5
-  currencyOutputAmount: 1
+  currencyOutputRate: 2
+  currencyOutputAmount: 2
   wanderRadius: 1.5
   wanderPauseMin: 2
   wanderPauseMax: 5

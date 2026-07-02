@@ -22,7 +22,7 @@ MonoBehaviour:
   maxHunger: 100
   hungerRate: 2
   currencyOutputRate: 5
-  currencyOutputAmount: 100
+  currencyOutputAmount: 2
   wanderRadius: 1.5
   wanderPauseMin: 4
   wanderPauseMax: 6
