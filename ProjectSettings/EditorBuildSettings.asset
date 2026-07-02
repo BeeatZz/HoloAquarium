@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/STARTUP.unity
+    guid: 0b43b3504f0bda84593dcfe2a3b136c5
+  - enabled: 1
     path: Assets/Scenes/IntroMenu.unity
     guid: 664f4a87490ac6f4286334537a0eb483
   - enabled: 1
@@ -26,6 +29,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ShioriLevel.unity
     guid: 8ab6a6ccdba4cec41ae545bc28d3acbd
+  - enabled: 1
+    path: Assets/Scenes/Vault.unity
+    guid: 84e6ff8a84a2430409433900edbb8fa9
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

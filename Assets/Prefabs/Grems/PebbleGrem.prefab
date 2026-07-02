@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5185005263625600261}
   - component: {fileID: 4115026822745897637}
   - component: {fileID: -1231235208619989632}
+  - component: {fileID: -8705409951834305939}
   m_Layer: 3
   m_Name: PebbleGrem
   m_TagString: Untagged
@@ -82,15 +83,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 928352293, guid: a058005bfb1105d47bc90eed1822bd62, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 4.32, y: 3.24}
+  m_Size: {x: 2.7257552, y: 1.8499999}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!50 &6048202981354926127
@@ -215,6 +216,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 706c716519f0aad4ca40607197d6c9de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!95 &-8705409951834305939
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3485767565064571701}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: cafe2ebd57249a148b38c373ec3568ba, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6157750543545413149
 GameObject:
   m_ObjectHideFlags: 0

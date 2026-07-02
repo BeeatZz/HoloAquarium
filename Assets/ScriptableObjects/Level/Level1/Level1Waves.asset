@@ -15,12 +15,16 @@ MonoBehaviour:
   initialDelay: 0
   waves:
   - label: First Wave
-    delayBefore: 0
+    delayBefore: 5
+    waitForClear: 0
+    entries:
+    - enemyPrefab: {fileID: 60664519481366948, guid: 3518336aaf52a994583b6aab26ea1a18, type: 3}
+      count: 1
+      spawnInterval: 0
+  - label: Second Wave
+    delayBefore: 5
     waitForClear: 1
     entries:
-    - enemyPrefab: {fileID: 603024529900613271, guid: 3f4696f036134d04faa138ea9c02e680, type: 3}
-      count: 1
-      spawnInterval: 0
-    - enemyPrefab: {fileID: 7417557367372351461, guid: dd7cbb59a324dd84a9ddbedf3e96a1c5, type: 3}
-      count: 1
-      spawnInterval: 0
+    - enemyPrefab: {fileID: 60664519481366948, guid: 3518336aaf52a994583b6aab26ea1a18, type: 3}
+      count: 3
+      spawnInterval: 2

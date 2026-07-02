@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Pebble_Grem
   m_EditorClassIdentifier: 
   gremName: Grembble
-  sprite: {fileID: 21300000, guid: d1f10c70e4240a341b92dc34fc262d50, type: 3}
+  sprite: {fileID: 928352293, guid: a058005bfb1105d47bc90eed1822bd62, type: 3}
   speciesPrefab: {fileID: 3485767565064571701, guid: 75ea73e0aed02524e8ff0c222d1b3e4c, type: 3}
+  hubAnimatorOverride: {fileID: 22100000, guid: cafe2ebd57249a148b38c373ec3568ba, type: 2}
   flavorText: A weird rocky Grem, produces money slower but is helpful for collecting
     money and for scaring Pebbles
   skills:
@@ -32,3 +33,14 @@ MonoBehaviour:
   wanderPauseMax: 5
   moveSpeed: 1.5
   role: 4
+  audioPack: {fileID: 0}
+  favoriteTrack: {fileID: 11400000, guid: 1c73323c68c946b48ad885f5f2b3bd6c, type: 2}
+  spotlightColor: {r: 1, g: 0, b: 1, a: 1}
+  danceShowIntensity: 0
+  trackGremurin: 1
+  sceneAnchorTag: StageCenter
+  spotlightOrbitSpeed: 3
+  spotlightRadiusScale: 4
+  showTotalDuration: 10
+  secretActivationDelay: 10
+  secretEffect: {fileID: 11400000, guid: 6102a3134e0acf54d8fe3501951eecea, type: 2}

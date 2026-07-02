@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 3
   tags:
   - PageSuckSpawn
+  - Speaker
+  - MainLight
+  - StageSpotlight
+  - StageCenter
   layers:
   - Default
   - TransparentFX
@@ -16,7 +20,7 @@ TagManager:
   - Barrier
   - Currency
   - CursorHazard
-  - 
+  - groundLayer
   - 
   - 
   - 

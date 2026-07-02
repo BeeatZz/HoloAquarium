@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: f13176795b3095540ad2ad82b8522561, type: 3}
+  m_Sprite: {fileID: 1763920427, guid: 181a7f6faec14db49a479d608018f749, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -211,7 +211,6 @@ MonoBehaviour:
   clicksToWakeUp: 5
   lastUncharmedTime: -10
   damageCooldown: 0.5
-  currencyPrefab: {fileID: 5020653946910322864, guid: 85824904d583fe840b3dfcf772c839a3, type: 3}
   baseDropCooldown: 5
   twinDropCooldown: 2.5
   synergyRadius: 3

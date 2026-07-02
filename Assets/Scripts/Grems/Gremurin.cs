@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using DG.Tweening;
+using System.Diagnostics;
 
 public class Gremurin : MonoBehaviour
 {
@@ -40,10 +41,8 @@ public class Gremurin : MonoBehaviour
     protected FoodItem targetFood;
     protected SpriteRenderer sr;
 
-    // Animation reference
     protected Animator animator;
 
-    // Dynamic virtual property so DropSpawner can grab dynamic rates from subclasses
     public virtual float CurrentCurrencyOutputRate
     {
         get { return data != null ? data.currencyOutputRate : 15f; }
@@ -55,7 +54,6 @@ public class Gremurin : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         if (sr != null && data.sprite != null) sr.sprite = data.sprite;
 
-        // Looks for the Animator on this GameObject or its visual child
         animator = GetComponentInChildren<Animator>();
 
         basePosition = transform.position;
@@ -67,7 +65,6 @@ public class Gremurin : MonoBehaviour
 
         ScheduleNextWander();
 
-        // --- PLAY SPAWN SOUND ---
         data.audioPack?.PlaySpawn();
     }
 
@@ -78,16 +75,14 @@ public class Gremurin : MonoBehaviour
         if (isCharmed)
         {
             HandleCharmBehavior();
-            UpdateAnimationStates(); // Update layout while charmed
+            UpdateAnimationStates(); 
             return;
         }
 
-        // Clean, flattened update cycle execution
         HandleHunger();
         HandleWander();
         HandleIdleBob();
 
-        // Push movement and state data to the animator every frame
         UpdateAnimationStates();
     }
 
@@ -199,7 +194,6 @@ public class Gremurin : MonoBehaviour
         lastDamageTime = Time.time;
         currentHealth -= amount;
 
-        // --- PLAY HURT SOUND ---
         data.audioPack?.PlayHit();
 
         if (sr != null)
@@ -291,19 +285,18 @@ public class Gremurin : MonoBehaviour
     {
         currentHunger = Mathf.Clamp(currentHunger + amt, 0, data.maxHunger);
 
-        // --- PLAY EAT SOUND PACK ---
-        data.audioPack?.PlayHit(); // Or add a specialized audio method if needed!
+        data.audioPack?.PlayHit();
     }
-
     protected virtual void Die()
     {
         isDead = true;
 
-        // --- PLAY DEATH CRY ---
         data.audioPack?.PlayDeath();
 
         if (animator != null) animator.SetBool("IsMoving", false);
         if (LevelManager.Instance != null) LevelManager.Instance.RegisterGremDeath();
         UnityEngine.Object.Destroy(gameObject);
+
+        
     }
 }

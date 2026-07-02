@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Grem_Basic
   m_EditorClassIdentifier: 
   gremName: Gremurin
-  sprite: {fileID: 21300000, guid: f4f743dc0d21f2142aed0e93e3a293fb, type: 3}
+  sprite: {fileID: -801666026, guid: 014756d30627711418157539d4d6f1ed, type: 3}
   speciesPrefab: {fileID: 3485767565064571701, guid: 592ec362faec6a145893536569607d1e, type: 3}
+  hubAnimatorOverride: {fileID: 22100000, guid: bfedf76c15a6bfc4393dad319a73a3fb, type: 2}
   flavorText: Just a regular ol Grem
   skills:
   - skillName: Test
@@ -31,3 +32,14 @@ MonoBehaviour:
   wanderPauseMax: 6
   moveSpeed: 1.5
   role: 0
+  audioPack: {fileID: 0}
+  favoriteTrack: {fileID: 11400000, guid: de53245ce02526d4288cd164b723614c, type: 2}
+  spotlightColor: {r: 0.014359474, g: 0, b: 1, a: 1}
+  danceShowIntensity: 0.053
+  trackGremurin: 0
+  sceneAnchorTag: StageCenter
+  spotlightOrbitSpeed: 1
+  spotlightRadiusScale: 1.5
+  showTotalDuration: 10
+  secretActivationDelay: 10
+  secretEffect: {fileID: 11400000, guid: 40a8617edce2a434a800ca1969d191a8, type: 2}

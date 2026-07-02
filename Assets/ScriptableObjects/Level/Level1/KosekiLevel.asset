@@ -17,6 +17,7 @@ MonoBehaviour:
   sceneName: KosekiLevel
   thumbnail: {fileID: 0}
   gremReward: {fileID: 11400000, guid: 9f69d480cf1ff7f4d93ce08c1a6a8c2b, type: 2}
+  trackReward: {fileID: 11400000, guid: 1c73323c68c946b48ad885f5f2b3bd6c, type: 2}
   unlockType: 0
   previousLevelId: 
   requiredTotalStars: 0

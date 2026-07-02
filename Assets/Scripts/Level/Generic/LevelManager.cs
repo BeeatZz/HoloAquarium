@@ -13,6 +13,7 @@ public class LevelManager : MonoBehaviour
 
     [Header("References")]
     public WaveSpawner waveSpawner;
+   
 
     [Header("Play Area")]
     public Vector2 playAreaMin = new Vector2(-4f, -3f);
@@ -242,4 +243,6 @@ public class LevelManager : MonoBehaviour
             CurrencyManager.Instance.OnCurrencyCollected -= OnCurrencyCollectedHandler;
         }
     }
+
+    
 }

@@ -163,6 +163,15 @@ public class SaveManager : MonoBehaviour
         }
     }
 
+    public void UnlockTrack(string trackName)
+    {
+        if (!saveData.unlockedTracks.Contains(trackName))
+        {
+            saveData.unlockedTracks.Add(trackName);
+            Save();
+        }
+    }
+
     public bool IsCampaignUnlocked(CampaignDefinition campaign, LevelRegistry registry)
     {
         switch (campaign.unlockType)

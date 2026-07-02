@@ -1,5 +1,4 @@
 using UnityEngine;
-
 [CreateAssetMenu(fileName = "New LevelDefinition", menuName = "Gremurin/LevelDefinition")]
 public class LevelDefinition : ScriptableObject
 {
@@ -8,16 +7,14 @@ public class LevelDefinition : ScriptableObject
     public string displayName;
     public string sceneName;
     public Sprite thumbnail;
-
     [Header("Reward")]
     public GremData gremReward;
-
+    public TrackData trackReward;
     [Header("Unlock")]
     public LevelUnlockType unlockType;
     public string previousLevelId;
     public int requiredTotalStars;
 }
-
 public enum LevelUnlockType
 {
     AlwaysUnlocked,

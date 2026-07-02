@@ -21,6 +21,9 @@ public class GremUnlockEgg : MonoBehaviour, IPointerClickHandler
     public int clicksToHatch = 8;
     public float maxShakeStrength = 15f;
 
+    // Track state cleanly for LevelCompleteUI's tracking
+    public bool FlavorTextDone { get; private set; }
+
     private int clickCount;
     private bool hatched;
     private GremData pendingData;
@@ -30,6 +33,7 @@ public class GremUnlockEgg : MonoBehaviour, IPointerClickHandler
         pendingData = data;
         clickCount = 0;
         hatched = false;
+        FlavorTextDone = false; // Reset state tracking
         eggImage.sprite = closedSprite;
         eggImage.color = Color.white;
         eggImage.gameObject.SetActive(true);
@@ -82,7 +86,7 @@ public class GremUnlockEgg : MonoBehaviour, IPointerClickHandler
         if (gremImage != null)
         {
             gremImage.sprite = pendingData.sprite;
-            gremImage.SetNativeSize(); 
+            gremImage.SetNativeSize();
             gremImage.gameObject.SetActive(true);
         }
 
@@ -112,13 +116,14 @@ public class GremUnlockEgg : MonoBehaviour, IPointerClickHandler
 
         if (gremFlavorText != null)
         {
-            gremFlavorText.gameObject.SetActive(true); 
+            gremFlavorText.gameObject.SetActive(true);
             gremFlavorText.text = pendingData.flavorText;
             DOTween.To(() => gremFlavorText.alpha, x => gremFlavorText.alpha = x, 1f, 0.4f).SetUpdate(true);
         }
 
         yield return new WaitForSecondsRealtime(0.4f);
 
-        LevelCompleteUI.Instance?.SetButtonsInteractable(true);
+        // Tell the UI that we are ready to reveal the Return button!
+        FlavorTextDone = true;
     }
 }
