@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
+using System;
 
 public class VaultTrigger : MonoBehaviour
 {
@@ -33,6 +34,8 @@ public class VaultTrigger : MonoBehaviour
         if (Keyboard.current.eKey.wasPressedThisFrame)
         {
             SceneFader.Instance.FadeToScene("MainMenu");
+            Cursor.lockState = CursorLockMode.None; 
+            Cursor.visible = true;
         }
     }
 
